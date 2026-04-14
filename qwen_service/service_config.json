@@ -1,0 +1,15 @@
+{
+  "python_bin": "/home/a/miniconda3/envs/swdtorch12/bin/python",
+  "model_path": "/mnt/PRO6000_disk/models/Qwen/Qwen3-Next-80B-A3B-Instruct-FP8",
+  "served_model_name": "next80b_fp8",
+  "host": "127.0.0.1",
+  "port": 8000,
+  "api_key": "EMPTY",
+  "pid_file": "./qwen_service.pid",
+  "log_file": "./logs/qwen_service.log",
+  "gpu_memory_utilization": 0.90,
+  "tensor_parallel_size": 1,
+  "max_model_len": 8192,
+  "dtype": "auto",
+  "trust_remote_code": true
+}
