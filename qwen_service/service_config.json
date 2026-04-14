@@ -7,7 +7,7 @@
   "api_key": "EMPTY",
   "pid_file": "./qwen_service.pid",
   "log_file": "./logs/qwen_service.log",
-  "gpu_memory_utilization": 0.90,
+  "gpu_memory_utilization": 0.70,
   "tensor_parallel_size": 1,
   "max_model_len": 8192,
   "dtype": "auto",
