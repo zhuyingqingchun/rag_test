@@ -160,14 +160,14 @@ def health_check(base_url: str, timeout: int = 5) -> bool:
     """发起健康检查请求
     
     Args:
-        base_url: 基础URL
+        base_url: 基础URL (应包含 /v1 路径)
         timeout: 超时时间（秒）
         
     Returns:
         True表示健康，False表示不健康
     """
     try:
-        response = requests.get(f"{base_url}/v1/models", timeout=timeout)
+        response = requests.get(f"{base_url}/models", timeout=timeout)
         return response.status_code == 200
     except requests.RequestException:
         return False

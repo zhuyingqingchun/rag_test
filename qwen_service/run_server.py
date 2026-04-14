@@ -14,6 +14,7 @@ from utils import (
     check_port,
     check_process_exists,
     create_directory,
+    delete_pid_file,
     generate_start_command,
     log,
     read_pid_file,
@@ -126,13 +127,13 @@ def wait_for_startup(config, process, timeout=60) -> bool:
             return False
         
         # 检查端口是否已监听
-        if not check_port(config.port, config.host):
+        if check_port(config.port, config.host):
             log("端口已监听，等待接口就绪...")
             
             # 检查接口是否可用
             import requests
             try:
-                response = requests.get(f"{base_url}/v1/models", timeout=5)
+                response = requests.get(f"{base_url}/models", timeout=5)
                 if response.status_code == 200:
                     log("服务启动成功")
                     return True
