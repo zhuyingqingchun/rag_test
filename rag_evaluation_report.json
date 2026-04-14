@@ -1,0 +1,20 @@
+{
+  "retrieval_metrics": {
+    "accuracy": 0.4,
+    "recall": 0.18,
+    "precision": 0.2,
+    "mrr": 0.4
+  },
+  "generation_metrics": {
+    "bleu_score": 0.0,
+    "rouge_l": 0.0,
+    "answer_relevance": 0.6111999750137329,
+    "answer_faithfulness": 0.6848999857902527
+  },
+  "efficiency_metrics": {
+    "avg_retrieval_time_ms": 9.31,
+    "avg_generation_time_ms": 0.0,
+    "total_latency_ms": 9.32
+  },
+  "overall_score": 0.3414
+}

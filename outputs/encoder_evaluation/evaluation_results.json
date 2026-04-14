@@ -1,0 +1,70 @@
+{
+  "cnn": {
+    "low": {
+      "accuracy": 1.0,
+      "add_time": 0.3661160469055176,
+      "avg_retrieval_time": 0.0005899012088775635
+    },
+    "medium": {
+      "accuracy": 1.0,
+      "add_time": 0.09069108963012695,
+      "avg_retrieval_time": 0.0005878067016601563
+    },
+    "high": {
+      "accuracy": 1.0,
+      "add_time": 0.09334111213684082,
+      "avg_retrieval_time": 0.0005837786197662354
+    }
+  },
+  "lstm": {
+    "low": {
+      "accuracy": 0.105,
+      "add_time": 12.330325603485107,
+      "avg_retrieval_time": 0.0611650013923645
+    },
+    "medium": {
+      "accuracy": 0.07,
+      "add_time": 12.162312269210815,
+      "avg_retrieval_time": 0.06114932179450989
+    },
+    "high": {
+      "accuracy": 0.12,
+      "add_time": 12.16087555885315,
+      "avg_retrieval_time": 0.0610948121547699
+    }
+  },
+  "autoencoder": {
+    "low": {
+      "accuracy": 1.0,
+      "add_time": 0.046277523040771484,
+      "avg_retrieval_time": 0.0003631126880645752
+    },
+    "medium": {
+      "accuracy": 1.0,
+      "add_time": 0.04532051086425781,
+      "avg_retrieval_time": 0.00036087632179260254
+    },
+    "high": {
+      "accuracy": 1.0,
+      "add_time": 0.045491933822631836,
+      "avg_retrieval_time": 0.0003620433807373047
+    }
+  },
+  "transformer": {
+    "low": {
+      "accuracy": 1.0,
+      "add_time": 0.20856857299804688,
+      "avg_retrieval_time": 0.001130645275115967
+    },
+    "medium": {
+      "accuracy": 1.0,
+      "add_time": 0.19749855995178223,
+      "avg_retrieval_time": 0.0011296844482421874
+    },
+    "high": {
+      "accuracy": 1.0,
+      "add_time": 0.19851016998291016,
+      "avg_retrieval_time": 0.001129390001296997
+    }
+  }
+}

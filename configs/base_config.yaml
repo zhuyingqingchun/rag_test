@@ -1,0 +1,123 @@
+# REFRAG基础配置
+
+# 模型配置
+model:
+  encoder_name: "roberta-base"
+  decoder_name: "meta-llama/Llama-2-7b-hf"
+  block_size: 32
+  use_rl_policy: true
+  
+  encoder_config:
+    pooling: "mean"
+    
+  projection_config:
+    dropout: 0.1
+    activation: "gelu"
+    
+  decoder_config:
+    use_flash_attention: true
+    max_length: 4096
+    trust_remote_code: false
+    
+  rl_config:
+    hidden_dim: 512
+    num_layers: 2
+    num_heads: 8
+    expansion_ratio: 0.1
+    dropout: 0.1
+
+# 训练配置
+training:
+  # 通用配置
+  batch_size: 32
+  num_workers: 4
+  mixed_precision: true
+  max_grad_norm: 1.0
+  
+  # 各阶段配置
+  pretrain:
+    learning_rate: 1e-4
+    weight_decay: 0.01
+    warmup_ratio: 0.04
+    num_epochs: 3
+    max_length: 4096
+    
+  curriculum:
+    learning_rate: 1e-4
+    weight_decay: 0.01
+    warmup_ratio: 0.04
+    stage_epochs: 2
+    stages: [1, 2, 4, 8, 16, 32, 64, 128, 256]
+    improvement_threshold: 0.01
+    
+  cpt:
+    learning_rate: 5e-5
+    weight_decay: 0.01
+    warmup_ratio: 0.04
+    num_epochs: 2
+    context_length: 2048
+    prediction_length: 2048
+    
+  rl:
+    learning_rate: 1e-5
+    num_epochs: 1
+    epsilon: 0.2
+    value_coef: 0.5
+    entropy_coef: 0.01
+    num_samples_per_example: 4
+    
+  sft:
+    learning_rate: 2e-5
+    weight_decay: 0.01
+    warmup_ratio: 0.04
+    num_epochs: 3
+
+# 数据配置
+data:
+  train_data_path: "data/train.jsonl"
+  val_data_path: "data/val.jsonl"
+  test_data_path: "data/test.jsonl"
+  
+  # RAG数据配置
+  rag:
+    max_context_length: 2048
+    max_query_length: 256
+    max_answer_length: 512
+    
+  # 对话数据配置
+  dialogue:
+    max_history_length: 2048
+    max_response_length: 512
+    max_turns: 6
+    
+  # 摘要数据配置
+  summarization:
+    max_doc_length: 4096
+    max_summary_length: 512
+
+# 推理配置
+inference:
+  max_new_tokens: 256
+  temperature: 0.7
+  top_p: 0.9
+  top_k: 50
+  num_beams: 1
+  do_sample: true
+  use_cache: true
+  block_embedding_cache: true
+  selective_expansion: true
+  expansion_ratio: 0.1
+  batch_size: 1
+
+# 输出配置
+output:
+  output_dir: "./outputs"
+  log_interval: 100
+  save_interval: 1000
+  checkpoint_dir: "./checkpoints"
+  
+# 评估配置
+evaluation:
+  eval_interval: 500
+  metrics: ["accuracy", "f1", "rouge", "perplexity"]
+  save_predictions: true

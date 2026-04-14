@@ -1,0 +1,381 @@
+#!/usr/bin/env python3
+"""
+简化版信号编码器训练脚本
+使用交叉熵损失函数和正确的设备处理
+"""
+
+import argparse
+import json
+import numpy as np
+import torch
+import torch.nn as nn
+from torch.utils.data import Dataset, DataLoader
+from torch.optim import AdamW
+from torch.optim.lr_scheduler import CosineAnnealingLR
+from typing import Dict, Tuple, List, Optional
+import os
+import sys
+import time
+sys.path.append('/mnt/PRO6000_disk/swd/servo_0/refrag/src')
+
+from signal_rag.multiple_encoders import CNNSignalEncoder
+from signal_rag.signal_encoder import SignalPreprocessor, SignalRAG
+
+
+class SignalDataset(Dataset):
+    """信号数据集"""
+    
+    def __init__(self, signals: np.ndarray, labels: np.ndarray = None, 
+                 preprocessor: SignalPreprocessor = None):
+        self.signals = signals
+        self.labels = labels
+        self.preprocessor = preprocessor
+    
+    def __len__(self):
+        return len(self.signals)
+    
+    def __getitem__(self, idx):
+        signal = self.signals[idx]
+        
+        # 预处理
+        if self.preprocessor:
+            segments = self.preprocessor.segment_signal(signal)
+            if len(segments) > 0:
+                signal = segments[0]  # 使用第一个段
+        
+        # 转换为tensor
+        if signal.ndim == 1:
+            signal = signal.reshape(-1, 1)
+        
+        signal_tensor = torch.FloatTensor(signal)
+        
+        if self.labels is not None:
+            label = torch.LongTensor([self.labels[idx]])[0]
+            return signal_tensor, label
+        
+        return signal_tensor
+
+
+class SignalEncoderTrainer:
+    """信号编码器训练器"""
+    
+    def __init__(
+        self,
+        model: nn.Module,
+        train_loader: DataLoader,
+        val_loader: DataLoader = None,
+        learning_rate: float = 1e-4,
+        weight_decay: float = 0.01,
+        device: str = "cuda" if torch.cuda.is_available() else "cpu"
+    ):
+        self.model = model.to(device)
+        self.train_loader = train_loader
+        self.val_loader = val_loader
+        self.device = device
+        
+        # 添加分类头
+        self.classifier = nn.Linear(768, 10).to(device)
+        
+        self.optimizer = AdamW(
+            list(model.parameters()) + list(self.classifier.parameters()),
+            lr=learning_rate,
+            weight_decay=weight_decay
+        )
+        
+        self.scheduler = CosineAnnealingLR(
+            self.optimizer,
+            T_max=len(train_loader),
+            eta_min=learning_rate * 0.1
+        )
+        
+        self.criterion = nn.CrossEntropyLoss()
+        
+        self.train_logs = []
+        self.best_val_loss = float('inf')
+    
+    def train_epoch(self) -> Dict[str, float]:
+        """训练一个epoch"""
+        self.model.train()
+        self.classifier.train()
+        total_loss = 0.0
+        correct = 0
+        total = 0
+        num_batches = 0
+        
+        for batch_idx, (signals, labels) in enumerate(self.train_loader):
+            signals = signals.to(self.device)
+            labels = labels.to(self.device)
+            
+            # 前向传播
+            embeddings = self.model(signals)
+            outputs = self.classifier(embeddings)
+            loss = self.criterion(outputs, labels)
+            
+            # 计算准确率
+            _, predicted = outputs.max(1)
+            total += labels.size(0)
+            correct += predicted.eq(labels).sum().item()
+            
+            # 反向传播
+            self.optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(list(self.model.parameters()) + list(self.classifier.parameters()), 1.0)
+            self.optimizer.step()
+            self.scheduler.step()
+            
+            total_loss += loss.item()
+            num_batches += 1
+            
+            if batch_idx % 10 == 0:
+                accuracy = correct / total if total > 0 else 0
+                print(f"  Batch {batch_idx}/{len(self.train_loader)}, Loss: {loss.item():.4f}, Accuracy: {accuracy:.2%}")
+        
+        avg_loss = total_loss / num_batches
+        final_accuracy = correct / total if total > 0 else 0
+        return {'train_loss': avg_loss, 'train_accuracy': final_accuracy}
+    
+    def validate(self) -> Dict[str, float]:
+        """验证"""
+        if self.val_loader is None:
+            return {}
+        
+        self.model.eval()
+        self.classifier.eval()
+        total_loss = 0.0
+        correct = 0
+        total = 0
+        num_batches = 0
+        
+        with torch.no_grad():
+            for signals, labels in self.val_loader:
+                signals = signals.to(self.device)
+                labels = labels.to(self.device)
+                
+                embeddings = self.model(signals)
+                outputs = self.classifier(embeddings)
+                loss = self.criterion(outputs, labels)
+                
+                _, predicted = outputs.max(1)
+                total += labels.size(0)
+                correct += predicted.eq(labels).sum().item()
+                
+                total_loss += loss.item()
+                num_batches += 1
+        
+        avg_loss = total_loss / num_batches
+        accuracy = correct / total if total > 0 else 0
+        return {'val_loss': avg_loss, 'val_accuracy': accuracy}
+    
+    def train(self, num_epochs: int, output_dir: str):
+        """训练模型"""
+        os.makedirs(output_dir, exist_ok=True)
+        
+        for epoch in range(num_epochs):
+            print(f"\nEpoch {epoch + 1}/{num_epochs}")
+            print("-" * 50)
+            
+            # 训练
+            train_metrics = self.train_epoch()
+            print(f"Train Loss: {train_metrics['train_loss']:.4f}, Train Accuracy: {train_metrics['train_accuracy']:.2%}")
+            
+            # 验证
+            val_metrics = self.validate()
+            if val_metrics:
+                print(f"Val Loss: {val_metrics['val_loss']:.4f}, Val Accuracy: {val_metrics['val_accuracy']:.2%}")
+                
+                # 保存最佳模型
+                if val_metrics['val_loss'] < self.best_val_loss:
+                    self.best_val_loss = val_metrics['val_loss']
+                    self.save_checkpoint(
+                        os.path.join(output_dir, "best_model.pt"),
+                        epoch,
+                        val_metrics
+                    )
+                    print("Saved best model!")
+            
+            # 定期保存
+            if (epoch + 1) % 5 == 0:
+                self.save_checkpoint(
+                    os.path.join(output_dir, f"checkpoint_epoch_{epoch + 1}.pt"),
+                    epoch,
+                    {**train_metrics, **val_metrics}
+                )
+            
+            # 记录日志
+            self.train_logs.append({
+                'epoch': epoch + 1,
+                **train_metrics,
+                **val_metrics
+            })
+        
+        # 保存训练日志
+        with open(os.path.join(output_dir, "train_logs.json"), 'w') as f:
+            json.dump(self.train_logs, f, indent=2)
+        
+        print("\nTraining completed!")
+    
+    def save_checkpoint(self, path: str, epoch: int, metrics: Dict):
+        """保存检查点"""
+        checkpoint = {
+            'epoch': epoch,
+            'model_state_dict': self.model.state_dict(),
+            'classifier_state_dict': self.classifier.state_dict(),
+            'optimizer_state_dict': self.optimizer.state_dict(),
+            'metrics': metrics
+        }
+        torch.save(checkpoint, path)
+
+
+def generate_synthetic_data(num_samples: int = 1000, num_classes: int = 10) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    生成合成信号数据用于测试
+    """
+    signals = []
+    labels = []
+    
+    sample_rate = 1000
+    duration = 1.0
+    t = np.linspace(0, duration, int(sample_rate * duration))
+    
+    for i in range(num_samples):
+        class_id = i % num_classes
+        
+        # 根据类别生成不同频率的信号
+        freq = 5 + class_id * 2
+        phase = np.random.uniform(0, 2 * np.pi)
+        amplitude = np.random.uniform(0.5, 1.5)
+        noise_level = np.random.uniform(0.1, 0.3)
+        
+        signal = amplitude * np.sin(2 * np.pi * freq * t + phase) + noise_level * np.random.randn(len(t))
+        
+        signals.append(signal)
+        labels.append(class_id)
+    
+    return np.array(signals), np.array(labels)
+
+
+def evaluate_encoder(encoder, test_signals, test_labels, top_k=5, device='cuda'):
+    """
+    评估编码器的检索性能
+    """
+    preprocessor = SignalPreprocessor(window_size=1000, hop_size=500)
+    rag = SignalRAG(encoder, preprocessor, top_k=top_k)
+    
+    # 添加信号到数据库
+    metadata = [{'type': f'class_{label}'} for label in test_labels]
+    rag.add_signals(test_signals, metadata)
+    
+    # 评估检索性能
+    correct = 0
+    total = len(test_signals)
+    
+    for i, query_signal in enumerate(test_signals):
+        expected_label = f'class_{test_labels[i]}'
+        results = rag.retrieve(query_signal)
+        
+        if results:
+            top_result = results[0]
+            retrieved_label = top_result[3]['type']
+            if retrieved_label == expected_label:
+                correct += 1
+    
+    accuracy = correct / total if total > 0 else 0.0
+    return accuracy
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Train CNN Signal Encoder")
+    parser.add_argument("--output_dir", type=str, default="outputs/cnn_encoder", help="Output directory")
+    parser.add_argument("--batch_size", type=int, default=32, help="Batch size")
+    parser.add_argument("--num_epochs", type=int, default=20, help="Number of epochs")
+    parser.add_argument("--learning_rate", type=float, default=1e-5, help="Learning rate")
+    args = parser.parse_args()
+    
+    # 生成数据
+    print("Generating synthetic data...")
+    signals, labels = generate_synthetic_data(num_samples=1000, num_classes=10)
+    
+    # 划分训练集和验证集
+    num_train = int(0.8 * len(signals))
+    train_signals = signals[:num_train]
+    train_labels = labels[:num_train]
+    val_signals = signals[num_train:]
+    val_labels = labels[num_train:]
+    
+    # 创建预处理器
+    preprocessor = SignalPreprocessor(window_size=1000, hop_size=500)
+    
+    # 创建数据集
+    train_dataset = SignalDataset(train_signals, train_labels, preprocessor)
+    val_dataset = SignalDataset(val_signals, val_labels, preprocessor)
+    
+    # 创建数据加载器
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=4,
+        drop_last=True
+    )
+    
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=args.batch_size,
+        shuffle=False,
+        num_workers=4
+    )
+    
+    # 创建CNN模型
+    print("Creating CNN encoder...")
+    model = CNNSignalEncoder(
+        input_dim=1,
+        hidden_dim=256,
+        output_dim=768
+    )
+    
+    # 创建训练器
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Using device: {device}")
+    
+    trainer = SignalEncoderTrainer(
+        model=model,
+        train_loader=train_loader,
+        val_loader=val_loader,
+        learning_rate=args.learning_rate,
+        device=device
+    )
+    
+    # 训练
+    print("Training CNN encoder...")
+    trainer.train(
+        num_epochs=args.num_epochs,
+        output_dir=args.output_dir
+    )
+    
+    # 加载最佳模型
+    best_model_path = os.path.join(args.output_dir, "best_model.pt")
+    if os.path.exists(best_model_path):
+        print(f"Loading best model from {best_model_path}...")
+        checkpoint = torch.load(best_model_path, map_location=device)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        model.eval()
+    
+    # 评估
+    print("Evaluating CNN encoder...")
+    accuracy = evaluate_encoder(model, val_signals, val_labels, device=device)
+    print(f"CNN encoder RAG accuracy: {accuracy:.2%}")
+    
+    # 保存评估结果
+    results = {
+        'rag_accuracy': accuracy,
+        'best_val_loss': trainer.best_val_loss
+    }
+    
+    with open(os.path.join(args.output_dir, "evaluation_results.json"), 'w') as f:
+        json.dump(results, f, indent=2)
+    
+    print(f"\nResults saved to: {args.output_dir}")
+
+
+if __name__ == "__main__":
+    main()
