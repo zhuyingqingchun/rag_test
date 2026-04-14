@@ -167,7 +167,9 @@ def health_check(base_url: str, timeout: int = 5) -> bool:
         True表示健康，False表示不健康
     """
     try:
-        response = requests.get(f"{base_url}/models", timeout=timeout)
+        session = requests.Session()
+        session.trust_env = False
+        response = session.get(f"{base_url}/models", timeout=timeout)
         return response.status_code == 200
     except requests.RequestException:
         return False
