@@ -1,0 +1,33 @@
+{
+  "query": "RAG 系统的核心组成",
+  "method": "keyword",
+  "total_chunks": 19,
+  "results_count": 3,
+  "timestamp": "RAG 系统的核心组成",
+  "results": [
+    {
+      "doc_id": "doc_20260414_204819_4791",
+      "chunk_id": 0,
+      "source": "data/input_docs/rag_introduction.md",
+      "text": "# RAG 系统简介",
+      "score": 0.5,
+      "rank": 1
+    },
+    {
+      "doc_id": "doc_20260414_204819_4791",
+      "chunk_id": 3,
+      "source": "data/input_docs/rag_introduction.md",
+      "text": "## RAG 的核心组件",
+      "score": 0.5,
+      "rank": 2
+    },
+    {
+      "doc_id": "doc_20260414_204819_4791",
+      "chunk_id": 12,
+      "source": "data/input_docs/rag_introduction.md",
+      "text": "## RAG 的工作流程",
+      "score": 0.5,
+      "rank": 3
+    }
+  ]
+}

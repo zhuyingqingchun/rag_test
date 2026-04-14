@@ -66,12 +66,17 @@ def build_prompt(query: str, retrieved_results: List[Dict[str, Any]],
         references.append(f"- [{i}] {r['source']} (score: {r['score']:.3f})\n  {text}")
     
     # 构建 prompt
+    prompt_parts = []
+    for i, r in enumerate(retrieved_results):
+        prompt_parts.append(f"片段 {i+1} (score: {r['score']:.3f}):")
+        prompt_parts.append(r['text'])
+    
     prompt = f"""请根据以下检索结果，生成一份结构化报告。
 
 用户问题：{query}
 
 检索结果（按相关性排序）：
-{chr(10).join([f'片段 {i+1} (score: {r['score']:.3f}):' + chr(10) + r['text'] for i, r in enumerate(retrieved_results)])}
+{chr(10).join(prompt_parts)}
 
 请按照以下格式生成报告：
 
@@ -97,7 +102,7 @@ def build_prompt(query: str, retrieved_results: List[Dict[str, Any]],
 [结论内容]
 
 ## 六、参考片段
-{chr(10).join([f'- [{i+1}] {r['source']} (score: {r['score']:.3f})' + chr(10) + f'  {r['text'][:200]}' for i, r in enumerate(retrieved_results)])}
+{chr(10).join([f'- [{i+1}] {r["source"]} (score: {r["score"]:.3f})' + chr(10) + f'  {r["text"][:200]}' for i, r in enumerate(retrieved_results)])}
 """
     
     return prompt
