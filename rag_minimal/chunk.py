@@ -126,7 +126,7 @@ def chunk_file(input_path: str, output_path: str, method: str = 'paragraph',
         "status": "success",
         "input_file": input_path,
         "output_file": output_path,
-        "docs_processed": len(chunks),
+        "docs_processed": len({chunk["doc_id"] for chunk in chunks}),
         "chunks_total": len(chunks),
         "method": method,
         "chunk_size": chunk_size,
@@ -141,12 +141,18 @@ def chunk_directory(input_dir: str, output_path: str, method: str = 'paragraph',
     files_processed = 0
     
     for file_path in Path(input_dir).glob('*.jsonl'):
-        result = chunk_file(str(file_path), output_path, method, chunk_size, overlap)
+        with open(file_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if line.strip():
+                    doc = json.loads(line)
+                    all_chunks.extend(chunk_document(doc, method, chunk_size, overlap))
         files_processed += 1
-        
-        with open(output_path, 'r', encoding='utf-8') as f:
-            all_chunks = [json.loads(line) for line in f if line.strip()]
-    
+
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        for chunk in all_chunks:
+            f.write(json.dumps(chunk, ensure_ascii=False) + '\n')
+
     return {
         "status": "success",
         "input_dir": input_dir,

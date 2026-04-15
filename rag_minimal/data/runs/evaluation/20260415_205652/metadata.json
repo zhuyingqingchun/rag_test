@@ -1,0 +1,7 @@
+{
+  "query": "FMECA 在该研究中的作用是什么？",
+  "timestamp": "20260415_205652",
+  "status": "success",
+  "model": "next80b_fp8",
+  "retrieved_count": 5
+}

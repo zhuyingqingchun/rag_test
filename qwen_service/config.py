@@ -15,7 +15,8 @@ class Config:
         Args:
             config_path: 配置文件路径
         """
-        self.config_path = config_path
+        base_dir = Path(__file__).resolve().parent
+        self.config_path = str((base_dir / config_path).resolve()) if not os.path.isabs(config_path) else config_path
         self.config: Dict[str, Any] = {}
         self._load_config()
     

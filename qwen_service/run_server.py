@@ -19,25 +19,19 @@ from utils import (
     log,
     read_pid_file,
     write_pid_file,
+    health_check,
 )
 
 
-def check_dependencies() -> bool:
-    """检查依赖项"""
-    try:
-        import vllm
-        log("vllm 已安装")
-    except ImportError:
-        log("vllm 未安装，请运行: pip install vllm", "ERROR")
-        return False
-    
-    try:
-        import requests
-        log("requests 已安装")
-    except ImportError:
-        log("requests 未安装，请运行: pip install requests", "ERROR")
-        return False
-    
+def check_dependencies(config) -> bool:
+    """检查依赖项，强制使用配置中的 Python 解释器。"""
+    for module_name in ["vllm", "requests"]:
+        cmd = [config.python_bin, "-c", f"import {module_name}; print({module_name}.__name__)"]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            log(f"{module_name} 未安装到目标环境: {config.python_bin}", "ERROR")
+            return False
+        log(f"{module_name} 已安装 ({config.python_bin})")
     return True
 
 
@@ -130,15 +124,9 @@ def wait_for_startup(config, process, timeout=60) -> bool:
         if check_port(config.port, config.host):
             log("端口已监听，等待接口就绪...")
             
-            # 检查接口是否可用
-            import requests
-            try:
-                response = requests.get(f"{base_url}/models", timeout=5)
-                if response.status_code == 200:
-                    log("服务启动成功")
-                    return True
-            except requests.RequestException:
-                pass
+            if health_check(base_url):
+                log("服务启动成功")
+                return True
         
         time.sleep(2)
         log(f"等待服务启动中... ({int(time.time() - start_time)}s)")
@@ -157,7 +145,7 @@ def main():
         log("=" * 60)
         
         # 检查依赖
-        if not check_dependencies():
+        if not check_dependencies(config):
             return 1
         
         # 检查模型路径

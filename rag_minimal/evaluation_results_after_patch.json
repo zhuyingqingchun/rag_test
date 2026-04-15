@@ -1,0 +1,414 @@
+{
+  "summary": {
+    "总耗时": 37.48,
+    "问题数量": 3,
+    "成功数量": 3,
+    "失败数量": 0,
+    "平均耗时": {
+      "导入": 0.57,
+      "切分": 0.04,
+      "检索": 0.06,
+      "生成": 11.81
+    },
+    "检索指标平均值": {
+      "Recall@5": 0.0,
+      "Precision@5": 0.0,
+      "Hit@5": 0.0,
+      "平均相关性": 1.0
+    },
+    "报告指标平均值": {
+      "结构完整率": 1.0,
+      "引用覆盖率": 1.0,
+      "事实一致性": 1.0,
+      "综合得分": 1.0
+    }
+  },
+  "details": [
+    {
+      "query": "电动舵机故障诊断的主要方法有哪些？",
+      "timestamp": "2026-04-15T20:56:25.653875",
+      "relevant_docs": [
+        "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+      ],
+      "ingest": {
+        "status": "success",
+        "time": 0.58
+      },
+      "chunk": {
+        "status": "success",
+        "time": 0.04
+      },
+      "retrieve": {
+        "status": "success",
+        "time": 0.06
+      },
+      "retrieval": {
+        "status": "success",
+        "query": "电动舵机故障诊断的主要方法有哪些？",
+        "total_chunks": 193,
+        "results_count": 5,
+        "metrics": {
+          "recall@k": 0.0,
+          "precision@k": 0.0,
+          "hit_rate": false,
+          "avg_relevance": 1.0
+        },
+        "relevance_scores": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "top_k_results": [
+          {
+            "rank": 1,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 1.0,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n10\n针对电动舵机的渐变性故障模式难以获得明显故障特征的特点，本文利用小\n波分解算法去除信号中高频分量的影响，获得更为平滑的故障特征参数，同时利\n用神经网络作为人"
+          },
+          {
+            "rank": 2,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 1.0,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第五章基于模糊规则推理的EMA 智能故障诊断方法\n117\n从表5-9 所示的测试结果发现，本文所提出方法对测试样本中的单故障模式和\n多故障模式都具有100%的识别率。故障模式"
+          },
+          {
+            "rank": 3,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.9375,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n5\n测器生成残差可以检测系统故障。\n残差生成法已经被证明在工程中是一种可靠的故障检测方法[39][40]。然而工程\n中有些变量难以直接获取，比如无法使用物理方法测"
+          },
+          {
+            "rank": 4,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.9375,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n6\n考虑到基于解析模型的故障诊断方法的优劣依赖于模型的精确性，对于电动\n舵机这一类具有模型不确定性和未知输入扰动的系统，需要进一步研究具有鲁棒\n性的故障诊断方法，"
+          },
+          {
+            "rank": 5,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.9375,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n11\n可能发生的故障，仍然是一个难题；其二是，轴承磨损、齿轮裂纹、滚珠丝杠磨\n损等渐变性故障，其演变的过程时间较长，对电动舵机传感器检测的电流、转速、\n位置等数据"
+          }
+        ]
+      },
+      "report": {
+        "status": "success",
+        "time": 12.82,
+        "file": "data/runs/evaluation/20260415_205639/report.md"
+      },
+      "report_evaluation": {
+        "status": "success",
+        "report_file": "data/runs/evaluation/20260415_205639/report.md",
+        "context_file": "data/processed/eval_retrieved.json",
+        "metrics": {
+          "结构完整率": 1.0,
+          "引用覆盖率": 1.0,
+          "事实一致性": 1.0,
+          "综合得分": 1.0
+        },
+        "structure": {
+          "标题": true,
+          "任务说明": true,
+          "检索摘要": true,
+          "关键内容整理": true,
+          "综合分析": true,
+          "结论": true,
+          "参考片段": true
+        },
+        "chapter_coverage": {
+          "用户问题": 1,
+          "生成时间": 1,
+          "共召回片段数": 1,
+          "主要来源": 1,
+          "关键点条目": 6,
+          "结论章节": 1
+        },
+        "citation": {
+          "total_references": 1,
+          "cited_count": 1,
+          "coverage": 1.0,
+          "cited_sources": [
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+          ],
+          "all_sources": [
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+          ]
+        },
+        "consistency": {
+          "total_key_points": 6,
+          "consistent_points": 6,
+          "consistency_score": 1.0
+        }
+      }
+    },
+    {
+      "query": "FMECA 在该研究中的作用是什么？",
+      "timestamp": "2026-04-15T20:56:39.156251",
+      "relevant_docs": [
+        "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+      ],
+      "ingest": {
+        "status": "success",
+        "time": 0.57
+      },
+      "chunk": {
+        "status": "success",
+        "time": 0.04
+      },
+      "retrieve": {
+        "status": "success",
+        "time": 0.06
+      },
+      "retrieval": {
+        "status": "success",
+        "query": "FMECA 在该研究中的作用是什么？",
+        "total_chunks": 193,
+        "results_count": 5,
+        "metrics": {
+          "recall@k": 0.0,
+          "precision@k": 0.0,
+          "hit_rate": false,
+          "avg_relevance": 1.0
+        },
+        "relevance_scores": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "top_k_results": [
+          {
+            "rank": 1,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.75,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n4\n如图1-3 所示，人工智能故障诊断系统包括故障特征检测、故障数据融合、以\n及智能决策和推理等多个模块。故障诊断过程中，故障特征检测和故障数据融合\n是人工智能推"
+          },
+          {
+            "rank": 2,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.75,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n5\n测器生成残差可以检测系统故障。\n残差生成法已经被证明在工程中是一种可靠的故障检测方法[39][40]。然而工程\n中有些变量难以直接获取，比如无法使用物理方法测"
+          },
+          {
+            "rank": 3,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.75,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n6\n考虑到基于解析模型的故障诊断方法的优劣依赖于模型的精确性，对于电动\n舵机这一类具有模型不确定性和未知输入扰动的系统，需要进一步研究具有鲁棒\n性的故障诊断方法，"
+          },
+          {
+            "rank": 4,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.75,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n10\n针对电动舵机的渐变性故障模式难以获得明显故障特征的特点，本文利用小\n波分解算法去除信号中高频分量的影响，获得更为平滑的故障特征参数，同时利\n用神经网络作为人"
+          },
+          {
+            "rank": 5,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.75,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第二章电动舵机故障诊断模型和平台建立\n39\n图2-25 所示的是电动舵机正常工作时的数据管理软件界面图。该界面中分别\n监测电动舵机中电机电流、线电压和推杆顶点的位移。其中，电"
+          }
+        ]
+      },
+      "report": {
+        "status": "success",
+        "time": 12.76,
+        "file": "data/runs/evaluation/20260415_205652/report.md"
+      },
+      "report_evaluation": {
+        "status": "success",
+        "report_file": "data/runs/evaluation/20260415_205652/report.md",
+        "context_file": "data/processed/eval_retrieved.json",
+        "metrics": {
+          "结构完整率": 1.0,
+          "引用覆盖率": 1.0,
+          "事实一致性": 1.0,
+          "综合得分": 1.0
+        },
+        "structure": {
+          "标题": true,
+          "任务说明": true,
+          "检索摘要": true,
+          "关键内容整理": true,
+          "综合分析": true,
+          "结论": true,
+          "参考片段": true
+        },
+        "chapter_coverage": {
+          "用户问题": 1,
+          "生成时间": 1,
+          "共召回片段数": 1,
+          "主要来源": 1,
+          "关键点条目": 3,
+          "结论章节": 1
+        },
+        "citation": {
+          "total_references": 1,
+          "cited_count": 1,
+          "coverage": 1.0,
+          "cited_sources": [
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf (score: 0.750)",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf (score: 0.750)",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf (score: 0.750)",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf (score: 0.750)",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf (score: 0.750)"
+          ],
+          "all_sources": [
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+          ]
+        },
+        "consistency": {
+          "total_key_points": 3,
+          "consistent_points": 3,
+          "consistency_score": 1.0
+        }
+      }
+    },
+    {
+      "query": "文中提到了哪些关键故障模式？",
+      "timestamp": "2026-04-15T20:56:52.599441",
+      "relevant_docs": [
+        "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+      ],
+      "ingest": {
+        "status": "success",
+        "time": 0.57
+      },
+      "chunk": {
+        "status": "success",
+        "time": 0.05
+      },
+      "retrieve": {
+        "status": "success",
+        "time": 0.06
+      },
+      "retrieval": {
+        "status": "success",
+        "query": "文中提到了哪些关键故障模式？",
+        "total_chunks": 193,
+        "results_count": 5,
+        "metrics": {
+          "recall@k": 0.0,
+          "precision@k": 0.0,
+          "hit_rate": false,
+          "avg_relevance": 1.0
+        },
+        "relevance_scores": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "top_k_results": [
+          {
+            "rank": 1,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.9230769230769231,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第五章基于模糊规则推理的EMA 智能故障诊断方法\n117\n从表5-9 所示的测试结果发现，本文所提出方法对测试样本中的单故障模式和\n多故障模式都具有100%的识别率。故障模式"
+          },
+          {
+            "rank": 2,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.8461538461538461,
+            "relevance": 1,
+            "preview": "摘要\nI\n摘要\n舵机是飞机实现飞行姿态和飞行轨迹控制的关键控制部件，舵机一旦出现故\n障必将严重影响飞机的机动性、飞行安全性等性能。随着全电飞机计划的提出，\n电液舵机（EHA）和电动舵机（EMA）逐步被"
+          },
+          {
+            "rank": 3,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.8461538461538461,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n4\n如图1-3 所示，人工智能故障诊断系统包括故障特征检测、故障数据融合、以\n及智能决策和推理等多个模块。故障诊断过程中，故障特征检测和故障数据融合\n是人工智能推"
+          },
+          {
+            "rank": 4,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.8461538461538461,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n5\n测器生成残差可以检测系统故障。\n残差生成法已经被证明在工程中是一种可靠的故障检测方法[39][40]。然而工程\n中有些变量难以直接获取，比如无法使用物理方法测"
+          },
+          {
+            "rank": 5,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.8461538461538461,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n6\n考虑到基于解析模型的故障诊断方法的优劣依赖于模型的精确性，对于电动\n舵机这一类具有模型不确定性和未知输入扰动的系统，需要进一步研究具有鲁棒\n性的故障诊断方法，"
+          }
+        ]
+      },
+      "report": {
+        "status": "success",
+        "time": 9.84,
+        "file": "data/runs/evaluation/20260415_205703/report.md"
+      },
+      "report_evaluation": {
+        "status": "success",
+        "report_file": "data/runs/evaluation/20260415_205703/report.md",
+        "context_file": "data/processed/eval_retrieved.json",
+        "metrics": {
+          "结构完整率": 1.0,
+          "引用覆盖率": 1.0,
+          "事实一致性": 1.0,
+          "综合得分": 1.0
+        },
+        "structure": {
+          "标题": true,
+          "任务说明": true,
+          "检索摘要": true,
+          "关键内容整理": true,
+          "综合分析": true,
+          "结论": true,
+          "参考片段": true
+        },
+        "chapter_coverage": {
+          "用户问题": 1,
+          "生成时间": 1,
+          "共召回片段数": 1,
+          "主要来源": 1,
+          "关键点条目": 3,
+          "结论章节": 1
+        },
+        "citation": {
+          "total_references": 1,
+          "cited_count": 1,
+          "coverage": 1.0,
+          "cited_sources": [
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf (score: 0.923)",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf (score: 0.846)",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf (score: 0.846)",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf (score: 0.846)",
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf (score: 0.846)"
+          ],
+          "all_sources": [
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+          ]
+        },
+        "consistency": {
+          "total_key_points": 3,
+          "consistent_points": 3,
+          "consistency_score": 1.0
+        }
+      }
+    }
+  ],
+  "total_time": 37.48,
+  "timestamp": "2026-04-15T20:57:03.132192"
+}

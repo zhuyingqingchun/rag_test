@@ -1,0 +1,1170 @@
+--- a/retrieve.py
++++ b/retrieve.py
+@@ -1,15 +1,13 @@
+ #!/usr/bin/env python3
+ # -*- coding: utf-8 -*-
+-"""
+-基础检索模块
+-使用 BM25 或 TF-IDF 在 chunk 中检索相关片段
+-"""
++"""基础检索模块。"""
++from __future__ import annotations
+ 
++import json
+ import os
+ import sys
+-import json
+-from pathlib import Path
+-from typing import List, Dict, Any, Optional
++from datetime import datetime
++from typing import Any, Dict, List
+ 
+ try:
+     from rank_bm25 import BM25Okapi
+@@ -17,151 +15,93 @@
+ except ImportError:
+     BM25_AVAILABLE = False
+ 
++from text_utils import tokenize, unique_tokens
++
+ 
+ def load_chunks(chunks_path: str) -> List[Dict[str, Any]]:
+-    """加载 chunk 数据"""
+     chunks = []
+-    
+     with open(chunks_path, 'r', encoding='utf-8') as f:
+         for line in f:
+             if line.strip():
+                 chunks.append(json.loads(line))
+-    
+     return chunks
+ 
+ 
+-def tokenize(text: str) -> List[str]:
+-    """简单分词（按空格）"""
+-    return text.split()
+-
+-
+ def bm25_search(query: str, chunks: List[Dict[str, Any]], top_k: int = 5) -> List[Dict[str, Any]]:
+-    """使用 BM25 检索"""
+     if not BM25_AVAILABLE:
+         raise ImportError("rank-bm25 未安装，请运行: pip install rank-bm25")
+-    
+-    # 准备语料库
+-    corpus = [chunk['text'] for chunk in chunks]
+-    tokenized_corpus = [tokenize(doc) for doc in corpus]
+-    
+-    # 初始化 BM25
++    tokenized_corpus = [tokenize(chunk['text']) for chunk in chunks]
+     bm25 = BM25Okapi(tokenized_corpus)
+-    
+-    # 检索
+-    tokenized_query = tokenize(query)
+-    scores = bm25.get_scores(tokenized_query)
+-    
+-    # 排序并返回 top-k
++    query_tokens = tokenize(query)
++    scores = bm25.get_scores(query_tokens)
+     ranked_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:top_k]
+-    
+     results = []
+     for idx in ranked_indices:
+         if scores[idx] > 0:
+-            results.append({
+-                "chunk": chunks[idx],
+-                "score": scores[idx],
+-                "rank": len(results) + 1
+-            })
+-    
++            results.append({"chunk": chunks[idx], "score": float(scores[idx]), "rank": len(results) + 1})
+     return results
+ 
+ 
+ def tfidf_search(query: str, chunks: List[Dict[str, Any]], top_k: int = 5) -> List[Dict[str, Any]]:
+-    """使用 TF-IDF 检索（简单实现）"""
+     from sklearn.feature_extraction.text import TfidfVectorizer
+     from sklearn.metrics.pairwise import cosine_similarity
+-    import numpy as np
+-    
+-    # 准备语料库
+-    corpus = [chunk['text'] for chunk in chunks]
+-    
+-    # 初始化 TF-IDF
+-    vectorizer = TfidfVectorizer()
++
++    corpus = [' '.join(tokenize(chunk['text'])) for chunk in chunks]
++    vectorizer = TfidfVectorizer(token_pattern=r'[^ ]+')
+     tfidf_matrix = vectorizer.fit_transform(corpus)
+-    
+-    # 转换查询
+-    query_vec = vectorizer.transform([query])
+-    
+-    # 计算相似度
++    query_vec = vectorizer.transform([' '.join(tokenize(query))])
+     similarities = cosine_similarity(query_vec, tfidf_matrix).flatten()
+-    
+-    # 排序并返回 top-k
+     ranked_indices = sorted(range(len(similarities)), key=lambda i: similarities[i], reverse=True)[:top_k]
+-    
+     results = []
+     for idx in ranked_indices:
+         if similarities[idx] > 0:
+-            results.append({
+-                "chunk": chunks[idx],
+-                "score": float(similarities[idx]),
+-                "rank": len(results) + 1
+-            })
+-    
++            results.append({"chunk": chunks[idx], "score": float(similarities[idx]), "rank": len(results) + 1})
+     return results
+ 
+ 
+ def keyword_search(query: str, chunks: List[Dict[str, Any]], top_k: int = 5) -> List[Dict[str, Any]]:
+-    """简单关键词匹配检索"""
+-    query_terms = set(query.lower().split())
+-    
++    query_terms = unique_tokens(query)
+     scores = []
+     for i, chunk in enumerate(chunks):
+-        chunk_text = chunk['text'].lower()
+-        matching_terms = query_terms & set(chunk_text.split())
+-        score = len(matching_terms) / len(query_terms) if query_terms else 0
++        chunk_terms = unique_tokens(chunk['text'])
++        overlap = query_terms & chunk_terms
++        score = len(overlap) / len(query_terms) if query_terms else 0.0
+         scores.append((i, score))
+-    
+-    # 排序
+     scores.sort(key=lambda x: x[1], reverse=True)
+-    
+     results = []
+     for idx, score in scores[:top_k]:
+         if score > 0:
+-            results.append({
+-                "chunk": chunks[idx],
+-                "score": score,
+-                "rank": len(results) + 1
+-            })
+-    
++            results.append({"chunk": chunks[idx], "score": float(score), "rank": len(results) + 1})
+     return results
+ 
+ 
+ def retrieve(query: str, chunks_path: str, method: str = 'bm25', top_k: int = 5) -> Dict[str, Any]:
+-    """检索主函数"""
+     chunks = load_chunks(chunks_path)
+-    
+     if method == 'bm25':
+-        if not BM25_AVAILABLE:
+-            print("警告: rank-bm25 未安装，使用 keyword_search")
+-            results = keyword_search(query, chunks, top_k)
+-        else:
+-            results = bm25_search(query, chunks, top_k)
++        results = bm25_search(query, chunks, top_k) if BM25_AVAILABLE else keyword_search(query, chunks, top_k)
+     elif method == 'tfidf':
+         results = tfidf_search(query, chunks, top_k)
+     elif method == 'keyword':
+         results = keyword_search(query, chunks, top_k)
+     else:
+         raise ValueError(f"不支持的检索方法: {method}")
+-    
+     return {
+         "query": query,
+         "method": method,
+         "total_chunks": len(chunks),
+         "results_count": len(results),
+-        "results": results
++        "results": results,
+     }
+ 
+ 
+ def save_results(results: Dict[str, Any], output_path: str) -> None:
+-    """保存检索结果"""
+     os.makedirs(os.path.dirname(output_path), exist_ok=True)
+-    
+     output = {
+         "query": results['query'],
+         "method": results['method'],
+         "total_chunks": results['total_chunks'],
+         "results_count": results['results_count'],
+-        "timestamp": Path(results['query']).name if Path(results['query']).exists() else results['query'][:50],
++        "timestamp": datetime.now().isoformat(),
+         "results": [
+             {
+                 "doc_id": r['chunk']['doc_id'],
+@@ -169,52 +109,40 @@
+                 "source": r['chunk']['source'],
+                 "text": r['chunk']['text'],
+                 "score": r['score'],
+-                "rank": r['rank']
++                "rank": r['rank'],
+             }
+             for r in results['results']
+-        ]
++        ],
+     }
+-    
+     with open(output_path, 'w', encoding='utf-8') as f:
+         json.dump(output, f, ensure_ascii=False, indent=2)
+ 
+ 
+-def main():
+-    """主函数"""
++def main() -> int:
+     import argparse
+-    
++
+     parser = argparse.ArgumentParser(description='基础检索模块')
+     parser.add_argument('--query', '-q', required=True, help='查询语句')
+-    parser.add_argument('--chunks', '-c', default='./data/processed/docs_chunks.jsonl',
+-                        help='chunk 数据文件路径')
+-    parser.add_argument('--method', '-m', default='bm25',
+-                        choices=['bm25', 'tfidf', 'keyword'],
+-                        help='检索方法: bm25, tfidf, keyword')
+-    parser.add_argument('--top-k', '-k', type=int, default=5,
+-                        help='返回 top-k 个结果')
+-    parser.add_argument('--output', '-o', default='./data/processed/retrieved_context.json',
+-                        help='输出文件路径')
+-    
++    parser.add_argument('--chunks', '-c', default='./data/processed/docs_chunks.jsonl', help='chunk 数据文件路径')
++    parser.add_argument('--method', '-m', default='bm25', choices=['bm25', 'tfidf', 'keyword'], help='检索方法')
++    parser.add_argument('--top-k', '-k', type=int, default=5, help='返回 top-k 个结果')
++    parser.add_argument('--output', '-o', default='./data/processed/retrieved_context.json', help='输出文件路径')
+     args = parser.parse_args()
+-    
++
+     results = retrieve(args.query, args.chunks, args.method, args.top_k)
+-    
+     print(f"查询: {results['query']}")
+     print(f"检索方法: {results['method']}")
+     print(f"总块数: {results['total_chunks']}")
+     print(f"召回块数: {results['results_count']}")
+-    
+     if results['results']:
+         print("\n检索结果:")
+         for r in results['results']:
+             print(f"  [{r['rank']}] (score: {r['score']:.4f})")
+             print(f"      {r['chunk']['text'][:100]}...")
+-    
+     save_results(results, args.output)
+     print(f"\n结果已保存到: {args.output}")
+-    
+     return 0
+ 
+ 
+-if __name__ == "__main__":
++if __name__ == '__main__':
+     sys.exit(main())
+--- a/pipeline_demo.py
++++ b/pipeline_demo.py
+@@ -1,169 +1,80 @@
+ #!/usr/bin/env python3
+ # -*- coding: utf-8 -*-
+-"""
+-完整流程演示脚本
+-一条命令完成：导入 → 切分 → 检索 → 生成报告
+-"""
++"""完整流程演示脚本。"""
++from __future__ import annotations
+ 
+-import os
++import subprocess
+ import sys
+-import json
+-import subprocess
+ from pathlib import Path
+-from datetime import datetime
+-from typing import Dict, Any
+ 
+ 
+-def run_command(cmd: list, description: str) -> bool:
+-    """运行命令并检查结果"""
++def run_command(cmd: list[str], description: str) -> bool:
++    cmd = [c for c in cmd if c]
+     print(f"\n{'=' * 60}")
+-    print(f"{description}")
++    print(description)
+     print(f"命令: {' '.join(cmd)}")
+     print('=' * 60)
+-    
+     result = subprocess.run(cmd, capture_output=True, text=True)
+-    
+     if result.returncode == 0:
+         print(result.stdout)
+         if result.stderr:
+             print(f"[警告] {result.stderr}")
+         return True
+-    else:
+-        print(f"[错误] 命令执行失败")
+-        if result.stderr:
+-            print(result.stderr)
+-        return False
++    print('[错误] 命令执行失败')
++    if result.stderr:
++        print(result.stderr)
++    return False
+ 
+ 
+-def main():
+-    """主函数"""
++def main() -> int:
+     import argparse
+-    
+-    parser = argparse.ArgumentParser(
+-        description='完整流程演示：导入 → 切分 → 检索 → 生成报告'
+-    )
+-    parser.add_argument('--query', '-q', required=True, 
+-                        help='用户查询问题')
+-    parser.add_argument('--input', '-i', default='./data/input_docs',
+-                        help='输入文档目录')
+-    parser.add_argument('--model', '-m', default='next80b_fp8',
+-                        help='Qwen 模型名称')
+-    parser.add_argument('--base-url', '-b', default='http://127.0.0.1:8000/v1',
+-                        help='Qwen 服务地址')
+-    parser.add_argument('--chunk-method', '-c', default='paragraph',
+-                        choices=['paragraph', 'char', 'sentence'],
+-                        help='切分方法')
+-    parser.add_argument('--retrieve-method', '-r', default='bm25',
+-                        choices=['bm25', 'tfidf', 'keyword'],
+-                        help='检索方法')
+-    parser.add_argument('--top-k', '-k', type=int, default=5,
+-                        help='检索 top-k 结果')
+-    parser.add_argument('--save-run', '-s', action='store_true',
+-                        help='保存运行记录')
+-    
++
++    parser = argparse.ArgumentParser(description='完整流程演示：导入 → 切分 → 检索 → 生成报告')
++    parser.add_argument('--query', '-q', required=True, help='用户查询问题')
++    parser.add_argument('--input', '-i', default='./data/input_docs', help='输入文档目录')
++    parser.add_argument('--model', '-m', default='next80b_fp8', help='Qwen 模型名称')
++    parser.add_argument('--base-url', '-b', default='http://127.0.0.1:8000/v1', help='Qwen 服务地址')
++    parser.add_argument('--chunk-method', '-c', default='paragraph', choices=['paragraph', 'char', 'sentence'], help='切分方法')
++    parser.add_argument('--retrieve-method', '-r', default='bm25', choices=['bm25', 'tfidf', 'keyword'], help='检索方法')
++    parser.add_argument('--top-k', '-k', type=int, default=5, help='检索 top-k 结果')
++    parser.add_argument('--save-run', '-s', action='store_true', help='保存运行记录')
+     args = parser.parse_args()
+-    
+-    # 设置路径
++
+     base_dir = Path(__file__).parent
+     data_dir = base_dir / 'data'
+     processed_dir = data_dir / 'processed'
+     runs_dir = data_dir / 'runs'
+-    
+-    # 创建目录
+     processed_dir.mkdir(parents=True, exist_ok=True)
+     runs_dir.mkdir(parents=True, exist_ok=True)
+-    
+-    # 步骤 1: 文档导入
+-    print("\n" + "=" * 60)
+-    print("步骤 1: 文档导入")
+-    print("=" * 60)
+-    
+-    ingest_cmd = [
+-        sys.executable, str(base_dir / 'ingest.py'),
+-        '--input', args.input,
+-        '--output', str(processed_dir / 'docs_raw.jsonl')
+-    ]
+-    
+-    if not run_command(ingest_cmd, "文档导入"):
++
++    ingest_cmd = [sys.executable, str(base_dir / 'ingest.py'), '--input', args.input, '--output', str(processed_dir / 'docs_raw.jsonl')]
++    if not run_command(ingest_cmd, '文档导入'):
+         return 1
+-    
+-    # 步骤 2: 文本切分
+-    print("\n" + "=" * 60)
+-    print("步骤 2: 文本切分")
+-    print("=" * 60)
+-    
+-    chunk_cmd = [
+-        sys.executable, str(base_dir / 'chunk.py'),
+-        '--input', str(processed_dir / 'docs_raw.jsonl'),
+-        '--output', str(processed_dir / 'docs_chunks.jsonl'),
+-        '--method', args.chunk_method
+-    ]
+-    
+-    if not run_command(chunk_cmd, "文本切分"):
++
++    chunk_cmd = [sys.executable, str(base_dir / 'chunk.py'), '--input', str(processed_dir / 'docs_raw.jsonl'), '--output', str(processed_dir / 'docs_chunks.jsonl'), '--method', args.chunk_method]
++    if not run_command(chunk_cmd, '文本切分'):
+         return 1
+-    
+-    # 步骤 3: 检索
+-    print("\n" + "=" * 60)
+-    print("步骤 3: 检索")
+-    print("=" * 60)
+-    
+-    retrieve_cmd = [
+-        sys.executable, str(base_dir / 'retrieve.py'),
+-        '--query', args.query,
+-        '--chunks', str(processed_dir / 'docs_chunks.jsonl'),
+-        '--method', args.retrieve_method,
+-        '--top-k', str(args.top_k),
+-        '--output', str(processed_dir / 'retrieved_context.json')
+-    ]
+-    
+-    if not run_command(retrieve_cmd, "检索相关片段"):
++
++    retrieve_cmd = [sys.executable, str(base_dir / 'retrieve.py'), '--query', args.query, '--chunks', str(processed_dir / 'docs_chunks.jsonl'), '--method', args.retrieve_method, '--top-k', str(args.top_k), '--output', str(processed_dir / 'retrieved_context.json')]
++    if not run_command(retrieve_cmd, '检索相关片段'):
+         return 1
+-    
+-    # 步骤 4: 生成报告
+-    print("\n" + "=" * 60)
+-    print("步骤 4: 生成报告")
+-    print("=" * 60)
+-    
+-    report_cmd = [
+-        sys.executable, str(base_dir / 'generate_report.py'),
+-        '--query', args.query,
+-        '--context', str(processed_dir / 'retrieved_context.json'),
+-        '--model', args.model,
+-        '--base-url', args.base_url,
+-        '--save-run' if args.save_run else '',
+-        '--runs-dir', str(runs_dir)
+-    ]
+-    
+-    if not run_command(report_cmd, "生成结构化报告"):
++
++    report_cmd = [sys.executable, str(base_dir / 'generate_report.py'), '--query', args.query, '--context', str(processed_dir / 'retrieved_context.json'), '--model', args.model, '--base-url', args.base_url, '--runs-dir', str(runs_dir)]
++    if args.save_run:
++        report_cmd.append('--save-run')
++    if not run_command(report_cmd, '生成结构化报告'):
+         return 1
+-    
+-    # 总结
+-    print("\n" + "=" * 60)
+-    print("流程完成!")
+-    print("=" * 60)
+-    
++
++    print("\n" + '=' * 60)
++    print('流程完成!')
++    print('=' * 60)
+     print(f"\n查询: {args.query}")
+     print(f"输入目录: {args.input}")
+     print(f"切分方法: {args.chunk_method}")
+     print(f"检索方法: {args.retrieve_method}")
+     print(f"top-k: {args.top_k}")
+-    
+-    if args.save_run:
+-        run_dirs = sorted(runs_dir.glob('*'), key=lambda x: x.stat().st_mtime, reverse=True)
+-        if run_dirs:
+-            print(f"\n最新运行记录: {run_dirs[0]}")
+-    
+-    print("\n输出文件:")
+-    print(f"  - 原始文档: {processed_dir / 'docs_raw.jsonl'}")
+-    print(f"  - 切分结果: {processed_dir / 'docs_chunks.jsonl'}")
+-    print(f"  - 检索结果: {processed_dir / 'retrieved_context.json'}")
+-    
+-    report_files = list(processed_dir.glob('report_*.md'))
+-    if report_files:
+-        print(f"  - 报告文件: {report_files[-1]}")
+-    
+     return 0
+ 
+ 
+-if __name__ == "__main__":
++if __name__ == '__main__':
+     sys.exit(main())
+--- a/evaluate_retrieval.py
++++ b/evaluate_retrieval.py
+@@ -1,209 +1,118 @@
+ #!/usr/bin/env python3
+ # -*- coding: utf-8 -*-
+-"""
+-检索评估模块
+-评估检索结果的相关性和准确性
+-"""
++"""检索评估模块。"""
++from __future__ import annotations
+ 
+ import json
+ import sys
+ from pathlib import Path
+-from typing import List, Dict, Any, Optional
++from typing import Any, Dict, List, Optional
++
++from text_utils import unique_tokens
+ 
+ 
+ def load_retrieved_context(context_path: str) -> Dict[str, Any]:
+-    """加载检索结果"""
+     with open(context_path, 'r', encoding='utf-8') as f:
+         return json.load(f)
+ 
+ 
+-def calculate_recall_at_k(results: List[Dict], relevant_docs: List[str], k: int) -> float:
+-    """计算 Recall@K"""
++def calculate_recall_at_k(results: List[Dict[str, Any]], relevant_docs: List[str], k: int) -> float:
+     if k <= 0:
+         return 0.0
+-    
+-    top_k_results = results[:k]
+-    top_k_sources = [r['source'] for r in top_k_results]
+-    
++    top_k_sources = [r['source'] for r in results[:k]]
++    total_relevant = len(relevant_docs)
++    if total_relevant == 0:
++        return 1.0
+     relevant_count = sum(1 for doc in relevant_docs if doc in top_k_sources)
+-    total_relevant = len(relevant_docs)
+-    
+-    if total_relevant == 0:
+-        return 1.0  # 没有相关文档，视为完美
+-    
+     return relevant_count / total_relevant
+ 
+ 
+-def calculate_precision_at_k(results: List[Dict], relevant_docs: List[str], k: int) -> float:
+-    """计算 Precision@K"""
++def calculate_precision_at_k(results: List[Dict[str, Any]], relevant_docs: List[str], k: int) -> float:
+     if k <= 0:
+         return 0.0
+-    
+-    top_k_results = results[:k]
+-    top_k_sources = [r['source'] for r in top_k_results]
+-    
++    top_k_sources = [r['source'] for r in results[:k]]
+     relevant_count = sum(1 for doc in top_k_sources if doc in relevant_docs)
+-    
+     return relevant_count / k
+ 
+ 
+-def check_hit_rate(results: List[Dict], relevant_docs: List[str], k: int) -> bool:
+-    """检查 Top-K 中是否至少有 1 条相关"""
+-    top_k_results = results[:k]
+-    top_k_sources = [r['source'] for r in top_k_results]
+-    
++def check_hit_rate(results: List[Dict[str, Any]], relevant_docs: List[str], k: int) -> bool:
++    top_k_sources = [r['source'] for r in results[:k]]
+     return any(doc in top_k_sources for doc in relevant_docs)
+ 
+ 
+-def calculate_relevance_score(result: Dict, query: str, relevant_docs: List[str]) -> int:
+-    """计算单个结果的相关性得分 (0/1/2)"""
++def calculate_relevance_score(result: Dict[str, Any], query: str, relevant_docs: List[str]) -> int:
+     source = result['source']
+-    text = result['text']
+-    
+-    # 如果来源在相关文档中，至少 1 分
++    text_tokens = unique_tokens(result['text'])
++    query_tokens = unique_tokens(query)
++    overlap = query_tokens & text_tokens
+     if source in relevant_docs:
+-        # 检查文本是否真的相关
+-        if any(word in text for word in query.split() if len(word) > 2):
+-            return 2  # 高度相关
+-        return 1  # 部分相关
+-    
+-    # 检查文本内容
+-    if any(word in text for word in query.split() if len(word) > 3):
+-        return 1  # 部分相关
+-    
+-    return 0  # 不相关
++        return 2 if overlap else 1
++    return 1 if overlap else 0
+ 
+ 
+-def evaluate_retrieval(query: str, context_path: str, 
+-                       relevant_docs: List[str] = None,
+-                       k: int = 5) -> Dict[str, Any]:
+-    """
+-    评估检索结果
+-    
+-    Args:
+-        query: 用户查询
+-        context_path: 检索结果文件路径
+-        relevant_docs: 相关文档列表（可选）
+-        k: 评估的 top-k 结果
+-    
+-    Returns:
+-        评估结果字典
+-    """
++def evaluate_retrieval(query: str, context_path: str, relevant_docs: Optional[List[str]] = None, k: int = 5) -> Dict[str, Any]:
+     context = load_retrieved_context(context_path)
+     results = context.get('results', [])
+-    
+     if not results:
+         return {
+-            "status": "warning",
+-            "message": "没有检索结果",
+-            "query": query,
+-            "total_chunks": context.get('total_chunks', 0),
+-            "results_count": 0,
+-            "metrics": {
+-                "recall@k": 0.0,
+-                "precision@k": 0.0,
+-                "hit_rate": False,
+-                "avg_relevance": 0.0
+-            },
+-            "top_k_results": []
++            'status': 'warning',
++            'message': '没有检索结果',
++            'query': query,
++            'total_chunks': context.get('total_chunks', 0),
++            'results_count': 0,
++            'metrics': {'recall@k': 0.0, 'precision@k': 0.0, 'hit_rate': False, 'avg_relevance': 0.0},
++            'top_k_results': [],
+         }
+-    
+-    # 如果没有提供相关文档，自动推断
+     if relevant_docs is None:
+-        # 假设所有召回的文档都是相关的
+-        relevant_docs = list(set([r['source'] for r in results]))
+-    
+-    # 计算指标
++        relevant_docs = list({r['source'] for r in results})
+     recall = calculate_recall_at_k(results, relevant_docs, k)
+     precision = calculate_precision_at_k(results, relevant_docs, k)
+     hit = check_hit_rate(results, relevant_docs, k)
+-    
+-    # 计算平均相关性得分
+     relevance_scores = [calculate_relevance_score(r, query, relevant_docs) for r in results[:k]]
+     avg_relevance = sum(relevance_scores) / len(relevance_scores) if relevance_scores else 0.0
+-    
+     return {
+-        "status": "success",
+-        "query": query,
+-        "total_chunks": context.get('total_chunks', 0),
+-        "results_count": len(results),
+-        "metrics": {
+-            "recall@k": round(recall, 3),
+-            "precision@k": round(precision, 3),
+-            "hit_rate": hit,
+-            "avg_relevance": round(avg_relevance, 2)
+-        },
+-        "relevance_scores": relevance_scores,
+-        "top_k_results": [
+-            {
+-                "rank": i + 1,
+-                "source": r['source'],
+-                "score": r.get('score', 0),
+-                "relevance": relevance_scores[i] if i < len(relevance_scores) else 0,
+-                "preview": r['text'][:100]
+-            }
+-            for i, r in enumerate(results[:k])
+-        ]
++        'status': 'success',
++        'query': query,
++        'total_chunks': context.get('total_chunks', 0),
++        'results_count': len(results),
++        'metrics': {'recall@k': round(recall, 3), 'precision@k': round(precision, 3), 'hit_rate': hit, 'avg_relevance': round(avg_relevance, 2)},
++        'relevance_scores': relevance_scores,
++        'top_k_results': [{'rank': i + 1, 'source': r['source'], 'score': r.get('score', 0), 'relevance': relevance_scores[i] if i < len(relevance_scores) else 0, 'preview': r['text'][:100]} for i, r in enumerate(results[:k])],
+     }
+ 
+ 
+ def print_evaluation(result: Dict[str, Any]) -> None:
+-    """打印评估结果"""
+-    print("=" * 60)
+-    print("检索评估结果")
+-    print("=" * 60)
++    print('=' * 60)
++    print('检索评估结果')
++    print('=' * 60)
+     print(f"查询: {result['query']}")
+     print(f"总块数: {result['total_chunks']}")
+     print(f"召回数: {result['results_count']}")
+-    print()
+-    print("指标:")
+     metrics = result['metrics']
+     print(f"  Recall@5:    {metrics['recall@k']:.3f}")
+     print(f"  Precision@5: {metrics['precision@k']:.3f}")
+     print(f"  Hit@5:       {'✓' if metrics['hit_rate'] else '✗'}")
+     print(f"  平均相关性:  {metrics['avg_relevance']:.2f}/2")
+-    print()
+-    print("Top-5 结果:")
+-    for r in result.get('top_k_results', []):
+-        print(f"  [{r['rank']}] (score: {r['score']:.3f}, relevance: {r['relevance']})")
+-        print(f"      {r['source']}")
+-        print(f"      {r['preview']}...")
+-    print()
+ 
+ 
+-def main():
+-    """主函数"""
++def main() -> int:
+     import argparse
+-    
+     parser = argparse.ArgumentParser(description='检索评估模块')
+     parser.add_argument('--query', '-q', required=True, help='用户查询')
+     parser.add_argument('--context', '-c', required=True, help='检索结果 JSON 文件')
+     parser.add_argument('--relevant', '-r', nargs='+', default=None, help='相关文档列表')
+     parser.add_argument('--top-k', '-k', type=int, default=5, help='评估的 top-k')
+     parser.add_argument('--output', '-o', default=None, help='输出评估结果文件')
+-    
+     args = parser.parse_args()
+-    
+-    result = evaluate_retrieval(
+-        query=args.query,
+-        context_path=args.context,
+-        relevant_docs=args.relevant,
+-        k=args.top_k
+-    )
+-    
++    result = evaluate_retrieval(args.query, args.context, args.relevant, args.top_k)
+     print_evaluation(result)
+-    
+     if args.output:
+         output_path = Path(args.output)
+         output_path.parent.mkdir(parents=True, exist_ok=True)
+-        
+         with open(output_path, 'w', encoding='utf-8') as f:
+             json.dump(result, f, ensure_ascii=False, indent=2)
+-        
+-        print(f"评估结果已保存到: {output_path}")
+-    
+     return 0
+ 
+ 
+-if __name__ == "__main__":
++if __name__ == '__main__':
+     sys.exit(main())
+--- a/evaluate_report.py
++++ b/evaluate_report.py
+@@ -1,256 +1,132 @@
+ #!/usr/bin/env python3
+ # -*- coding: utf-8 -*-
+-"""
+-报告评估模块
+-评估生成报告的质量和结构完整性
+-"""
++"""报告评估模块。"""
++from __future__ import annotations
+ 
+ import json
+ import re
+ import sys
+ from pathlib import Path
+-from typing import List, Dict, Any, Optional
++from typing import Any, Dict
++
++from text_utils import unique_tokens
+ 
+ 
+ def load_report(report_path: str) -> str:
+-    """加载报告内容"""
+-    with open(report_path, 'r', encoding='utf-8') as f:
+-        return f.read()
++    return Path(report_path).read_text(encoding='utf-8')
+ 
+ 
+ def load_retrieved_context(context_path: str) -> Dict[str, Any]:
+-    """加载检索结果"""
+     with open(context_path, 'r', encoding='utf-8') as f:
+         return json.load(f)
+ 
+ 
+ def check_structure(report_text: str) -> Dict[str, bool]:
+-    """检查报告结构完整性"""
+     sections = {
+-        "标题": r"^#\s+.+",
+-        "任务说明": r"##\s+一、任务说明",
+-        "检索摘要": r"##\s+二、检索摘要",
+-        "关键内容整理": r"##\s+三、关键内容整理",
+-        "综合分析": r"##\s+四、综合分析",
+-        "结论": r"##\s+五、结论",
+-        "参考片段": r"##\s+六、参考片段"
++        '标题': r'^#\s+.+',
++        '任务说明': r'##\s+一、任务说明',
++        '检索摘要': r'##\s+二、检索摘要',
++        '关键内容整理': r'##\s+三、关键内容整理',
++        '综合分析': r'##\s+四、综合分析',
++        '结论': r'##\s+五、结论',
++        '参考片段': r'##\s+六、参考片段',
+     }
+-    
+-    results = {}
+-    for name, pattern in sections.items():
+-        results[name] = bool(re.search(pattern, report_text, re.MULTILINE))
+-    
+-    return results
++    return {name: bool(re.search(pattern, report_text, re.MULTILINE)) for name, pattern in sections.items()}
+ 
+ 
+ def count_chapter_coverage(report_text: str) -> Dict[str, int]:
+-    """统计章节覆盖情况"""
+-    # 检查关键子章节
+-    sub_sections = {
+-        "用户问题": r"用户问题",
+-        "生成时间": r"生成时间",
+-        "共召回片段数": r"共召回片段数",
+-        "主要来源": r"主要来源",
+-        "关键点": r"\d+\.\s+\[?关键",
+-        "结论内容": r"##\s+五、结论"
++    return {
++        '用户问题': len(re.findall(r'用户问题', report_text)),
++        '生成时间': len(re.findall(r'生成时间', report_text)),
++        '共召回片段数': len(re.findall(r'共召回片段数', report_text)),
++        '主要来源': len(re.findall(r'主要来源', report_text)),
++        '关键点条目': len(re.findall(r'^\s*\d+\.\s+', report_text, re.MULTILINE)),
++        '结论章节': len(re.findall(r'##\s+五、结论', report_text)),
+     }
+-    
+-    results = {}
+-    for name, pattern in sub_sections.items():
+-        matches = re.findall(pattern, report_text, re.MULTILINE | re.IGNORECASE)
+-        results[name] = len(matches)
+-    
+-    return results
+ 
+ 
+ def check_citation_coverage(report_text: str, context_path: str) -> Dict[str, Any]:
+-    """检查引用覆盖情况"""
+     context = load_retrieved_context(context_path)
+     results = context.get('results', [])
+-    
+-    if not results:
+-        return {
+-            "total_references": 0,
+-            "cited_count": 0,
+-            "coverage": 0.0,
+-            "cited_sources": []
+-        }
+-    
+-    # 提取报告中引用的来源
+-    cited_sources = re.findall(r"\[(\d+)\]\s+(.+?)(?:\n|$)", report_text)
++    all_sources = list({r['source'] for r in results})
++    if not all_sources:
++        return {'total_references': 0, 'cited_count': 0, 'coverage': 0.0, 'cited_sources': [], 'all_sources': []}
++    cited_sources = re.findall(r'- \[(\d+)\]\s+(.+?)(?:\s*\(score:.*?\))?(?:\n|$)', report_text)
+     cited_source_paths = [path.strip() for _, path in cited_sources]
+-    
+-    # 提取检索结果的来源
+-    all_sources = list(set([r['source'] for r in results]))
+-    
+-    # 计算覆盖率
+-    cited_count = sum(1 for src in all_sources if any(src in cited for cited in cited_source_paths))
+-    coverage = cited_count / len(all_sources) if all_sources else 0.0
+-    
+-    return {
+-        "total_references": len(all_sources),
+-        "cited_count": cited_count,
+-        "coverage": round(coverage, 2),
+-        "cited_sources": cited_source_paths[:5],
+-        "all_sources": all_sources
+-    }
++    cited_count = sum(1 for src in all_sources if any(src in cited or cited in src for cited in cited_source_paths))
++    coverage = cited_count / len(all_sources)
++    return {'total_references': len(all_sources), 'cited_count': cited_count, 'coverage': round(coverage, 2), 'cited_sources': cited_source_paths[:5], 'all_sources': all_sources}
+ 
+ 
+ def check_factual_consistency(report_text: str, context_path: str) -> Dict[str, Any]:
+-    """检查事实一致性（简单版本）"""
+     context = load_retrieved_context(context_path)
+     results = context.get('results', [])
+-    
+     if not results:
+-        return {
+-            "status": "warning",
+-            "message": "没有检索结果可供比对",
+-            "consistency_score": 0.0
+-        }
+-    
+-    # 提取报告中的关键信息
+-    key_points = re.findall(r"\d+\.\s+(.+?)(?:\n|$)", report_text)
+-    
+-    # 检查关键信息是否能在检索结果中找到依据
++        return {'status': 'warning', 'message': '没有检索结果可供比对', 'consistency_score': 0.0}
++    combined_context_tokens = set()
++    for r in results:
++        combined_context_tokens |= unique_tokens(r['text'])
++    key_points = re.findall(r'^\s*\d+\.\s+(.+?)(?:\n|$)', report_text, re.MULTILINE)
+     consistency_count = 0
++    for point in key_points[:10]:
++        point_tokens = unique_tokens(point)
++        if point_tokens and (point_tokens & combined_context_tokens):
++            consistency_count += 1
+     total_points = len(key_points)
+-    
+-    for point in key_points[:10]:  # 只检查前10个关键点
+-        point_lower = point.lower()
+-        for r in results:
+-            if any(word in r['text'].lower() for word in point_lower.split() if len(word) > 3):
+-                consistency_count += 1
+-                break
+-    
+     consistency_score = consistency_count / total_points if total_points > 0 else 0.0
+-    
+-    return {
+-        "total_key_points": total_points,
+-        "consistent_points": consistency_count,
+-        "consistency_score": round(consistency_score, 2)
+-    }
++    return {'total_key_points': total_points, 'consistent_points': consistency_count, 'consistency_score': round(consistency_score, 2)}
+ 
+ 
+ def evaluate_report(report_path: str, context_path: str) -> Dict[str, Any]:
+-    """
+-    评估报告质量
+-    
+-    Args:
+-        report_path: 报告文件路径
+-        context_path: 检索结果文件路径
+-    
+-    Returns:
+-        评估结果字典
+-    """
+     report_text = load_report(report_path)
+-    
+-    # 结构检查
+     structure = check_structure(report_text)
+-    structure_complete = all(structure.values())
+-    
+-    # 章节覆盖
+     chapter_coverage = count_chapter_coverage(report_text)
+-    
+-    # 引用覆盖
+     citation = check_citation_coverage(report_text, context_path)
+-    
+-    # 事实一致性
+     consistency = check_factual_consistency(report_text, context_path)
+-    
+-    # 综合评分
+     structure_score = sum(structure.values()) / len(structure) if structure else 0
+     citation_score = citation['coverage']
+-    consistency_score = consistency['consistency_score']
+-    
++    consistency_score = consistency.get('consistency_score', 0)
+     overall_score = (structure_score + citation_score + consistency_score) / 3
+-    
+     return {
+-        "status": "success",
+-        "report_file": report_path,
+-        "context_file": context_path,
+-        "metrics": {
+-            "结构完整率": round(structure_score, 2),
+-            "引用覆盖率": round(citation_score, 2),
+-            "事实一致性": round(consistency_score, 2),
+-            "综合得分": round(overall_score, 2)
+-        },
+-        "structure": structure,
+-        "chapter_coverage": chapter_coverage,
+-        "citation": citation,
+-        "consistency": consistency
++        'status': 'success',
++        'report_file': report_path,
++        'context_file': context_path,
++        'metrics': {'结构完整率': round(structure_score, 2), '引用覆盖率': round(citation_score, 2), '事实一致性': round(consistency_score, 2), '综合得分': round(overall_score, 2)},
++        'structure': structure,
++        'chapter_coverage': chapter_coverage,
++        'citation': citation,
++        'consistency': consistency,
+     }
+ 
+ 
+ def print_evaluation(result: Dict[str, Any]) -> None:
+-    """打印评估结果"""
+-    print("=" * 60)
+-    print("报告评估结果")
+-    print("=" * 60)
++    print('=' * 60)
++    print('报告评估结果')
++    print('=' * 60)
+     print(f"报告文件: {result['report_file']}")
+-    print()
+-    print("综合指标:")
+     metrics = result['metrics']
+     print(f"  结构完整率:  {metrics['结构完整率']:.2f}")
+     print(f"  引用覆盖率:  {metrics['引用覆盖率']:.2f}")
+     print(f"  事实一致性:  {metrics['事实一致性']:.2f}")
+     print(f"  综合得分:    {metrics['综合得分']:.2f}/1.0")
+-    print()
+-    
+-    print("结构检查:")
+-    structure = result['structure']
+-    for name, present in structure.items():
+-        status = "✓" if present else "✗"
+-        print(f"  {status} {name}")
+-    print()
+-    
+-    print("引用情况:")
+-    citation = result['citation']
+-    print(f"  总引用数: {citation['total_references']}")
+-    print(f"  已引用:   {citation['cited_count']}")
+-    print(f"  覆盖率:   {citation['coverage']:.2f}")
+-    if citation['cited_sources']:
+-        print(f"  引用来源:")
+-        for src in citation['cited_sources'][:3]:
+-            print(f"    - {src}")
+-    print()
+-    
+-    print("事实一致性:")
+-    consistency = result['consistency']
+-    print(f"  关键点数:     {consistency.get('total_key_points', 0)}")
+-    print(f"  一致点数:     {consistency.get('consistent_points', 0)}")
+-    print(f"  一致性得分:   {consistency.get('consistency_score', 0):.2f}")
+-    print()
+ 
+ 
+-def main():
+-    """主函数"""
++def main() -> int:
+     import argparse
+-    
+     parser = argparse.ArgumentParser(description='报告评估模块')
+     parser.add_argument('--report', '-r', required=True, help='报告文件路径')
+     parser.add_argument('--context', '-c', required=True, help='检索结果 JSON 文件')
+     parser.add_argument('--output', '-o', default=None, help='输出评估结果文件')
+-    
+     args = parser.parse_args()
+-    
+-    result = evaluate_report(
+-        report_path=args.report,
+-        context_path=args.context
+-    )
+-    
++    result = evaluate_report(args.report, args.context)
+     print_evaluation(result)
+-    
+     if args.output:
+         output_path = Path(args.output)
+         output_path.parent.mkdir(parents=True, exist_ok=True)
+-        
+         with open(output_path, 'w', encoding='utf-8') as f:
+             json.dump(result, f, ensure_ascii=False, indent=2)
+-        
+-        print(f"评估结果已保存到: {output_path}")
+-    
+     return 0
+ 
+ 
+-if __name__ == "__main__":
++if __name__ == '__main__':
+     sys.exit(main())
+--- a/evaluate_main.py
++++ b/evaluate_main.py
+@@ -64,7 +64,9 @@
+                           processed_dir: Path,
+                           runs_dir: Path,
+                           model: str = "next80b_fp8",
+-                          base_url: str = "http://localhost:8000/v1") -> Dict[str, Any]:
++                          base_url: str = "http://localhost:8000/v1",
++                          retrieve_method: str = "bm25",
++                          top_k: int = 5) -> Dict[str, Any]:
+     """运行单个问题的完整评估流程"""
+     
+     query = query_info['query']
+@@ -136,8 +138,8 @@
+         sys.executable, str(Path(__file__).parent / 'retrieve.py'),
+         '--query', query,
+         '--chunks', str(processed_dir / 'eval_docs_chunks.jsonl'),
+-        '--method', 'keyword',
+-        '--top-k', '5',
++        '--method', retrieve_method,
++        '--top-k', str(top_k),
+         '--output', str(processed_dir / 'eval_retrieved.json')
+     ]
+     
+@@ -219,7 +221,9 @@
+ def run_all_evaluations(input_dir: str,
+                         processed_dir: Path,
+                         runs_dir: Path,
+-                        questions: List[Dict[str, Any]] = None) -> Dict[str, Any]:
++                        questions: List[Dict[str, Any]] = None,
++                        retrieve_method: str = "bm25",
++                        top_k: int = 5) -> Dict[str, Any]:
+     """运行所有评估问题"""
+     
+     if questions is None:
+@@ -246,7 +250,9 @@
+             query_info=question,
+             input_dir=input_dir,
+             processed_dir=processed_dir,
+-            runs_dir=runs_dir
++            runs_dir=runs_dir,
++            retrieve_method=retrieve_method,
++            top_k=top_k
+         )
+         results.append(result)
+     
+@@ -350,6 +356,8 @@
+     parser.add_argument('--runs', '-r', default='./data/runs/evaluation', help='运行记录目录')
+     parser.add_argument('--output', '-o', default='./evaluation_results.json', help='输出结果文件')
+     parser.add_argument('--questions', '-q', type=int, default=None, help='评估问题数量（默认全部）')
++    parser.add_argument('--retrieve-method', '-m', default='bm25', choices=['bm25', 'tfidf', 'keyword'], help='检索方法')
++    parser.add_argument('--top-k', '-k', type=int, default=5, help='评估 top-k')
+     
+     args = parser.parse_args()
+     
+@@ -360,10 +368,14 @@
+     runs_dir.mkdir(parents=True, exist_ok=True)
+     
+     # 运行评估
++    selected_questions = EVALUATION_QUESTIONS[:args.questions] if args.questions else EVALUATION_QUESTIONS
+     results = run_all_evaluations(
+         input_dir=args.input,
+         processed_dir=processed_dir,
+-        runs_dir=runs_dir
++        runs_dir=runs_dir,
++        questions=selected_questions,
++        retrieve_method=args.retrieve_method,
++        top_k=args.top_k
+     )
+     
+     # 打印汇总
+--- a/chunk.py
++++ b/chunk.py
+@@ -126,7 +126,7 @@
+         "status": "success",
+         "input_file": input_path,
+         "output_file": output_path,
+-        "docs_processed": len(chunks),
++        "docs_processed": len({chunk["doc_id"] for chunk in chunks}),
+         "chunks_total": len(chunks),
+         "method": method,
+         "chunk_size": chunk_size,
+@@ -141,12 +141,19 @@
+     files_processed = 0
+     
+     for file_path in Path(input_dir).glob('*.jsonl'):
+-        result = chunk_file(str(file_path), output_path, method, chunk_size, overlap)
++        with open(file_path, 'r', encoding='utf-8') as f:
++            for line in f:
++                if line.strip():
++                    doc = json.loads(line)
++                    all_chunks.extend(chunk_document(doc, method, chunk_size, overlap))
+         files_processed += 1
+-        
+-        with open(output_path, 'r', encoding='utf-8') as f:
+-            all_chunks = [json.loads(line) for line in f if line.strip()]
+-    
++
++    os.makedirs(os.path.dirname(output_path), exist_ok=True)
++    with open(output_path, 'w', encoding='utf-8') as f:
++        for chunk in all_chunks:
++            f.write(json.dumps(chunk, ensure_ascii=False) + '
++')
++
+     return {
+         "status": "success",
+         "input_dir": input_dir,
+--- a/text_utils.py
++++ b/text_utils.py
+@@ -0,0 +1,24 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""文本处理公共工具。"""
++from __future__ import annotations
++
++import re
++from typing import List, Set
++
++_TOKEN_RE = re.compile(r"[A-Za-z0-9_]+|[\u4e00-\u9fff]")
++
++
++def normalize_text(text: str) -> str:
++    return re.sub(r"\s+", " ", (text or "").strip().lower())
++
++
++def tokenize(text: str) -> List[str]:
++    text = normalize_text(text)
++    if not text:
++        return []
++    return _TOKEN_RE.findall(text)
++
++
++def unique_tokens(text: str) -> Set[str]:
++    return set(tokenize(text))

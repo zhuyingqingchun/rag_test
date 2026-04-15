@@ -64,7 +64,9 @@ def run_single_evaluation(query_info: Dict[str, Any],
                           processed_dir: Path,
                           runs_dir: Path,
                           model: str = "next80b_fp8",
-                          base_url: str = "http://localhost:8000/v1") -> Dict[str, Any]:
+                          base_url: str = "http://localhost:8000/v1",
+                          retrieve_method: str = "bm25",
+                          top_k: int = 5) -> Dict[str, Any]:
     """运行单个问题的完整评估流程"""
     
     query = query_info['query']
@@ -136,8 +138,8 @@ def run_single_evaluation(query_info: Dict[str, Any],
         sys.executable, str(Path(__file__).parent / 'retrieve.py'),
         '--query', query,
         '--chunks', str(processed_dir / 'eval_docs_chunks.jsonl'),
-        '--method', 'keyword',
-        '--top-k', '5',
+        '--method', retrieve_method,
+        '--top-k', str(top_k),
         '--output', str(processed_dir / 'eval_retrieved.json')
     ]
     
@@ -219,7 +221,9 @@ def run_single_evaluation(query_info: Dict[str, Any],
 def run_all_evaluations(input_dir: str,
                         processed_dir: Path,
                         runs_dir: Path,
-                        questions: List[Dict[str, Any]] = None) -> Dict[str, Any]:
+                        questions: List[Dict[str, Any]] = None,
+                        retrieve_method: str = "bm25",
+                        top_k: int = 5) -> Dict[str, Any]:
     """运行所有评估问题"""
     
     if questions is None:
@@ -246,7 +250,9 @@ def run_all_evaluations(input_dir: str,
             query_info=question,
             input_dir=input_dir,
             processed_dir=processed_dir,
-            runs_dir=runs_dir
+            runs_dir=runs_dir,
+            retrieve_method=retrieve_method,
+            top_k=top_k
         )
         results.append(result)
     
@@ -350,6 +356,8 @@ def main():
     parser.add_argument('--runs', '-r', default='./data/runs/evaluation', help='运行记录目录')
     parser.add_argument('--output', '-o', default='./evaluation_results.json', help='输出结果文件')
     parser.add_argument('--questions', '-q', type=int, default=None, help='评估问题数量（默认全部）')
+    parser.add_argument('--retrieve-method', '-m', default='bm25', choices=['bm25', 'tfidf', 'keyword'], help='检索方法')
+    parser.add_argument('--top-k', '-k', type=int, default=5, help='评估 top-k')
     
     args = parser.parse_args()
     
@@ -360,10 +368,14 @@ def main():
     runs_dir.mkdir(parents=True, exist_ok=True)
     
     # 运行评估
+    selected_questions = EVALUATION_QUESTIONS[:args.questions] if args.questions else EVALUATION_QUESTIONS
     results = run_all_evaluations(
         input_dir=args.input,
         processed_dir=processed_dir,
-        runs_dir=runs_dir
+        runs_dir=runs_dir,
+        questions=selected_questions,
+        retrieve_method=args.retrieve_method,
+        top_k=args.top_k
     )
     
     # 打印汇总
