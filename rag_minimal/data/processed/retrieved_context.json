@@ -1,17 +1,49 @@
 {
-  "query": "什么是 RAG？",
+  "query": "RAG 的核心组件",
   "method": "keyword",
-  "total_chunks": 19,
-  "results_count": 1,
-  "timestamp": "什么是 RAG？",
+  "total_chunks": 30,
+  "results_count": 5,
+  "timestamp": "RAG 的核心组件",
   "results": [
     {
-      "doc_id": "doc_20260414_224216_9833",
-      "chunk_id": 1,
+      "doc_id": "doc_20260415_105520_3390",
+      "chunk_id": 3,
       "source": "data/input_docs/rag_introduction.md",
-      "text": "## 什么是 RAG？",
+      "text": "## RAG 的核心组件",
       "score": 1.0,
       "rank": 1
+    },
+    {
+      "doc_id": "doc_20260415_105520_1752",
+      "chunk_id": 1,
+      "source": "data/input_docs/pdf_test.md",
+      "text": "这是一个用于测试 RAG 系统 PDF 支持的文档。",
+      "score": 0.5,
+      "rank": 2
+    },
+    {
+      "doc_id": "doc_20260415_105520_1752",
+      "chunk_id": 5,
+      "source": "data/input_docs/pdf_test.md",
+      "text": "RAG 系统包含三个核心组件：",
+      "score": 0.5,
+      "rank": 3
+    },
+    {
+      "doc_id": "doc_20260415_105520_1752",
+      "chunk_id": 8,
+      "source": "data/input_docs/pdf_test.md",
+      "text": "RAG 技术广泛应用于：",
+      "score": 0.5,
+      "rank": 4
+    },
+    {
+      "doc_id": "doc_20260415_105520_3390",
+      "chunk_id": 0,
+      "source": "data/input_docs/rag_introduction.md",
+      "text": "# RAG 系统简介",
+      "score": 0.5,
+      "rank": 5
     }
   ]
 }
