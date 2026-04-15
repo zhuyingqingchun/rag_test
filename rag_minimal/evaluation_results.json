@@ -1,0 +1,270 @@
+{
+  "summary": {
+    "总耗时": 14.12,
+    "问题数量": 5,
+    "成功数量": 1,
+    "失败数量": 4,
+    "平均耗时": {
+      "导入": 0.57,
+      "切分": 0.05,
+      "检索": 0.05,
+      "生成": 2.15
+    },
+    "检索指标平均值": {
+      "Recall@5": 0.0,
+      "Precision@5": 0.0,
+      "Hit@5": 0.0,
+      "平均相关性": 1.0
+    },
+    "报告指标平均值": {
+      "结构完整率": 1.0,
+      "引用覆盖率": 1.0,
+      "事实一致性": 0.0,
+      "综合得分": 0.67
+    }
+  },
+  "details": [
+    {
+      "query": "电动舵机故障诊断的主要方法有哪些？",
+      "timestamp": "2026-04-15T13:59:29.282386",
+      "relevant_docs": [
+        "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+      ],
+      "ingest": {
+        "status": "success",
+        "time": 0.57
+      },
+      "chunk": {
+        "status": "success",
+        "time": 0.05
+      },
+      "retrieve": {
+        "status": "success",
+        "time": 0.05
+      },
+      "retrieval": {
+        "status": "warning",
+        "message": "没有检索结果",
+        "query": "电动舵机故障诊断的主要方法有哪些？",
+        "total_chunks": 193,
+        "results_count": 0,
+        "metrics": {
+          "recall@k": 0.0,
+          "precision@k": 0.0,
+          "hit_rate": false,
+          "avg_relevance": 0.0
+        },
+        "top_k_results": []
+      },
+      "report": {
+        "status": "failed",
+        "time": 0.4651312828063965
+      }
+    },
+    {
+      "query": "FMECA 在该研究中的作用是什么？",
+      "timestamp": "2026-04-15T13:59:30.416616",
+      "relevant_docs": [
+        "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+      ],
+      "ingest": {
+        "status": "success",
+        "time": 0.57
+      },
+      "chunk": {
+        "status": "success",
+        "time": 0.05
+      },
+      "retrieve": {
+        "status": "success",
+        "time": 0.05
+      },
+      "retrieval": {
+        "status": "success",
+        "query": "FMECA 在该研究中的作用是什么？",
+        "total_chunks": 193,
+        "results_count": 1,
+        "metrics": {
+          "recall@k": 0.0,
+          "precision@k": 0.0,
+          "hit_rate": false,
+          "avg_relevance": 1.0
+        },
+        "relevance_scores": [
+          1
+        ],
+        "top_k_results": [
+          {
+            "rank": 1,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.5,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第二章电动舵机故障诊断模型和平台建立\n30\n滚道磨损\n加剧丝杠振动，温度升高，磨损加剧，传动效果下降\n传感器漂移\n影响作动器性能\n表2-6 对电动舵机关键部件故障模式影响及危"
+          }
+        ]
+      },
+      "report": {
+        "status": "success",
+        "time": 8.88,
+        "file": "data/runs/evaluation/20260415_135939/report.md"
+      },
+      "report_evaluation": {
+        "status": "success",
+        "report_file": "data/runs/evaluation/20260415_135939/report.md",
+        "context_file": "data/processed/eval_retrieved.json",
+        "metrics": {
+          "结构完整率": 1.0,
+          "引用覆盖率": 1.0,
+          "事实一致性": 0.0,
+          "综合得分": 0.67
+        },
+        "structure": {
+          "标题": true,
+          "任务说明": true,
+          "检索摘要": true,
+          "关键内容整理": true,
+          "综合分析": true,
+          "结论": true,
+          "参考片段": true
+        },
+        "chapter_coverage": {
+          "用户问题": 1,
+          "生成时间": 1,
+          "共召回片段数": 1,
+          "主要来源": 1,
+          "关键点": 0,
+          "结论内容": 1
+        },
+        "citation": {
+          "total_references": 1,
+          "cited_count": 1,
+          "coverage": 1.0,
+          "cited_sources": [
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf (score: 0.500)"
+          ],
+          "all_sources": [
+            "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+          ]
+        },
+        "consistency": {
+          "total_key_points": 3,
+          "consistent_points": 0,
+          "consistency_score": 0.0
+        }
+      }
+    },
+    {
+      "query": "文中提到了哪些关键故障模式？",
+      "timestamp": "2026-04-15T13:59:39.972058",
+      "relevant_docs": [
+        "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+      ],
+      "ingest": {
+        "status": "success",
+        "time": 0.57
+      },
+      "chunk": {
+        "status": "success",
+        "time": 0.05
+      },
+      "retrieve": {
+        "status": "success",
+        "time": 0.05
+      },
+      "retrieval": {
+        "status": "warning",
+        "message": "没有检索结果",
+        "query": "文中提到了哪些关键故障模式？",
+        "total_chunks": 193,
+        "results_count": 0,
+        "metrics": {
+          "recall@k": 0.0,
+          "precision@k": 0.0,
+          "hit_rate": false,
+          "avg_relevance": 0.0
+        },
+        "top_k_results": []
+      },
+      "report": {
+        "status": "failed",
+        "time": 0.47797107696533203
+      }
+    },
+    {
+      "query": "故障检测主要依赖哪些参数？",
+      "timestamp": "2026-04-15T13:59:41.118662",
+      "relevant_docs": [
+        "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+      ],
+      "ingest": {
+        "status": "success",
+        "time": 0.56
+      },
+      "chunk": {
+        "status": "success",
+        "time": 0.05
+      },
+      "retrieve": {
+        "status": "success",
+        "time": 0.05
+      },
+      "retrieval": {
+        "status": "warning",
+        "message": "没有检索结果",
+        "query": "故障检测主要依赖哪些参数？",
+        "total_chunks": 193,
+        "results_count": 0,
+        "metrics": {
+          "recall@k": 0.0,
+          "precision@k": 0.0,
+          "hit_rate": false,
+          "avg_relevance": 0.0
+        },
+        "top_k_results": []
+      },
+      "report": {
+        "status": "failed",
+        "time": 0.4631187915802002
+      }
+    },
+    {
+      "query": "该研究的方法与传统方法相比有什么特点？",
+      "timestamp": "2026-04-15T13:59:42.243410",
+      "relevant_docs": [
+        "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
+      ],
+      "ingest": {
+        "status": "success",
+        "time": 0.57
+      },
+      "chunk": {
+        "status": "success",
+        "time": 0.05
+      },
+      "retrieve": {
+        "status": "success",
+        "time": 0.04
+      },
+      "retrieval": {
+        "status": "warning",
+        "message": "没有检索结果",
+        "query": "该研究的方法与传统方法相比有什么特点？",
+        "total_chunks": 193,
+        "results_count": 0,
+        "metrics": {
+          "recall@k": 0.0,
+          "precision@k": 0.0,
+          "hit_rate": false,
+          "avg_relevance": 0.0
+        },
+        "top_k_results": []
+      },
+      "report": {
+        "status": "failed",
+        "time": 0.48819947242736816
+      }
+    }
+  ],
+  "total_time": 14.12,
+  "timestamp": "2026-04-15T13:59:43.398484"
+}
