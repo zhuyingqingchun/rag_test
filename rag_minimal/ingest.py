@@ -17,6 +17,11 @@ try:
 except ImportError:
     PyPDF2 = None
 
+try:
+    import pymupdf
+except ImportError:
+    pymupdf = None
+
 
 def extract_text_from_txt(file_path: str) -> str:
     """从 txt 文件提取文本"""
@@ -34,10 +39,36 @@ def extract_text_from_md(file_path: str) -> str:
 
 
 def extract_text_from_pdf(file_path: str) -> str:
-    """从 pdf 文件提取文本"""
-    if PyPDF2 is None:
-        raise ImportError("PyPDF2 未安装，请运行: pip install PyPDF2")
+    """从 pdf 文件提取文本（优先使用 PyMuPDF）"""
+    if pymupdf is not None:
+        return _extract_text_from_pdf_pymupdf(file_path)
+    elif PyPDF2 is not None:
+        return _extract_text_from_pdf_pypdf2(file_path)
+    else:
+        raise ImportError("未安装 PDF 处理库，请运行: pip install pymupdf 或 pip install PyPDF2")
+
+
+def _extract_text_from_pdf_pymupdf(file_path: str) -> str:
+    """使用 PyMuPDF 从 PDF 提取文本"""
+    text_parts = []
+    doc = pymupdf.open(file_path)
+    try:
+        for page in doc:
+            page_text = page.get_text("text")
+            if page_text:
+                text_parts.append(page_text.strip())
+    finally:
+        doc.close()
     
+    result = "\n\n".join(part for part in text_parts if part)
+    if not result or not result.strip():
+        print(f"[WARN] PDF 未提取到有效文本: {file_path}")
+        return ""
+    return result
+
+
+def _extract_text_from_pdf_pypdf2(file_path: str) -> str:
+    """使用 PyPDF2 从 PDF 提取文本（备用方案）"""
     text = []
     with open(file_path, 'rb') as f:
         reader = PyPDF2.PdfReader(f)
@@ -46,7 +77,11 @@ def extract_text_from_pdf(file_path: str) -> str:
             if page_text:
                 text.append(page_text)
     
-    return '\n'.join(text)
+    result = '\n'.join(text)
+    if not result or not result.strip():
+        print(f"[WARN] PDF 未提取到有效文本: {file_path}")
+        return ""
+    return result
 
 
 def extract_text(file_path: str) -> str:
