@@ -1,0 +1,7 @@
+{
+  "query": "该研究的方法与传统方法相比有什么特点？",
+  "timestamp": "20260416_163056",
+  "status": "success",
+  "model": "next80b_fp8",
+  "retrieved_count": 5
+}

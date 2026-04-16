@@ -7,9 +7,9 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
-from text_utils import unique_tokens
+_EVAL_TOKEN_RE = re.compile(r"[A-Za-z0-9_]+|[\u4e00-\u9fff]{2,}")
 
 
 def load_report(report_path: str) -> str:
@@ -21,15 +21,26 @@ def load_retrieved_context(context_path: str) -> Dict[str, Any]:
         return json.load(f)
 
 
+def normalize_source(source: str) -> str:
+    source = (source or '').strip()
+    if not source:
+        return ''
+    return Path(source).name or Path(source).as_posix()
+
+
+def evaluation_tokens(text: str) -> set[str]:
+    return set(_EVAL_TOKEN_RE.findall((text or '').lower()))
+
+
 def check_structure(report_text: str) -> Dict[str, bool]:
     sections = {
         '标题': r'^#\s+.+',
-        '任务说明': r'##\s+一、任务说明',
-        '检索摘要': r'##\s+二、检索摘要',
-        '关键内容整理': r'##\s+三、关键内容整理',
-        '综合分析': r'##\s+四、综合分析',
-        '结论': r'##\s+五、结论',
-        '参考片段': r'##\s+六、参考片段',
+        '任务说明': r'##\s+(?:一、)?任务说明',
+        '检索摘要': r'##\s+(?:二、)?检索摘要',
+        '关键内容整理': r'##\s+(?:三、)?关键内容整理',
+        '综合分析': r'##\s+(?:四、)?综合分析',
+        '结论': r'##\s+(?:五、)?结论',
+        '参考片段': r'##\s+(?:六、)?参考片段',
     }
     return {name: bool(re.search(pattern, report_text, re.MULTILINE)) for name, pattern in sections.items()}
 
@@ -41,21 +52,87 @@ def count_chapter_coverage(report_text: str) -> Dict[str, int]:
         '共召回片段数': len(re.findall(r'共召回片段数', report_text)),
         '主要来源': len(re.findall(r'主要来源', report_text)),
         '关键点条目': len(re.findall(r'^\s*\d+\.\s+', report_text, re.MULTILINE)),
-        '结论章节': len(re.findall(r'##\s+五、结论', report_text)),
+        '结论章节': len(re.findall(r'##\s+(?:五、)?结论', report_text)),
     }
 
 
 def check_citation_coverage(report_text: str, context_path: str) -> Dict[str, Any]:
     context = load_retrieved_context(context_path)
     results = context.get('results', [])
-    all_sources = list({r['source'] for r in results})
+    all_sources = list({normalize_source(r['source']) for r in results})
     if not all_sources:
         return {'total_references': 0, 'cited_count': 0, 'coverage': 0.0, 'cited_sources': [], 'all_sources': []}
+
     cited_sources = re.findall(r'- \[(\d+)\]\s+(.+?)(?:\s*\(score:.*?\))?(?:\n|$)', report_text)
-    cited_source_paths = [path.strip() for _, path in cited_sources]
-    cited_count = sum(1 for src in all_sources if any(src in cited or cited in src for cited in cited_source_paths))
+    cited_source_paths = [normalize_source(path.strip()) for _, path in cited_sources]
+    cited_count = sum(1 for src in all_sources if src in cited_source_paths)
     coverage = cited_count / len(all_sources)
-    return {'total_references': len(all_sources), 'cited_count': cited_count, 'coverage': round(coverage, 2), 'cited_sources': cited_source_paths[:5], 'all_sources': all_sources}
+
+    return {
+        'total_references': len(all_sources),
+        'cited_count': cited_count,
+        'coverage': round(coverage, 2),
+        'cited_sources': cited_source_paths[:5],
+        'all_sources': all_sources,
+    }
+
+
+def extract_section(report_text: str, section_pattern: str) -> str:
+    match = re.search(section_pattern + r'\s*(.*?)(?=\n##\s+|\Z)', report_text, re.S)
+    return match.group(1).strip() if match else ''
+
+
+def split_sentences(text: str) -> List[str]:
+    parts = re.split(r'[。！？；\n]+', text)
+    return [part.strip(' -•\t') for part in parts if part and part.strip(' -•\t')]
+
+
+def extract_claims(report_text: str) -> List[str]:
+    numbered_points = re.findall(r'^\s*\d+\.\s+(.+?)(?:\n|$)', report_text, re.MULTILINE)
+    analysis_text = extract_section(report_text, r'##\s+(?:四、)?综合分析')
+    conclusion_text = extract_section(report_text, r'##\s+(?:五、)?结论')
+
+    claims: List[str] = []
+    claims.extend([point.strip() for point in numbered_points if point.strip()])
+
+    for sentence in split_sentences(analysis_text):
+        if len(sentence) >= 8:
+            claims.append(sentence)
+
+    for sentence in split_sentences(conclusion_text):
+        if len(sentence) >= 8:
+            claims.append(sentence)
+
+    deduped: List[str] = []
+    seen = set()
+    for claim in claims:
+        if claim not in seen:
+            deduped.append(claim)
+            seen.add(claim)
+    return deduped[:20]
+
+
+def best_support_for_claim(claim: str, results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    claim_tokens = evaluation_tokens(claim)
+    if not claim_tokens:
+        return {'supported': False, 'best_overlap': 0, 'best_source': None, 'best_preview': ''}
+
+    best_overlap = 0
+    best_result = None
+    for result in results:
+        chunk_tokens = evaluation_tokens(result.get('text', ''))
+        overlap = len(claim_tokens & chunk_tokens)
+        if overlap > best_overlap:
+            best_overlap = overlap
+            best_result = result
+
+    threshold = 1 if len(claim_tokens) <= 2 else 2
+    return {
+        'supported': best_overlap >= threshold,
+        'best_overlap': best_overlap,
+        'best_source': normalize_source(best_result['source']) if best_result else None,
+        'best_preview': best_result['text'][:120] if best_result else '',
+    }
 
 
 def check_factual_consistency(report_text: str, context_path: str) -> Dict[str, Any]:
@@ -63,18 +140,36 @@ def check_factual_consistency(report_text: str, context_path: str) -> Dict[str, 
     results = context.get('results', [])
     if not results:
         return {'status': 'warning', 'message': '没有检索结果可供比对', 'consistency_score': 0.0}
-    combined_context_tokens = set()
-    for r in results:
-        combined_context_tokens |= unique_tokens(r['text'])
-    key_points = re.findall(r'^\s*\d+\.\s+(.+?)(?:\n|$)', report_text, re.MULTILINE)
-    consistency_count = 0
-    for point in key_points[:10]:
-        point_tokens = unique_tokens(point)
-        if point_tokens and (point_tokens & combined_context_tokens):
-            consistency_count += 1
-    total_points = len(key_points)
-    consistency_score = consistency_count / total_points if total_points > 0 else 0.0
-    return {'total_key_points': total_points, 'consistent_points': consistency_count, 'consistency_score': round(consistency_score, 2)}
+
+    claims = extract_claims(report_text)
+    supported_claims = []
+    unsupported_claims = []
+
+    for claim in claims:
+        support = best_support_for_claim(claim, results)
+        claim_record = {
+            'claim': claim,
+            'best_overlap': support['best_overlap'],
+            'best_source': support['best_source'],
+            'best_preview': support['best_preview'],
+        }
+        if support['supported']:
+            supported_claims.append(claim_record)
+        else:
+            unsupported_claims.append(claim_record)
+
+    total_claims = len(claims)
+    supported_count = len(supported_claims)
+    consistency_score = supported_count / total_claims if total_claims > 0 else 0.0
+
+    return {
+        'total_claims': total_claims,
+        'supported_claims': supported_count,
+        'unsupported_claims': len(unsupported_claims),
+        'consistency_score': round(consistency_score, 2),
+        'supported_examples': supported_claims[:5],
+        'unsupported_examples': unsupported_claims[:5],
+    }
 
 
 def evaluate_report(report_path: str, context_path: str) -> Dict[str, Any]:
