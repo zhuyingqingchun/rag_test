@@ -1,0 +1,8 @@
+{
+  "query": "故障检测主要依赖哪些参数？",
+  "timestamp": "20260416_192022",
+  "status": "success",
+  "model": "next80b_fp8",
+  "retrieved_count": 5,
+  "used_evidence_count": 5
+}

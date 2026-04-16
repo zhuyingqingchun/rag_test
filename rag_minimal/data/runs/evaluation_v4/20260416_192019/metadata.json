@@ -1,0 +1,8 @@
+{
+  "query": "文中提到了哪些关键故障模式？",
+  "timestamp": "20260416_192019",
+  "status": "success",
+  "model": "next80b_fp8",
+  "retrieved_count": 5,
+  "used_evidence_count": 5
+}
