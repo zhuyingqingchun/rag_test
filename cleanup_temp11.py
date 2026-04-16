@@ -7,7 +7,7 @@ from pathlib import Path
 
 # 删除临时文件
 temp_files = [
-    "cleanup_temp8.py",
+    "cleanup_temp10.py",
 ]
 
 for f in temp_files:
