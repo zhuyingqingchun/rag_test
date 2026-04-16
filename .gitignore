@@ -23,10 +23,17 @@ venv.bak/
 .DS_Store
 Thumbs.db
 
-# Data
-*.jsonl
-*.parquet
-*.csv
+# Data - 保留 input_docs
+!data/input_docs/
+data/input_docs/*/
+!data/input_docs/*.pdf
+!data/input_docs/*.md
+!data/input_docs/*.txt
+!data/input_docs/*.jsonl
+
+# Processed data - 不提交
+data/processed/
+data/runs/
 
 # Logs
 logs/
@@ -36,3 +43,20 @@ logs/
 build/
 dist/
 *.egg-info/
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation
+*.md
+!README.md
