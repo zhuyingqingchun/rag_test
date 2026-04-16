@@ -1,7 +1,0 @@
-{
-  "query": "什么是 RAG？",
-  "timestamp": "20260414_224219",
-  "status": "success",
-  "model": "next80b_fp8",
-  "retrieved_count": 1
-}
