@@ -1,0 +1,3118 @@
+{
+  "report_types": [
+    "comparison",
+    "incident",
+    "project",
+    "research",
+    "summary"
+  ],
+  "ranking": [
+    {
+      "report_type": "comparison",
+      "report_type_name": "对比分析报告",
+      "success_count": 1,
+      "failure_count": 4,
+      "综合得分": 0.88,
+      "事实一致性": 0.65,
+      "引用覆盖率": 1.0,
+      "结构完整率": 1.0,
+      "Recall@5": 0.2,
+      "Hit@5": 0.2
+    },
+    {
+      "report_type": "summary",
+      "report_type_name": "文档摘要报告",
+      "success_count": 2,
+      "failure_count": 3,
+      "综合得分": 0.83,
+      "事实一致性": 0.49,
+      "引用覆盖率": 1.0,
+      "结构完整率": 1.0,
+      "Recall@5": 0.2,
+      "Hit@5": 0.2
+    },
+    {
+      "report_type": "research",
+      "report_type_name": "专题调研报告",
+      "success_count": 1,
+      "failure_count": 4,
+      "综合得分": 0.81,
+      "事实一致性": 0.44,
+      "引用覆盖率": 1.0,
+      "结构完整率": 1.0,
+      "Recall@5": 0.2,
+      "Hit@5": 0.2
+    },
+    {
+      "report_type": "incident",
+      "report_type_name": "故障/事件分析报告",
+      "success_count": 2,
+      "failure_count": 3,
+      "综合得分": 0.79,
+      "事实一致性": 0.38,
+      "引用覆盖率": 1.0,
+      "结构完整率": 1.0,
+      "Recall@5": 0.2,
+      "Hit@5": 0.2
+    },
+    {
+      "report_type": "project",
+      "report_type_name": "项目汇报报告",
+      "success_count": 1,
+      "failure_count": 4,
+      "综合得分": 0.78,
+      "事实一致性": 0.35,
+      "引用覆盖率": 1.0,
+      "结构完整率": 1.0,
+      "Recall@5": 0.2,
+      "Hit@5": 0.2
+    }
+  ],
+  "best_template": {
+    "report_type": "comparison",
+    "report_type_name": "对比分析报告",
+    "success_count": 1,
+    "failure_count": 4,
+    "综合得分": 0.88,
+    "事实一致性": 0.65,
+    "引用覆盖率": 1.0,
+    "结构完整率": 1.0,
+    "Recall@5": 0.2,
+    "Hit@5": 0.2
+  },
+  "details": [
+    {
+      "report_type": "comparison",
+      "report_type_name": "对比分析报告",
+      "result": {
+        "summary": {
+          "report_type": "comparison",
+          "report_type_name": "对比分析报告",
+          "总耗时": 15.76,
+          "问题数量": 5,
+          "成功数量": 1,
+          "失败数量": 4,
+          "平均耗时": {
+            "导入": 0.0,
+            "切分": 0.0,
+            "检索": 0.14,
+            "生成": 3.01
+          },
+          "检索指标平均值": {
+            "Recall@5": 0.2,
+            "Precision@5": 0.2,
+            "Hit@5": 0.2,
+            "平均相关性": 0.56
+          },
+          "报告指标平均值": {
+            "结构完整率": 1.0,
+            "引用覆盖率": 1.0,
+            "事实一致性": 0.65,
+            "综合得分": 0.88
+          }
+        },
+        "details": [
+          {
+            "query": "Transformer 的核心结构和关键机制是什么？",
+            "timestamp": "2026-04-17T15:56:14.478084",
+            "relevant_docs": [
+              "transformer.pdf"
+            ],
+            "report_type": "comparison",
+            "retrieve": {
+              "status": "success",
+              "time": 0.13,
+              "context_file": "data/processed/template_matrix/comparison/eval_retrieved_comparison_82948190.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "Transformer 的核心结构和关键机制是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7857142857142857,
+                  "relevance": 0,
+                  "preview": "第3 章数据结构\nwww.hello‑algo.com\n55\n单，更容易进行并行化处理，运算速度更快。\n请注意，这并不意味着计算机只能做加法。通过将加法与一些基本逻辑运算结合，计算机能够实现各种其他\n"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7857142857142857,
+                  "relevance": 0,
+                  "preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i+"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第0 章前言\nwww.hello‑algo.com\n2\n0.1 关于本书\n本项目旨在创建一本开源、免费、对新手友好的数据结构与算法入门教程。\n‧ 全书采用动画图解，内容清晰易懂、学习曲线平滑，引导初学"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第1 章初识算法\nwww.hello‑algo.com\n13\n图1‑3 货币找零过程\n在以上步骤中，我们每一步都采取当前看来最好的选择（尽可能用大面额的货币），最终得到了可行的找零方\n案。从数据结构与"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第2 章复杂度分析\nwww.hello‑algo.com\n27\n迭代\n递归\n适用问\n题\n适用于简单循环任务，代码直观、可读性\n好\n适用于子问题分解，如树、图、分治、回溯等，代码结构简洁、\n清晰\nTip"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 1.979767084121704,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "BERT 与 GPT 的主要区别是什么？",
+            "timestamp": "2026-04-17T15:56:16.592400",
+            "relevant_docs": [
+              "bert.pdf",
+              "gpt.pdf",
+              "gpt2.pdf",
+              "gpt3.pdf"
+            ],
+            "report_type": "comparison",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/comparison/eval_retrieved_comparison_49169254.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "BERT 与 GPT 的主要区别是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第2 章复杂度分析\nwww.hello‑algo.com\n47\n‧ 空间复杂度的作用类似于时间复杂度，用于衡量算法占用内存空间随数据量增长的趋势。\n‧ 算法运行过程中的相关内存空间可分为输入空间、暂存"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n84\nQ：在Python 中初始化n = [1, 2, 3] 后，这3 个元素的地址是相连的，但是初始化m = [2, 1, 3] 会\n发现它"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第7 章树\nwww.hello‑algo.com\n160\n‧ 前序、中序、后序遍历皆属于深度优先搜索，它们体现了“先走到尽头，再回溯继续”的遍历方式，通\n常使用递归来实现。\n‧ 二叉搜索树是一种高效的"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n240\n‧ 插入排序每轮将未排序区间内的元素插入到已排序区间的正确位置，从而完成排序。虽然插入排序的\n时间复杂度为𝑂(𝑛2) ，但由于单元操作相对"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 1.9046361446380615,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+            "timestamp": "2026-04-17T15:56:18.635629",
+            "relevant_docs": [
+              "gpt2.pdf",
+              "gpt3.pdf"
+            ],
+            "report_type": "comparison",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/comparison/eval_retrieved_comparison_47316938.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.8
+              },
+              "relevance_scores": [
+                1,
+                1,
+                0,
+                1,
+                1
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "第15 章贪心\nwww.hello‑algo.com\n328\n1. 可以保证找到最优解：贪心算法在这种情况下往往是最优选择，因为它往往比回溯、动态规划更高效。\n2. 可以找到近似最优解：贪心算法在这种"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "摘要\nI\n摘要\n舵机是飞机实现飞行姿态和飞行轨迹控制的关键控制部件，舵机一旦出现故\n障必将严重影响飞机的机动性、飞行安全性等性能。随着全电飞机计划的提出，\n电液舵机（EHA）和电动舵机（EMA）逐步被"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 0,
+                  "preview": "西北工业大学博士学位论文\n第一章绪论\n3\n综上，从舵机故障诊断技术发展需求和新型舵机电动舵机的技术应用需求两\n方面考虑，致力于解决电动舵机的故障诊断问题，有助于降低电动舵机运用于新\n型飞机PBW 飞行"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "西北工业大学博士学位论文\n第一章绪论\n7\n理；利用解析模型进行的故障诊断无法得出准确结果时，可以利用模糊规则在候\n选故障集合中继续推理，最终获得一个有效的故障诊断结果。\n综上，模糊逻辑方法能够有效地将"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "西北工业大学博士学位论文\n第五章基于模糊规则推理的EMA 智能故障诊断方法\n98\n表示“下雨”；与经典布尔逻辑不同的是，模糊逻辑运算中模糊变量的取值不会设置\n严格的界限，而是用“小雨”、“中雨”和“大"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.900599956512451,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "RAG 系统的核心组成和基本流程是什么？",
+            "timestamp": "2026-04-17T15:56:21.674142",
+            "relevant_docs": [
+              "signal_rag_guide.md"
+            ],
+            "report_type": "comparison",
+            "retrieve": {
+              "status": "success",
+              "time": 0.13,
+              "context_file": "data/processed/template_matrix/comparison/eval_retrieved_comparison_72345890.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "RAG 系统的核心组成和基本流程是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "计算机的出现给世界带来了巨大变革，它凭借高速的计算能力和出色的可编程性，成为了执行算法与处理数\n据的理想媒介。无论是电子游戏的逼真画面、自动驾驶的智能决策，还是AlphaGo 的精彩棋局、ChatGP"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i+"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n235\n计数排序与桶排序的联系\n从桶排序的角度看，我们可以将计数排序中的计数数组counter 的每个索引视为一个桶，将统计数\n量的过程看作将各个"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.2663931846618652,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+            "timestamp": "2026-04-17T15:56:24.076819",
+            "relevant_docs": [
+              "hello-algo_1.3.0_zh_cpp.pdf"
+            ],
+            "report_type": "comparison",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/comparison/eval_retrieved_comparison_50632984.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 1.0,
+                "precision@k": 1.0,
+                "hit_rate": true,
+                "avg_relevance": 2.0
+              },
+              "relevance_scores": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.9047619047619048,
+                  "relevance": 2,
+                  "preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第15 章贪心\nwww.hello‑algo.com\n326\n15.1 贪心算法\n贪心算法（greedy algorithm）是一种常见的解决优化问题的算法，其基本思想是在问题的每个决策阶段，都\n选择"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8095238095238095,
+                  "relevance": 2,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数"
+                }
+              ]
+            },
+            "report": {
+              "status": "success",
+              "time": 6.02,
+              "file": "data/runs/template_matrix/comparison/20260417_155630/report.md"
+            },
+            "report_evaluation": {
+              "status": "success",
+              "report_file": "data/runs/template_matrix/comparison/20260417_155630/report.md",
+              "context_file": "data/processed/template_matrix/comparison/eval_retrieved_comparison_50632984.json",
+              "metrics": {
+                "结构完整率": 1.0,
+                "引用覆盖率": 1.0,
+                "事实一致性": 0.65,
+                "综合得分": 0.88
+              },
+              "structure": {
+                "标题": true,
+                "任务说明": true,
+                "检索摘要": true,
+                "关键内容整理": true,
+                "综合分析": true,
+                "结论": true,
+                "参考片段": true
+              },
+              "chapter_coverage": {
+                "用户问题": 1,
+                "生成时间": 1,
+                "共召回片段数": 1,
+                "主要来源": 1,
+                "关键点条目": 12,
+                "结论章节": 1
+              },
+              "citation": {
+                "total_references": 1,
+                "cited_count": 1,
+                "coverage": 1.0,
+                "cited_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ],
+                "all_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ]
+              },
+              "consistency": {
+                "total_claims": 20,
+                "supported_claims": 13,
+                "unsupported_claims": 7,
+                "consistency_score": 0.65,
+                "supported_examples": [
+                  {
+                    "claim": "数组：支持O(1)随机访问，具有缓存局部性，但插入删除效率低、长度固定、可能造成空间浪费 [5]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要熟悉各种数据结构的特点和用法，学习不同算"
+                  },
+                  {
+                    "claim": "二分查找：基于分治策略，将有序数组从中点分割，递归排除一半区间 [1]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "归并排序：基于分治策略，将数组递归分割后合并，已在前文介绍 [1]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "快速排序：基于分治策略，选取基准值划分数组为两部分，递归处理子数组 [1]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "桶排序：基于分治思想，将数据分散至多个桶，分别排序后合并 [1]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  }
+                ],
+                "unsupported_examples": [
+                  {
+                    "claim": "链表：未在证据中明确描述其结构与操作，仅提及与数组并列 [5]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要熟悉各种数据结构的特点和用法，学习不同算"
+                  },
+                  {
+                    "claim": "堆：作为特殊完全二叉树，其插入、删除、堆化操作隐含分治思想 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "贪心算法：在每个决策阶段选择当前最优解，不回溯，用于优化问题如零钱兑换，与动态规划不同在于不依赖历史决策 [4]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自适应排序：涉及遍历nums 和遍历cou"
+                  },
+                  {
+                    "claim": "分治思想广泛应用于排序与搜索结构，而贪心与动态规划形成对比：贪心仅做局部最优选择，不回溯",
+                    "best_overlap": 0,
+                    "best_source": null,
+                    "best_preview": ""
+                  },
+                  {
+                    "claim": "计数排序受限于数据类型，仅适用于可转为非负整数的场景",
+                    "best_overlap": 0,
+                    "best_source": null,
+                    "best_preview": ""
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "total_time": 15.76,
+        "timestamp": "2026-04-17T15:56:30.241719"
+      },
+      "compact_summary": {
+        "report_type": "comparison",
+        "report_type_name": "对比分析报告",
+        "success_count": 1,
+        "failure_count": 4,
+        "综合得分": 0.88,
+        "事实一致性": 0.65,
+        "引用覆盖率": 1.0,
+        "结构完整率": 1.0,
+        "Recall@5": 0.2,
+        "Hit@5": 0.2
+      }
+    },
+    {
+      "report_type": "incident",
+      "report_type_name": "故障/事件分析报告",
+      "result": {
+        "summary": {
+          "report_type": "incident",
+          "report_type_name": "故障/事件分析报告",
+          "总耗时": 15.62,
+          "问题数量": 5,
+          "成功数量": 2,
+          "失败数量": 3,
+          "平均耗时": {
+            "导入": 0.0,
+            "切分": 0.0,
+            "检索": 0.13,
+            "生成": 2.98
+          },
+          "检索指标平均值": {
+            "Recall@5": 0.2,
+            "Precision@5": 0.2,
+            "Hit@5": 0.2,
+            "平均相关性": 0.56
+          },
+          "报告指标平均值": {
+            "结构完整率": 1.0,
+            "引用覆盖率": 1.0,
+            "事实一致性": 0.38,
+            "综合得分": 0.79
+          }
+        },
+        "details": [
+          {
+            "query": "Transformer 的核心结构和关键机制是什么？",
+            "timestamp": "2026-04-17T15:56:31.505411",
+            "relevant_docs": [
+              "transformer.pdf"
+            ],
+            "report_type": "incident",
+            "retrieve": {
+              "status": "success",
+              "time": 0.13,
+              "context_file": "data/processed/template_matrix/incident/eval_retrieved_incident_82948190.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "Transformer 的核心结构和关键机制是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7857142857142857,
+                  "relevance": 0,
+                  "preview": "第3 章数据结构\nwww.hello‑algo.com\n55\n单，更容易进行并行化处理，运算速度更快。\n请注意，这并不意味着计算机只能做加法。通过将加法与一些基本逻辑运算结合，计算机能够实现各种其他\n"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7857142857142857,
+                  "relevance": 0,
+                  "preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i+"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第0 章前言\nwww.hello‑algo.com\n2\n0.1 关于本书\n本项目旨在创建一本开源、免费、对新手友好的数据结构与算法入门教程。\n‧ 全书采用动画图解，内容清晰易懂、学习曲线平滑，引导初学"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第1 章初识算法\nwww.hello‑algo.com\n13\n图1‑3 货币找零过程\n在以上步骤中，我们每一步都采取当前看来最好的选择（尽可能用大面额的货币），最终得到了可行的找零方\n案。从数据结构与"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第2 章复杂度分析\nwww.hello‑algo.com\n27\n迭代\n递归\n适用问\n题\n适用于简单循环任务，代码直观、可读性\n好\n适用于子问题分解，如树、图、分治、回溯等，代码结构简洁、\n清晰\nTip"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.1404852867126465,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "BERT 与 GPT 的主要区别是什么？",
+            "timestamp": "2026-04-17T15:56:33.780618",
+            "relevant_docs": [
+              "bert.pdf",
+              "gpt.pdf",
+              "gpt2.pdf",
+              "gpt3.pdf"
+            ],
+            "report_type": "incident",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/incident/eval_retrieved_incident_49169254.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "BERT 与 GPT 的主要区别是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第2 章复杂度分析\nwww.hello‑algo.com\n47\n‧ 空间复杂度的作用类似于时间复杂度，用于衡量算法占用内存空间随数据量增长的趋势。\n‧ 算法运行过程中的相关内存空间可分为输入空间、暂存"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n84\nQ：在Python 中初始化n = [1, 2, 3] 后，这3 个元素的地址是相连的，但是初始化m = [2, 1, 3] 会\n发现它"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第7 章树\nwww.hello‑algo.com\n160\n‧ 前序、中序、后序遍历皆属于深度优先搜索，它们体现了“先走到尽头，再回溯继续”的遍历方式，通\n常使用递归来实现。\n‧ 二叉搜索树是一种高效的"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n240\n‧ 插入排序每轮将未排序区间内的元素插入到已排序区间的正确位置，从而完成排序。虽然插入排序的\n时间复杂度为𝑂(𝑛2) ，但由于单元操作相对"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 1.9919304847717285,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+            "timestamp": "2026-04-17T15:56:35.908553",
+            "relevant_docs": [
+              "gpt2.pdf",
+              "gpt3.pdf"
+            ],
+            "report_type": "incident",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/incident/eval_retrieved_incident_47316938.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.8
+              },
+              "relevance_scores": [
+                1,
+                1,
+                0,
+                1,
+                1
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "第15 章贪心\nwww.hello‑algo.com\n328\n1. 可以保证找到最优解：贪心算法在这种情况下往往是最优选择，因为它往往比回溯、动态规划更高效。\n2. 可以找到近似最优解：贪心算法在这种"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "摘要\nI\n摘要\n舵机是飞机实现飞行姿态和飞行轨迹控制的关键控制部件，舵机一旦出现故\n障必将严重影响飞机的机动性、飞行安全性等性能。随着全电飞机计划的提出，\n电液舵机（EHA）和电动舵机（EMA）逐步被"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 0,
+                  "preview": "西北工业大学博士学位论文\n第一章绪论\n3\n综上，从舵机故障诊断技术发展需求和新型舵机电动舵机的技术应用需求两\n方面考虑，致力于解决电动舵机的故障诊断问题，有助于降低电动舵机运用于新\n型飞机PBW 飞行"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "西北工业大学博士学位论文\n第一章绪论\n7\n理；利用解析模型进行的故障诊断无法得出准确结果时，可以利用模糊规则在候\n选故障集合中继续推理，最终获得一个有效的故障诊断结果。\n综上，模糊逻辑方法能够有效地将"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "西北工业大学博士学位论文\n第五章基于模糊规则推理的EMA 智能故障诊断方法\n98\n表示“下雨”；与经典布尔逻辑不同的是，模糊逻辑运算中模糊变量的取值不会设置\n严格的界限，而是用“小雨”、“中雨”和“大"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.3699636459350586,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "RAG 系统的核心组成和基本流程是什么？",
+            "timestamp": "2026-04-17T15:56:38.416574",
+            "relevant_docs": [
+              "signal_rag_guide.md"
+            ],
+            "report_type": "incident",
+            "retrieve": {
+              "status": "success",
+              "time": 0.13,
+              "context_file": "data/processed/template_matrix/incident/eval_retrieved_incident_72345890.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "RAG 系统的核心组成和基本流程是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "计算机的出现给世界带来了巨大变革，它凭借高速的计算能力和出色的可编程性，成为了执行算法与处理数\n据的理想媒介。无论是电子游戏的逼真画面、自动驾驶的智能决策，还是AlphaGo 的精彩棋局、ChatGP"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i+"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n235\n计数排序与桶排序的联系\n从桶排序的角度看，我们可以将计数排序中的计数数组counter 的每个索引视为一个桶，将统计数\n量的过程看作将各个"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自"
+                }
+              ]
+            },
+            "report": {
+              "status": "success",
+              "time": 3.13,
+              "file": "data/runs/template_matrix/incident/20260417_155641/report.md"
+            },
+            "report_evaluation": {
+              "status": "success",
+              "report_file": "data/runs/template_matrix/incident/20260417_155641/report.md",
+              "context_file": "data/processed/template_matrix/incident/eval_retrieved_incident_72345890.json",
+              "metrics": {
+                "结构完整率": 1.0,
+                "引用覆盖率": 1.0,
+                "事实一致性": 0.3,
+                "综合得分": 0.77
+              },
+              "structure": {
+                "标题": true,
+                "任务说明": true,
+                "检索摘要": true,
+                "关键内容整理": true,
+                "综合分析": true,
+                "结论": true,
+                "参考片段": true
+              },
+              "chapter_coverage": {
+                "用户问题": 1,
+                "生成时间": 1,
+                "共召回片段数": 1,
+                "主要来源": 1,
+                "关键点条目": 5,
+                "结论章节": 1
+              },
+              "citation": {
+                "total_references": 1,
+                "cited_count": 1,
+                "coverage": 1.0,
+                "cited_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ],
+                "all_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ]
+              },
+              "consistency": {
+                "total_claims": 10,
+                "supported_claims": 3,
+                "unsupported_claims": 7,
+                "consistency_score": 0.3,
+                "supported_examples": [
+                  {
+                    "claim": "栈是一种遵循先入后出原则的数据结构，可用于实现软件撤销功能 [3]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i++, j++) {\nres[i] = n"
+                  },
+                  {
+                    "claim": "[1][2][3]",
+                    "best_overlap": 3,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释放效率：栈是一块较小的内存，分配由编译器"
+                  },
+                  {
+                    "claim": "[1][2][3][4][5]",
+                    "best_overlap": 5,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释放效率：栈是一块较小的内存，分配由编译器"
+                  }
+                ],
+                "unsupported_examples": [
+                  {
+                    "claim": "算法是计算机执行数据处理和智能决策的核心思想，广泛应用于各类应用中 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释放效率：栈是一块较小的内存，分配由编译器"
+                  },
+                  {
+                    "claim": "数据结构如数组、链表、栈、队列等是算法实现的基础，用于组织和操作数据 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释放效率：栈是一块较小的内存，分配由编译器"
+                  },
+                  {
+                    "claim": "数组要求元素类型相同，以便通过偏移量计算内存地址；链表节点可存储不同类型数据 [2]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释放效率：栈是一块较小的内存，分配由编译器"
+                  },
+                  {
+                    "claim": "双向队列可实现栈和队列的功能，并支持在两端操作，适用于需限制撤销步数的场景 [3]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释放效率：栈是一块较小的内存，分配由编译器"
+                  },
+                  {
+                    "claim": "当前证据集中于算法、数据结构（如栈、队列、数组、链表）的基本概念与应用，但未提及检索增强生成（RAG）系统及其组成模块（如检索器、生成器、向量数据库等）或其基本流程（如查询编码、向量检索、上下文拼接、答案生成等）",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "计算机的出现给世界带来了巨大变革，它凭借高速的计算能力和出色的可编程性，成为了执行算法与处理数\n据的理想媒介。无论是电子游戏的逼真画面、自动驾驶的智能决策，还是AlphaGo 的精彩棋局、ChatGPT\n的自然交互，这些应用都是算法在计算机"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+            "timestamp": "2026-04-17T15:56:41.689302",
+            "relevant_docs": [
+              "hello-algo_1.3.0_zh_cpp.pdf"
+            ],
+            "report_type": "incident",
+            "retrieve": {
+              "status": "success",
+              "time": 0.13,
+              "context_file": "data/processed/template_matrix/incident/eval_retrieved_incident_50632984.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 1.0,
+                "precision@k": 1.0,
+                "hit_rate": true,
+                "avg_relevance": 2.0
+              },
+              "relevance_scores": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.9047619047619048,
+                  "relevance": 2,
+                  "preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第15 章贪心\nwww.hello‑algo.com\n326\n15.1 贪心算法\n贪心算法（greedy algorithm）是一种常见的解决优化问题的算法，其基本思想是在问题的每个决策阶段，都\n选择"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8095238095238095,
+                  "relevance": 2,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数"
+                }
+              ]
+            },
+            "report": {
+              "status": "success",
+              "time": 5.29,
+              "file": "data/runs/template_matrix/incident/20260417_155646/report.md"
+            },
+            "report_evaluation": {
+              "status": "success",
+              "report_file": "data/runs/template_matrix/incident/20260417_155646/report.md",
+              "context_file": "data/processed/template_matrix/incident/eval_retrieved_incident_50632984.json",
+              "metrics": {
+                "结构完整率": 1.0,
+                "引用覆盖率": 1.0,
+                "事实一致性": 0.45,
+                "综合得分": 0.82
+              },
+              "structure": {
+                "标题": true,
+                "任务说明": true,
+                "检索摘要": true,
+                "关键内容整理": true,
+                "综合分析": true,
+                "结论": true,
+                "参考片段": true
+              },
+              "chapter_coverage": {
+                "用户问题": 1,
+                "生成时间": 1,
+                "共召回片段数": 1,
+                "主要来源": 1,
+                "关键点条目": 10,
+                "结论章节": 1
+              },
+              "citation": {
+                "total_references": 1,
+                "cited_count": 1,
+                "coverage": 1.0,
+                "cited_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ],
+                "all_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ]
+              },
+              "consistency": {
+                "total_claims": 20,
+                "supported_claims": 9,
+                "unsupported_claims": 11,
+                "consistency_score": 0.45,
+                "supported_examples": [
+                  {
+                    "claim": "数组和链表是基础数据结构，数组支持随机访问、缓存局部性，但插入删除效率低、长度不可变 [5]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数据，从而借助高速缓\n存来提升后续操作的执"
+                  },
+                  {
+                    "claim": "归并排序和快速排序是基于分治思想的排序算法 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "树结构（如二叉搜索树、AVL树、红黑树、B树、B+树）的操作可视为分治策略的应用 [1]",
+                    "best_overlap": 4,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "计数排序适用于非负整数，时间复杂度为O(n)，是稳定排序，但适用条件严格 [3]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自适应排序：涉及遍历nums 和遍历cou"
+                  },
+                  {
+                    "claim": "算法学习分为三个阶段：算法入门、刷算法题、搭建知识体系，本书主要覆盖第一阶段 [2]",
+                    "best_overlap": 4,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要熟悉各种数据结构的特点和用法，学习不同算"
+                  }
+                ],
+                "unsupported_examples": [
+                  {
+                    "claim": "二分查找是一种分治算法，通过中点分割有序数组并递归缩小搜索区间 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "桶排序通过将数据分散到多个桶中，分别排序后合并得到有序结果 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "堆的操作（插入、删除、堆化）隐含分治思想 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "哈希表虽不直接应用分治，但链式地址中长链表转红黑树的冲突解决方式间接应用分治 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "贪心算法在每个决策阶段选择局部最优解，用于解决优化问题，如零钱兑换 [4]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自适应排序：涉及遍历nums 和遍历cou"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "total_time": 15.62,
+        "timestamp": "2026-04-17T15:56:47.122722"
+      },
+      "compact_summary": {
+        "report_type": "incident",
+        "report_type_name": "故障/事件分析报告",
+        "success_count": 2,
+        "failure_count": 3,
+        "综合得分": 0.79,
+        "事实一致性": 0.38,
+        "引用覆盖率": 1.0,
+        "结构完整率": 1.0,
+        "Recall@5": 0.2,
+        "Hit@5": 0.2
+      }
+    },
+    {
+      "report_type": "project",
+      "report_type_name": "项目汇报报告",
+      "result": {
+        "summary": {
+          "report_type": "project",
+          "report_type_name": "项目汇报报告",
+          "总耗时": 14.06,
+          "问题数量": 5,
+          "成功数量": 1,
+          "失败数量": 4,
+          "平均耗时": {
+            "导入": 0.0,
+            "切分": 0.0,
+            "检索": 0.14,
+            "生成": 2.67
+          },
+          "检索指标平均值": {
+            "Recall@5": 0.2,
+            "Precision@5": 0.2,
+            "Hit@5": 0.2,
+            "平均相关性": 0.56
+          },
+          "报告指标平均值": {
+            "结构完整率": 1.0,
+            "引用覆盖率": 1.0,
+            "事实一致性": 0.35,
+            "综合得分": 0.78
+          }
+        },
+        "details": [
+          {
+            "query": "Transformer 的核心结构和关键机制是什么？",
+            "timestamp": "2026-04-17T15:56:48.386188",
+            "relevant_docs": [
+              "transformer.pdf"
+            ],
+            "report_type": "project",
+            "retrieve": {
+              "status": "success",
+              "time": 0.13,
+              "context_file": "data/processed/template_matrix/project/eval_retrieved_project_82948190.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "Transformer 的核心结构和关键机制是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7857142857142857,
+                  "relevance": 0,
+                  "preview": "第3 章数据结构\nwww.hello‑algo.com\n55\n单，更容易进行并行化处理，运算速度更快。\n请注意，这并不意味着计算机只能做加法。通过将加法与一些基本逻辑运算结合，计算机能够实现各种其他\n"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7857142857142857,
+                  "relevance": 0,
+                  "preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i+"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第0 章前言\nwww.hello‑algo.com\n2\n0.1 关于本书\n本项目旨在创建一本开源、免费、对新手友好的数据结构与算法入门教程。\n‧ 全书采用动画图解，内容清晰易懂、学习曲线平滑，引导初学"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第1 章初识算法\nwww.hello‑algo.com\n13\n图1‑3 货币找零过程\n在以上步骤中，我们每一步都采取当前看来最好的选择（尽可能用大面额的货币），最终得到了可行的找零方\n案。从数据结构与"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第2 章复杂度分析\nwww.hello‑algo.com\n27\n迭代\n递归\n适用问\n题\n适用于简单循环任务，代码直观、可读性\n好\n适用于子问题分解，如树、图、分治、回溯等，代码结构简洁、\n清晰\nTip"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.0986318588256836,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "BERT 与 GPT 的主要区别是什么？",
+            "timestamp": "2026-04-17T15:56:50.620168",
+            "relevant_docs": [
+              "bert.pdf",
+              "gpt.pdf",
+              "gpt2.pdf",
+              "gpt3.pdf"
+            ],
+            "report_type": "project",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/project/eval_retrieved_project_49169254.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "BERT 与 GPT 的主要区别是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第2 章复杂度分析\nwww.hello‑algo.com\n47\n‧ 空间复杂度的作用类似于时间复杂度，用于衡量算法占用内存空间随数据量增长的趋势。\n‧ 算法运行过程中的相关内存空间可分为输入空间、暂存"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n84\nQ：在Python 中初始化n = [1, 2, 3] 后，这3 个元素的地址是相连的，但是初始化m = [2, 1, 3] 会\n发现它"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第7 章树\nwww.hello‑algo.com\n160\n‧ 前序、中序、后序遍历皆属于深度优先搜索，它们体现了“先走到尽头，再回溯继续”的遍历方式，通\n常使用递归来实现。\n‧ 二叉搜索树是一种高效的"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n240\n‧ 插入排序每轮将未排序区间内的元素插入到已排序区间的正确位置，从而完成排序。虽然插入排序的\n时间复杂度为𝑂(𝑛2) ，但由于单元操作相对"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.208944320678711,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+            "timestamp": "2026-04-17T15:56:52.966305",
+            "relevant_docs": [
+              "gpt2.pdf",
+              "gpt3.pdf"
+            ],
+            "report_type": "project",
+            "retrieve": {
+              "status": "success",
+              "time": 0.13,
+              "context_file": "data/processed/template_matrix/project/eval_retrieved_project_47316938.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.8
+              },
+              "relevance_scores": [
+                1,
+                1,
+                0,
+                1,
+                1
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "第15 章贪心\nwww.hello‑algo.com\n328\n1. 可以保证找到最优解：贪心算法在这种情况下往往是最优选择，因为它往往比回溯、动态规划更高效。\n2. 可以找到近似最优解：贪心算法在这种"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "摘要\nI\n摘要\n舵机是飞机实现飞行姿态和飞行轨迹控制的关键控制部件，舵机一旦出现故\n障必将严重影响飞机的机动性、飞行安全性等性能。随着全电飞机计划的提出，\n电液舵机（EHA）和电动舵机（EMA）逐步被"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 0,
+                  "preview": "西北工业大学博士学位论文\n第一章绪论\n3\n综上，从舵机故障诊断技术发展需求和新型舵机电动舵机的技术应用需求两\n方面考虑，致力于解决电动舵机的故障诊断问题，有助于降低电动舵机运用于新\n型飞机PBW 飞行"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "西北工业大学博士学位论文\n第一章绪论\n7\n理；利用解析模型进行的故障诊断无法得出准确结果时，可以利用模糊规则在候\n选故障集合中继续推理，最终获得一个有效的故障诊断结果。\n综上，模糊逻辑方法能够有效地将"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "西北工业大学博士学位论文\n第五章基于模糊规则推理的EMA 智能故障诊断方法\n98\n表示“下雨”；与经典布尔逻辑不同的是，模糊逻辑运算中模糊变量的取值不会设置\n严格的界限，而是用“小雨”、“中雨”和“大"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.3770716190338135,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "RAG 系统的核心组成和基本流程是什么？",
+            "timestamp": "2026-04-17T15:56:55.479693",
+            "relevant_docs": [
+              "signal_rag_guide.md"
+            ],
+            "report_type": "project",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/project/eval_retrieved_project_72345890.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "RAG 系统的核心组成和基本流程是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "计算机的出现给世界带来了巨大变革，它凭借高速的计算能力和出色的可编程性，成为了执行算法与处理数\n据的理想媒介。无论是电子游戏的逼真画面、自动驾驶的智能决策，还是AlphaGo 的精彩棋局、ChatGP"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i+"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n235\n计数排序与桶排序的联系\n从桶排序的角度看，我们可以将计数排序中的计数数组counter 的每个索引视为一个桶，将统计数\n量的过程看作将各个"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.0369038581848145,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+            "timestamp": "2026-04-17T15:56:57.653639",
+            "relevant_docs": [
+              "hello-algo_1.3.0_zh_cpp.pdf"
+            ],
+            "report_type": "project",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/project/eval_retrieved_project_50632984.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 1.0,
+                "precision@k": 1.0,
+                "hit_rate": true,
+                "avg_relevance": 2.0
+              },
+              "relevance_scores": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.9047619047619048,
+                  "relevance": 2,
+                  "preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第15 章贪心\nwww.hello‑algo.com\n326\n15.1 贪心算法\n贪心算法（greedy algorithm）是一种常见的解决优化问题的算法，其基本思想是在问题的每个决策阶段，都\n选择"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8095238095238095,
+                  "relevance": 2,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数"
+                }
+              ]
+            },
+            "report": {
+              "status": "success",
+              "time": 4.65,
+              "file": "data/runs/template_matrix/project/20260417_155702/report.md"
+            },
+            "report_evaluation": {
+              "status": "success",
+              "report_file": "data/runs/template_matrix/project/20260417_155702/report.md",
+              "context_file": "data/processed/template_matrix/project/eval_retrieved_project_50632984.json",
+              "metrics": {
+                "结构完整率": 1.0,
+                "引用覆盖率": 1.0,
+                "事实一致性": 0.35,
+                "综合得分": 0.78
+              },
+              "structure": {
+                "标题": true,
+                "任务说明": true,
+                "检索摘要": true,
+                "关键内容整理": true,
+                "综合分析": true,
+                "结论": true,
+                "参考片段": true
+              },
+              "chapter_coverage": {
+                "用户问题": 1,
+                "生成时间": 1,
+                "共召回片段数": 1,
+                "主要来源": 1,
+                "关键点条目": 7,
+                "结论章节": 1
+              },
+              "citation": {
+                "total_references": 1,
+                "cited_count": 1,
+                "coverage": 1.0,
+                "cited_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ],
+                "all_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ]
+              },
+              "consistency": {
+                "total_claims": 17,
+                "supported_claims": 6,
+                "unsupported_claims": 11,
+                "consistency_score": 0.35,
+                "supported_examples": [
+                  {
+                    "claim": "常见数据结构包括数组、链表、哈希表、堆、树（如二叉搜索树、AVL树、红黑树、B树、B+树） [1][5]",
+                    "best_overlap": 5,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "常见算法思想包括分治（如二分查找、归并排序、快速排序、桶排序）、贪心算法、排序算法（如计数排序） [1][4][3]",
+                    "best_overlap": 5,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数据，从而借助高速缓\n存来提升后续操作的执"
+                  },
+                  {
+                    "claim": "当前项目内容聚焦于算法入门阶段，系统介绍了基础数据结构（数组、链表、哈希表、树、堆）和核心算法思想（分治、贪心、排序）",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数据，从而借助高速缓\n存来提升后续操作的执"
+                  },
+                  {
+                    "claim": "分治策略贯穿多个算法（如二分查找、归并排序、快速排序）和数据结构（树、堆），体现其在设计中的普适性",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "[1][3][4][5]",
+                    "best_overlap": 3,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要熟悉各种数据结构的特点和用法，学习不同算"
+                  }
+                ],
+                "unsupported_examples": [
+                  {
+                    "claim": "数组是排序和搜索算法的基础数据结构，支持随机访问和缓存局部性，但插入删除效率低、长度不可变 [5]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要熟悉各种数据结构的特点和用法，学习不同算"
+                  },
+                  {
+                    "claim": "计数排序适用于非负整数，通过统计数量实现高效排序，但不适用于负数或非整数类型，需预处理转换 [3]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要熟悉各种数据结构的特点和用法，学习不同算"
+                  },
+                  {
+                    "claim": "贪心算法通过每一步选择局部最优解来逼近全局最优，与动态规划不同，不回溯历史决策 [4]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自适应排序：涉及遍历nums 和遍历cou"
+                  },
+                  {
+                    "claim": "分治思想广泛应用于树和堆的操作中，如查找、插入、删除和堆化过程 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "哈希表虽不直接应用分治，但其链式地址冲突解决中可能将长链表转为红黑树以提升效率，间接体现分治 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "total_time": 14.06,
+        "timestamp": "2026-04-17T15:57:02.450662"
+      },
+      "compact_summary": {
+        "report_type": "project",
+        "report_type_name": "项目汇报报告",
+        "success_count": 1,
+        "failure_count": 4,
+        "综合得分": 0.78,
+        "事实一致性": 0.35,
+        "引用覆盖率": 1.0,
+        "结构完整率": 1.0,
+        "Recall@5": 0.2,
+        "Hit@5": 0.2
+      }
+    },
+    {
+      "report_type": "research",
+      "report_type_name": "专题调研报告",
+      "result": {
+        "summary": {
+          "report_type": "research",
+          "report_type_name": "专题调研报告",
+          "总耗时": 15.13,
+          "问题数量": 5,
+          "成功数量": 1,
+          "失败数量": 4,
+          "平均耗时": {
+            "导入": 0.0,
+            "切分": 0.0,
+            "检索": 0.14,
+            "生成": 2.89
+          },
+          "检索指标平均值": {
+            "Recall@5": 0.2,
+            "Precision@5": 0.2,
+            "Hit@5": 0.2,
+            "平均相关性": 0.56
+          },
+          "报告指标平均值": {
+            "结构完整率": 1.0,
+            "引用覆盖率": 1.0,
+            "事实一致性": 0.44,
+            "综合得分": 0.81
+          }
+        },
+        "details": [
+          {
+            "query": "Transformer 的核心结构和关键机制是什么？",
+            "timestamp": "2026-04-17T15:57:03.714533",
+            "relevant_docs": [
+              "transformer.pdf"
+            ],
+            "report_type": "research",
+            "retrieve": {
+              "status": "success",
+              "time": 0.13,
+              "context_file": "data/processed/template_matrix/research/eval_retrieved_research_82948190.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "Transformer 的核心结构和关键机制是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7857142857142857,
+                  "relevance": 0,
+                  "preview": "第3 章数据结构\nwww.hello‑algo.com\n55\n单，更容易进行并行化处理，运算速度更快。\n请注意，这并不意味着计算机只能做加法。通过将加法与一些基本逻辑运算结合，计算机能够实现各种其他\n"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7857142857142857,
+                  "relevance": 0,
+                  "preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i+"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第0 章前言\nwww.hello‑algo.com\n2\n0.1 关于本书\n本项目旨在创建一本开源、免费、对新手友好的数据结构与算法入门教程。\n‧ 全书采用动画图解，内容清晰易懂、学习曲线平滑，引导初学"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第1 章初识算法\nwww.hello‑algo.com\n13\n图1‑3 货币找零过程\n在以上步骤中，我们每一步都采取当前看来最好的选择（尽可能用大面额的货币），最终得到了可行的找零方\n案。从数据结构与"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第2 章复杂度分析\nwww.hello‑algo.com\n27\n迭代\n递归\n适用问\n题\n适用于简单循环任务，代码直观、可读性\n好\n适用于子问题分解，如树、图、分治、回溯等，代码结构简洁、\n清晰\nTip"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.200070858001709,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "BERT 与 GPT 的主要区别是什么？",
+            "timestamp": "2026-04-17T15:57:06.049055",
+            "relevant_docs": [
+              "bert.pdf",
+              "gpt.pdf",
+              "gpt2.pdf",
+              "gpt3.pdf"
+            ],
+            "report_type": "research",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/research/eval_retrieved_research_49169254.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "BERT 与 GPT 的主要区别是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第2 章复杂度分析\nwww.hello‑algo.com\n47\n‧ 空间复杂度的作用类似于时间复杂度，用于衡量算法占用内存空间随数据量增长的趋势。\n‧ 算法运行过程中的相关内存空间可分为输入空间、暂存"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n84\nQ：在Python 中初始化n = [1, 2, 3] 后，这3 个元素的地址是相连的，但是初始化m = [2, 1, 3] 会\n发现它"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第7 章树\nwww.hello‑algo.com\n160\n‧ 前序、中序、后序遍历皆属于深度优先搜索，它们体现了“先走到尽头，再回溯继续”的遍历方式，通\n常使用递归来实现。\n‧ 二叉搜索树是一种高效的"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n240\n‧ 插入排序每轮将未排序区间内的元素插入到已排序区间的正确位置，从而完成排序。虽然插入排序的\n时间复杂度为𝑂(𝑛2) ，但由于单元操作相对"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.097367286682129,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+            "timestamp": "2026-04-17T15:57:08.283900",
+            "relevant_docs": [
+              "gpt2.pdf",
+              "gpt3.pdf"
+            ],
+            "report_type": "research",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/research/eval_retrieved_research_47316938.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.8
+              },
+              "relevance_scores": [
+                1,
+                1,
+                0,
+                1,
+                1
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "第15 章贪心\nwww.hello‑algo.com\n328\n1. 可以保证找到最优解：贪心算法在这种情况下往往是最优选择，因为它往往比回溯、动态规划更高效。\n2. 可以找到近似最优解：贪心算法在这种"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "摘要\nI\n摘要\n舵机是飞机实现飞行姿态和飞行轨迹控制的关键控制部件，舵机一旦出现故\n障必将严重影响飞机的机动性、飞行安全性等性能。随着全电飞机计划的提出，\n电液舵机（EHA）和电动舵机（EMA）逐步被"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 0,
+                  "preview": "西北工业大学博士学位论文\n第一章绪论\n3\n综上，从舵机故障诊断技术发展需求和新型舵机电动舵机的技术应用需求两\n方面考虑，致力于解决电动舵机的故障诊断问题，有助于降低电动舵机运用于新\n型飞机PBW 飞行"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "西北工业大学博士学位论文\n第一章绪论\n7\n理；利用解析模型进行的故障诊断无法得出准确结果时，可以利用模糊规则在候\n选故障集合中继续推理，最终获得一个有效的故障诊断结果。\n综上，模糊逻辑方法能够有效地将"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "西北工业大学博士学位论文\n第五章基于模糊规则推理的EMA 智能故障诊断方法\n98\n表示“下雨”；与经典布尔逻辑不同的是，模糊逻辑运算中模糊变量的取值不会设置\n严格的界限，而是用“小雨”、“中雨”和“大"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.8736472129821777,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "RAG 系统的核心组成和基本流程是什么？",
+            "timestamp": "2026-04-17T15:57:11.295354",
+            "relevant_docs": [
+              "signal_rag_guide.md"
+            ],
+            "report_type": "research",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/research/eval_retrieved_research_72345890.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "RAG 系统的核心组成和基本流程是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "计算机的出现给世界带来了巨大变革，它凭借高速的计算能力和出色的可编程性，成为了执行算法与处理数\n据的理想媒介。无论是电子游戏的逼真画面、自动驾驶的智能决策，还是AlphaGo 的精彩棋局、ChatGP"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i+"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n235\n计数排序与桶排序的联系\n从桶排序的角度看，我们可以将计数排序中的计数数组counter 的每个索引视为一个桶，将统计数\n量的过程看作将各个"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.300740957260132,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+            "timestamp": "2026-04-17T15:57:13.732902",
+            "relevant_docs": [
+              "hello-algo_1.3.0_zh_cpp.pdf"
+            ],
+            "report_type": "research",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/research/eval_retrieved_research_50632984.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 1.0,
+                "precision@k": 1.0,
+                "hit_rate": true,
+                "avg_relevance": 2.0
+              },
+              "relevance_scores": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.9047619047619048,
+                  "relevance": 2,
+                  "preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第15 章贪心\nwww.hello‑algo.com\n326\n15.1 贪心算法\n贪心算法（greedy algorithm）是一种常见的解决优化问题的算法，其基本思想是在问题的每个决策阶段，都\n选择"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8095238095238095,
+                  "relevance": 2,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数"
+                }
+              ]
+            },
+            "report": {
+              "status": "success",
+              "time": 4.96,
+              "file": "data/runs/template_matrix/research/20260417_155718/report.md"
+            },
+            "report_evaluation": {
+              "status": "success",
+              "report_file": "data/runs/template_matrix/research/20260417_155718/report.md",
+              "context_file": "data/processed/template_matrix/research/eval_retrieved_research_50632984.json",
+              "metrics": {
+                "结构完整率": 1.0,
+                "引用覆盖率": 1.0,
+                "事实一致性": 0.44,
+                "综合得分": 0.81
+              },
+              "structure": {
+                "标题": true,
+                "任务说明": true,
+                "检索摘要": true,
+                "关键内容整理": true,
+                "综合分析": true,
+                "结论": true,
+                "参考片段": true
+              },
+              "chapter_coverage": {
+                "用户问题": 1,
+                "生成时间": 1,
+                "共召回片段数": 1,
+                "主要来源": 1,
+                "关键点条目": 7,
+                "结论章节": 1
+              },
+              "citation": {
+                "total_references": 1,
+                "cited_count": 1,
+                "coverage": 1.0,
+                "cited_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ],
+                "all_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ]
+              },
+              "consistency": {
+                "total_claims": 16,
+                "supported_claims": 7,
+                "unsupported_claims": 9,
+                "consistency_score": 0.44,
+                "supported_examples": [
+                  {
+                    "claim": "基础数据结构包括数组、链表、哈希表、堆、树（如二叉搜索树、AVL树、红黑树、B树、B+树） [1][5]",
+                    "best_overlap": 5,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "常见算法思想包括分治（如二分查找、归并排序、快速排序、桶排序）、贪心算法（如零钱兑换问题）、排序算法（如计数排序） [1][4][3]",
+                    "best_overlap": 5,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数据，从而借助高速缓\n存来提升后续操作的执"
+                  },
+                  {
+                    "claim": "数组是排序和搜索算法最常用的数据结构，支持随机访问和缓存局部性，但插入删除效率低、长度不可变 [5]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数据，从而借助高速缓\n存来提升后续操作的执"
+                  },
+                  {
+                    "claim": "算法学习分为三个阶段：算法入门（熟悉数据结构与算法原理）、刷算法题（积累100+题目）、搭建知识体系（专题分类与一题多解） [2]",
+                    "best_overlap": 5,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要熟悉各种数据结构的特点和用法，学习不同算"
+                  },
+                  {
+                    "claim": "证据显示，hello-algo 以基础数据结构（数组、链表、哈希表、树、堆）和核心算法思想（分治、贪心、排序）为核心内容，其中分治思想贯穿多个算法（如二分查找、归并排序、树操作），而贪心算法作为独立优化策略被单独阐述",
+                    "best_overlap": 5,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数据，从而借助高速缓\n存来提升后续操作的执"
+                  }
+                ],
+                "unsupported_examples": [
+                  {
+                    "claim": "计数排序适用于非负整数，通过统计数量实现高效排序，是稳定排序但空间开销大 [3]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要熟悉各种数据结构的特点和用法，学习不同算"
+                  },
+                  {
+                    "claim": "分治思想广泛应用于树结构和堆的操作，哈希表的链式地址冲突解决中可间接应用分治（如链表转红黑树） [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "贪心算法通过局部最优决策求解优化问题，与动态规划不同，不依赖历史决策 [4]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自适应排序：涉及遍历nums 和遍历cou"
+                  },
+                  {
+                    "claim": "数组作为基础载体被频繁用于实现排序与搜索，其特性与局限性被明确指出",
+                    "best_overlap": 0,
+                    "best_source": null,
+                    "best_preview": ""
+                  },
+                  {
+                    "claim": "计数排序的适用条件与局限性说明教材注重算法的实践边界",
+                    "best_overlap": 0,
+                    "best_source": null,
+                    "best_preview": ""
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "total_time": 15.13,
+        "timestamp": "2026-04-17T15:57:18.843388"
+      },
+      "compact_summary": {
+        "report_type": "research",
+        "report_type_name": "专题调研报告",
+        "success_count": 1,
+        "failure_count": 4,
+        "综合得分": 0.81,
+        "事实一致性": 0.44,
+        "引用覆盖率": 1.0,
+        "结构完整率": 1.0,
+        "Recall@5": 0.2,
+        "Hit@5": 0.2
+      }
+    },
+    {
+      "report_type": "summary",
+      "report_type_name": "文档摘要报告",
+      "result": {
+        "summary": {
+          "report_type": "summary",
+          "report_type_name": "文档摘要报告",
+          "总耗时": 15.23,
+          "问题数量": 5,
+          "成功数量": 2,
+          "失败数量": 3,
+          "平均耗时": {
+            "导入": 0.0,
+            "切分": 0.0,
+            "检索": 0.14,
+            "生成": 2.91
+          },
+          "检索指标平均值": {
+            "Recall@5": 0.2,
+            "Precision@5": 0.2,
+            "Hit@5": 0.2,
+            "平均相关性": 0.56
+          },
+          "报告指标平均值": {
+            "结构完整率": 1.0,
+            "引用覆盖率": 1.0,
+            "事实一致性": 0.49,
+            "综合得分": 0.83
+          }
+        },
+        "details": [
+          {
+            "query": "Transformer 的核心结构和关键机制是什么？",
+            "timestamp": "2026-04-17T15:57:20.140897",
+            "relevant_docs": [
+              "transformer.pdf"
+            ],
+            "report_type": "summary",
+            "retrieve": {
+              "status": "success",
+              "time": 0.13,
+              "context_file": "data/processed/template_matrix/summary/eval_retrieved_summary_82948190.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "Transformer 的核心结构和关键机制是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7857142857142857,
+                  "relevance": 0,
+                  "preview": "第3 章数据结构\nwww.hello‑algo.com\n55\n单，更容易进行并行化处理，运算速度更快。\n请注意，这并不意味着计算机只能做加法。通过将加法与一些基本逻辑运算结合，计算机能够实现各种其他\n"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7857142857142857,
+                  "relevance": 0,
+                  "preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i+"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第0 章前言\nwww.hello‑algo.com\n2\n0.1 关于本书\n本项目旨在创建一本开源、免费、对新手友好的数据结构与算法入门教程。\n‧ 全书采用动画图解，内容清晰易懂、学习曲线平滑，引导初学"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第1 章初识算法\nwww.hello‑algo.com\n13\n图1‑3 货币找零过程\n在以上步骤中，我们每一步都采取当前看来最好的选择（尽可能用大面额的货币），最终得到了可行的找零方\n案。从数据结构与"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7142857142857143,
+                  "relevance": 0,
+                  "preview": "第2 章复杂度分析\nwww.hello‑algo.com\n27\n迭代\n递归\n适用问\n题\n适用于简单循环任务，代码直观、可读性\n好\n适用于子问题分解，如树、图、分治、回溯等，代码结构简洁、\n清晰\nTip"
+                }
+              ]
+            },
+            "report": {
+              "status": "success",
+              "time": 3.97,
+              "file": "data/runs/template_matrix/summary/20260417_155724/report.md"
+            },
+            "report_evaluation": {
+              "status": "success",
+              "report_file": "data/runs/template_matrix/summary/20260417_155724/report.md",
+              "context_file": "data/processed/template_matrix/summary/eval_retrieved_summary_82948190.json",
+              "metrics": {
+                "结构完整率": 1.0,
+                "引用覆盖率": 1.0,
+                "事实一致性": 0.31,
+                "综合得分": 0.77
+              },
+              "structure": {
+                "标题": true,
+                "任务说明": true,
+                "检索摘要": true,
+                "关键内容整理": true,
+                "综合分析": true,
+                "结论": true,
+                "参考片段": true
+              },
+              "chapter_coverage": {
+                "用户问题": 1,
+                "生成时间": 1,
+                "共召回片段数": 1,
+                "主要来源": 1,
+                "关键点条目": 6,
+                "结论章节": 1
+              },
+              "citation": {
+                "total_references": 1,
+                "cited_count": 1,
+                "coverage": 1.0,
+                "cited_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ],
+                "all_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ]
+              },
+              "consistency": {
+                "total_claims": 13,
+                "supported_claims": 4,
+                "unsupported_claims": 9,
+                "consistency_score": 0.31,
+                "supported_examples": [
+                  {
+                    "claim": "浮点数（float）采用IEEE 754标准编码，通过特殊表示方式实现比整数更大的取值范围，尽管其位长与int相同。 [1]",
+                    "best_overlap": 5,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第3 章数据结构\nwww.hello‑algo.com\n55\n单，更容易进行并行化处理，运算速度更快。\n请注意，这并不意味着计算机只能做加法。通过将加法与一些基本逻辑运算结合，计算机能够实现各种其他\n的数学运算。例如，计算减法𝑎−𝑏可以转换"
+                  },
+                  {
+                    "claim": "证据[2]和[5]分别展示栈和双向队列在逻辑实现中的作用，强调栈作为递归和撤销功能的核心支撑结构",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i++, j++) {\nres[i] = n"
+                  },
+                  {
+                    "claim": "整体主线是：从底层数据表示（[1]）到抽象数据结构（[2][5]），再到算法定义（[4]），形成由硬件到软件、由实现到理论的递进关系",
+                    "best_overlap": 4,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i++, j++) {\nres[i] = n"
+                  },
+                  {
+                    "claim": "[1][2][4][5]",
+                    "best_overlap": 4,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i++, j++) {\nres[i] = n"
+                  }
+                ],
+                "unsupported_examples": [
+                  {
+                    "claim": "计算机使用补码表示法以简化硬件设计，支持用相同电路处理正负数加法，避免减法专用电路和正负零歧义问题。 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第3 章数据结构\nwww.hello‑algo.com\n55\n单，更容易进行并行化处理，运算速度更快。\n请注意，这并不意味着计算机只能做加法。通过将加法与一些基本逻辑运算结合，计算机能够实现各种其他\n的数学运算。例如，计算减法𝑎−𝑏可以转换"
+                  },
+                  {
+                    "claim": "双向队列兼具栈和队列特性，可用于实现栈的先入后出逻辑（如撤销功能），同时支持在队首删除以限制历史记录长度。 [2]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第3 章数据结构\nwww.hello‑algo.com\n55\n单，更容易进行并行化处理，运算速度更快。\n请注意，这并不意味着计算机只能做加法。通过将加法与一些基本逻辑运算结合，计算机能够实现各种其他\n的数学运算。例如，计算减法𝑎−𝑏可以转换"
+                  },
+                  {
+                    "claim": "算法是在有限时间内解决特定问题的一组明确指令，具有明确输入输出、可行性、确定性等特性。 [4]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第3 章数据结构\nwww.hello‑algo.com\n55\n单，更容易进行并行化处理，运算速度更快。\n请注意，这并不意味着计算机只能做加法。通过将加法与一些基本逻辑运算结合，计算机能够实现各种其他\n的数学运算。例如，计算减法𝑎−𝑏可以转换"
+                  },
+                  {
+                    "claim": "数据结构是组织和存储数据的方式，与算法共同构成计算机解决问题的基础。 [4]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第3 章数据结构\nwww.hello‑algo.com\n55\n单，更容易进行并行化处理，运算速度更快。\n请注意，这并不意味着计算机只能做加法。通过将加法与一些基本逻辑运算结合，计算机能够实现各种其他\n的数学运算。例如，计算减法𝑎−𝑏可以转换"
+                  },
+                  {
+                    "claim": "递归的执行机制与栈的先入后出原则一致，调用栈通过栈帧管理函数调用与返回，可被显式栈模拟为迭代形式。 [5]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i++, j++) {\nres[i] = n"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "query": "BERT 与 GPT 的主要区别是什么？",
+            "timestamp": "2026-04-17T15:57:24.251102",
+            "relevant_docs": [
+              "bert.pdf",
+              "gpt.pdf",
+              "gpt2.pdf",
+              "gpt3.pdf"
+            ],
+            "report_type": "summary",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/summary/eval_retrieved_summary_49169254.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "BERT 与 GPT 的主要区别是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第2 章复杂度分析\nwww.hello‑algo.com\n47\n‧ 空间复杂度的作用类似于时间复杂度，用于衡量算法占用内存空间随数据量增长的趋势。\n‧ 算法运行过程中的相关内存空间可分为输入空间、暂存"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n84\nQ：在Python 中初始化n = [1, 2, 3] 后，这3 个元素的地址是相连的，但是初始化m = [2, 1, 3] 会\n发现它"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第7 章树\nwww.hello‑algo.com\n160\n‧ 前序、中序、后序遍历皆属于深度优先搜索，它们体现了“先走到尽头，再回溯继续”的遍历方式，通\n常使用递归来实现。\n‧ 二叉搜索树是一种高效的"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7272727272727273,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n240\n‧ 插入排序每轮将未排序区间内的元素插入到已排序区间的正确位置，从而完成排序。虽然插入排序的\n时间复杂度为𝑂(𝑛2) ，但由于单元操作相对"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 1.239088773727417,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+            "timestamp": "2026-04-17T15:57:25.629348",
+            "relevant_docs": [
+              "gpt2.pdf",
+              "gpt3.pdf"
+            ],
+            "report_type": "summary",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/summary/eval_retrieved_summary_47316938.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.8
+              },
+              "relevance_scores": [
+                1,
+                1,
+                0,
+                1,
+                1
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "第15 章贪心\nwww.hello‑algo.com\n328\n1. 可以保证找到最优解：贪心算法在这种情况下往往是最优选择，因为它往往比回溯、动态规划更高效。\n2. 可以找到近似最优解：贪心算法在这种"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "摘要\nI\n摘要\n舵机是飞机实现飞行姿态和飞行轨迹控制的关键控制部件，舵机一旦出现故\n障必将严重影响飞机的机动性、飞行安全性等性能。随着全电飞机计划的提出，\n电液舵机（EHA）和电动舵机（EMA）逐步被"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 0,
+                  "preview": "西北工业大学博士学位论文\n第一章绪论\n3\n综上，从舵机故障诊断技术发展需求和新型舵机电动舵机的技术应用需求两\n方面考虑，致力于解决电动舵机的故障诊断问题，有助于降低电动舵机运用于新\n型飞机PBW 飞行"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "西北工业大学博士学位论文\n第一章绪论\n7\n理；利用解析模型进行的故障诊断无法得出准确结果时，可以利用模糊规则在候\n选故障集合中继续推理，最终获得一个有效的故障诊断结果。\n综上，模糊逻辑方法能够有效地将"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+                  "score": 0.7777777777777778,
+                  "relevance": 1,
+                  "preview": "西北工业大学博士学位论文\n第五章基于模糊规则推理的EMA 智能故障诊断方法\n98\n表示“下雨”；与经典布尔逻辑不同的是，模糊逻辑运算中模糊变量的取值不会设置\n严格的界限，而是用“小雨”、“中雨”和“大"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 2.109921455383301,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "RAG 系统的核心组成和基本流程是什么？",
+            "timestamp": "2026-04-17T15:57:27.877574",
+            "relevant_docs": [
+              "signal_rag_guide.md"
+            ],
+            "report_type": "summary",
+            "retrieve": {
+              "status": "success",
+              "time": 0.14,
+              "context_file": "data/processed/template_matrix/summary/eval_retrieved_summary_72345890.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "RAG 系统的核心组成和基本流程是什么？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 0.0,
+                "precision@k": 0.0,
+                "hit_rate": false,
+                "avg_relevance": 0.0
+              },
+              "relevance_scores": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "计算机的出现给世界带来了巨大变革，它凭借高速的计算能力和出色的可编程性，成为了执行算法与处理数\n据的理想媒介。无论是电子游戏的逼真画面、自动驾驶的智能决策，还是AlphaGo 的精彩棋局、ChatGP"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i+"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n235\n计数排序与桶排序的联系\n从桶排序的角度看，我们可以将计数排序中的计数数组counter 的每个索引视为一个桶，将统计数\n量的过程看作将各个"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.75,
+                  "relevance": 0,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自"
+                }
+              ]
+            },
+            "report": {
+              "status": "failed",
+              "time": 1.3955471515655518,
+              "stderr": ""
+            }
+          },
+          {
+            "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+            "timestamp": "2026-04-17T15:57:29.410621",
+            "relevant_docs": [
+              "hello-algo_1.3.0_zh_cpp.pdf"
+            ],
+            "report_type": "summary",
+            "retrieve": {
+              "status": "success",
+              "time": 0.13,
+              "context_file": "data/processed/template_matrix/summary/eval_retrieved_summary_50632984.json"
+            },
+            "retrieval": {
+              "status": "success",
+              "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+              "total_chunks": 763,
+              "results_count": 5,
+              "labeled_eval": true,
+              "metrics": {
+                "recall@k": 1.0,
+                "precision@k": 1.0,
+                "hit_rate": true,
+                "avg_relevance": 2.0
+              },
+              "relevance_scores": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "top_k_results": [
+                {
+                  "rank": 1,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.9047619047619048,
+                  "relevance": 2,
+                  "preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素"
+                },
+                {
+                  "rank": 2,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第0 章前言\nwww.hello‑algo.com\n9\n图0‑7 评论区示例\n0.2.5 算法学习路线\n从总体上看，我们可以将学习数据结构与算法的过程划分为三个阶段。\n1. 阶段一：算法入门。我们需要"
+                },
+                {
+                  "rank": 3,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自"
+                },
+                {
+                  "rank": 4,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8571428571428571,
+                  "relevance": 2,
+                  "preview": "第15 章贪心\nwww.hello‑algo.com\n326\n15.1 贪心算法\n贪心算法（greedy algorithm）是一种常见的解决优化问题的算法，其基本思想是在问题的每个决策阶段，都\n选择"
+                },
+                {
+                  "rank": 5,
+                  "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+                  "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                  "score": 0.8095238095238095,
+                  "relevance": 2,
+                  "preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数"
+                }
+              ]
+            },
+            "report": {
+              "status": "success",
+              "time": 5.83,
+              "file": "data/runs/template_matrix/summary/20260417_155735/report.md"
+            },
+            "report_evaluation": {
+              "status": "success",
+              "report_file": "data/runs/template_matrix/summary/20260417_155735/report.md",
+              "context_file": "data/processed/template_matrix/summary/eval_retrieved_summary_50632984.json",
+              "metrics": {
+                "结构完整率": 1.0,
+                "引用覆盖率": 1.0,
+                "事实一致性": 0.68,
+                "综合得分": 0.89
+              },
+              "structure": {
+                "标题": true,
+                "任务说明": true,
+                "检索摘要": true,
+                "关键内容整理": true,
+                "综合分析": true,
+                "结论": true,
+                "参考片段": true
+              },
+              "chapter_coverage": {
+                "用户问题": 1,
+                "生成时间": 1,
+                "共召回片段数": 1,
+                "主要来源": 1,
+                "关键点条目": 12,
+                "结论章节": 1
+              },
+              "citation": {
+                "total_references": 1,
+                "cited_count": 1,
+                "coverage": 1.0,
+                "cited_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf",
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ],
+                "all_sources": [
+                  "hello-algo_1.3.0_zh_cpp.pdf"
+                ]
+              },
+              "consistency": {
+                "total_claims": 19,
+                "supported_claims": 13,
+                "unsupported_claims": 6,
+                "consistency_score": 0.68,
+                "supported_examples": [
+                  {
+                    "claim": "数组：支持随机访问（O(1)时间），具有缓存局部性，但插入删除效率低、长度不可变、可能造成空间浪费。 [5]",
+                    "best_overlap": 3,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数据，从而借助高速缓\n存来提升后续操作的执"
+                  },
+                  {
+                    "claim": "链表：未在证据中明确描述其定义或特性，但与数组并列在第4章标题中，因无具体描述，不列为关键点。 [5]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第4 章数组与链表\nwww.hello‑algo.com\n69\n‧ 支持随机访问：数组允许在𝑂(1) 时间内访问任何元素。\n‧ 缓存局部性：当访问数组元素时，计算机不仅会加载它，还会缓存其周围的其他数据，从而借助高速缓\n存来提升后续操作的执"
+                  },
+                  {
+                    "claim": "二分查找：将有序数组从中点分割，根据比较结果排除一半区间，递归进行。 [1]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "归并排序：通过分治策略将数组递归分割后合并排序。 [1]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "快速排序：选取基准值，将数组划分为小于和大于基准值的两部分，递归处理。 [1]",
+                    "best_overlap": 2,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  }
+                ],
+                "unsupported_examples": [
+                  {
+                    "claim": "堆：作为特殊完全二叉树，其插入、删除和堆化操作隐含分治思想。 [1]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第12 章分治\nwww.hello‑algo.com\n246\n另一方面，分治在算法和数据结构的设计中应用得非常广泛。\n‧ 二分查找：二分查找是将有序数组从中点索引处分为两部分，然后根据目标值与中间元素值比较结果，\n决定排除哪一半区间，并在剩"
+                  },
+                  {
+                    "claim": "贪心算法：在每个决策阶段选择当前局部最优解，以期望获得全局最优，与动态规划不同，不回溯历史决策。 [4]",
+                    "best_overlap": 1,
+                    "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+                    "best_preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自适应排序：涉及遍历nums 和遍历cou"
+                  },
+                  {
+                    "claim": "贪心算法作为独立优化策略被单独介绍",
+                    "best_overlap": 0,
+                    "best_source": null,
+                    "best_preview": ""
+                  },
+                  {
+                    "claim": "计数排序作为特定场景排序方法被详细分析",
+                    "best_overlap": 0,
+                    "best_source": null,
+                    "best_preview": ""
+                  },
+                  {
+                    "claim": "数组作为基础载体被多次用于实现算法",
+                    "best_overlap": 0,
+                    "best_source": null,
+                    "best_preview": ""
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "total_time": 15.23,
+        "timestamp": "2026-04-17T15:57:35.372898"
+      },
+      "compact_summary": {
+        "report_type": "summary",
+        "report_type_name": "文档摘要报告",
+        "success_count": 2,
+        "failure_count": 3,
+        "综合得分": 0.83,
+        "事实一致性": 0.49,
+        "引用覆盖率": 1.0,
+        "结构完整率": 1.0,
+        "Recall@5": 0.2,
+        "Hit@5": 0.2
+      }
+    }
+  ]
+}

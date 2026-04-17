@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from evaluate_retrieval import evaluate_retrieval, print_evaluation as print_retrieval
 from evaluate_report import evaluate_report, print_evaluation as print_report
+from report_templates import REPORT_TEMPLATES, DEFAULT_REPORT_TYPE
 
 
 # 评估问题集
@@ -109,7 +110,8 @@ def run_single_evaluation(query_info: Dict[str, Any],
                           model: str = "next80b_fp8",
                           base_url: str = "http://localhost:8000/v1",
                           retrieve_method: str = "bm25",
-                          top_k: int = 5) -> Dict[str, Any]:
+                          top_k: int = 5,
+                          report_type: str = DEFAULT_REPORT_TYPE) -> Dict[str, Any]:
     """运行单个问题的检索、生成与评估流程。"""
 
     query = query_info['query']
@@ -117,19 +119,20 @@ def run_single_evaluation(query_info: Dict[str, Any],
 
     print(f"\n{'='*60}")
     print(f"评估问题: {query}")
+    print(f"报告模板: {report_type}")
     print(f"{'='*60}")
 
     result = {
         "query": query,
         "timestamp": datetime.now().isoformat(),
-        "relevant_docs": relevant_docs
+        "relevant_docs": relevant_docs,
+        "report_type": report_type,
     }
 
-    # 步骤 1: 检索
     print("\n[1/2] 检索...")
     start_time = time.time()
 
-    retrieved_path = processed_dir / f"eval_retrieved_{abs(hash(query)) % 10**8}.json"
+    retrieved_path = processed_dir / f"eval_retrieved_{report_type}_{abs(hash(query)) % 10**8}.json"
     retrieve_cmd = [
         sys.executable, str(Path(__file__).parent / 'retrieve.py'),
         '--query', query,
@@ -153,7 +156,6 @@ def run_single_evaluation(query_info: Dict[str, Any],
     }
     print(f"  完成 (耗时: {retrieve_time:.2f}s)")
 
-    # 评估检索结果
     print("\n[1.1] 评估检索结果...")
     retrieval_result = evaluate_retrieval(
         query=query,
@@ -164,7 +166,6 @@ def run_single_evaluation(query_info: Dict[str, Any],
     result['retrieval'] = retrieval_result
     print_retrieval(retrieval_result)
 
-    # 步骤 2: 生成报告
     print("\n[2/2] 生成报告...")
     start_time = time.time()
 
@@ -175,17 +176,17 @@ def run_single_evaluation(query_info: Dict[str, Any],
         '--model', model,
         '--base-url', base_url,
         '--save-run',
-        '--runs-dir', str(runs_dir)
+        '--runs-dir', str(runs_dir),
+        '--report-type', report_type,
     ]
 
     report_result = subprocess.run(report_cmd, capture_output=True, text=True)
     report_time = time.time() - start_time
 
     if report_result.returncode != 0:
-        result['report'] = {'status': 'failed', 'time': report_time}
+        result['report'] = {'status': 'failed', 'time': report_time, 'stderr': report_result.stderr}
         return result
 
-    # 找到生成的报告文件 - 优先找本轮新增的 report.md
     report_files = list(runs_dir.glob('**/report.md'))
     if report_files:
         latest_report = max(report_files, key=lambda x: x.stat().st_mtime)
@@ -202,7 +203,6 @@ def run_single_evaluation(query_info: Dict[str, Any],
         }
     print(f"  完成 (耗时: {report_time:.2f}s)")
 
-    # 评估报告质量
     if result['report']['file']:
         print("\n[2.1] 评估报告质量...")
         report_eval = evaluate_report(
@@ -220,7 +220,8 @@ def run_all_evaluations(input_dir: str,
                         runs_dir: Path,
                         questions: List[Dict[str, Any]] = None,
                         retrieve_method: str = "bm25",
-                        top_k: int = 5) -> Dict[str, Any]:
+                        top_k: int = 5,
+                        report_type: str = DEFAULT_REPORT_TYPE) -> Dict[str, Any]:
     """运行所有评估问题"""
 
     if questions is None:
@@ -233,14 +234,14 @@ def run_all_evaluations(input_dir: str,
     print(f"输入目录: {input_dir}")
     print(f"处理目录: {processed_dir}")
     print(f"运行目录: {runs_dir}")
+    print(f"报告模板: {report_type}")
     print()
 
-    # 预处理一次文档导入和切分
     corpus_prep = prepare_corpus(input_dir, processed_dir)
     if corpus_prep['ingest']['status'] != 'success' or corpus_prep['chunk']['status'] != 'success':
         print("预处理失败，无法继续评估")
         return {
-            "summary": {"error": "预处理失败"},
+            "summary": {"error": "预处理失败", "report_type": report_type},
             "details": [],
             "total_time": 0,
             "timestamp": datetime.now().isoformat()
@@ -262,14 +263,13 @@ def run_all_evaluations(input_dir: str,
             processed_dir=processed_dir,
             runs_dir=runs_dir,
             retrieve_method=retrieve_method,
-            top_k=top_k
+            top_k=top_k,
+            report_type=report_type,
         )
         results.append(result)
 
     total_time = time.time() - total_start
-
-    # 生成汇总报告
-    summary = generate_summary(results, total_time)
+    summary = generate_summary(results, total_time, report_type)
 
     return {
         "summary": summary,
@@ -279,10 +279,9 @@ def run_all_evaluations(input_dir: str,
     }
 
 
-def generate_summary(results: List[Dict], total_time: float) -> Dict[str, Any]:
+def generate_summary(results: List[Dict], total_time: float, report_type: str) -> Dict[str, Any]:
     """生成评估汇总"""
 
-    # 统计指标
     ingest_times = [0] * len(results)
     chunk_times = [0] * len(results)
     retrieve_times = [r.get('retrieve', {}).get('time', 0) for r in results]
@@ -297,27 +296,25 @@ def generate_summary(results: List[Dict], total_time: float) -> Dict[str, Any]:
         if 'report_evaluation' in r and r['report_evaluation'].get('status') == 'success':
             report_metrics.append(r['report_evaluation']['metrics'])
 
-    # 计算平均值
     summary = {
+        "report_type": report_type,
+        "report_type_name": REPORT_TEMPLATES[report_type]['name'],
         "总耗时": round(total_time, 2),
         "问题数量": len(results),
         "成功数量": sum(1 for r in results if r.get('report', {}).get('status') == 'success'),
         "失败数量": sum(1 for r in results if r.get('report', {}).get('status') == 'failed'),
-
         "平均耗时": {
             "导入": round(sum(ingest_times) / len(ingest_times), 2) if ingest_times else 0,
             "切分": round(sum(chunk_times) / len(chunk_times), 2) if chunk_times else 0,
             "检索": round(sum(retrieve_times) / len(retrieve_times), 2) if retrieve_times else 0,
             "生成": round(sum(report_times) / len(report_times), 2) if report_times else 0
         },
-
         "检索指标平均值": {
             "Recall@5": round(sum(m.get('recall@k', 0) for m in retrieval_metrics) / len(retrieval_metrics), 3) if retrieval_metrics else 0,
             "Precision@5": round(sum(m.get('precision@k', 0) for m in retrieval_metrics) / len(retrieval_metrics), 3) if retrieval_metrics else 0,
             "Hit@5": round(sum(1 for m in retrieval_metrics if m.get('hit_rate', False)) / len(retrieval_metrics), 2) if retrieval_metrics else 0,
             "平均相关性": round(sum(m.get('avg_relevance', 0) for m in retrieval_metrics) / len(retrieval_metrics), 2) if retrieval_metrics else 0
         },
-
         "报告指标平均值": {
             "结构完整率": round(sum(m.get('结构完整率', 0) for m in report_metrics) / len(report_metrics), 2) if report_metrics else 0,
             "引用覆盖率": round(sum(m.get('引用覆盖率', 0) for m in report_metrics) / len(report_metrics), 2) if report_metrics else 0,
@@ -334,6 +331,10 @@ def print_summary(summary: Dict[str, Any]) -> None:
     print("\n" + "="*60)
     print("评估汇总报告")
     print("="*60)
+
+    print(f"\n报告模板:")
+    print(f"  类型: {summary['report_type']}")
+    print(f"  名称: {summary['report_type_name']}")
 
     print(f"\n总体统计:")
     print(f"  总耗时: {summary['总耗时']}s")
@@ -368,16 +369,17 @@ def main():
     parser.add_argument('--questions', '-q', type=int, default=None, help='评估问题数量（默认全部）')
     parser.add_argument('--retrieve-method', '-m', default='bm25', choices=['bm25', 'tfidf', 'keyword'], help='检索方法')
     parser.add_argument('--top-k', '-k', type=int, default=5, help='评估 top-k')
+    parser.add_argument('--report-type', default=DEFAULT_REPORT_TYPE,
+                        choices=sorted(REPORT_TEMPLATES.keys()),
+                        help='评估时使用的报告模板')
 
     args = parser.parse_args()
 
-    # 创建目录
     processed_dir = Path(args.processed)
     runs_dir = Path(args.runs)
     processed_dir.mkdir(parents=True, exist_ok=True)
     runs_dir.mkdir(parents=True, exist_ok=True)
 
-    # 运行评估
     selected_questions = EVALUATION_QUESTIONS[:args.questions] if args.questions else EVALUATION_QUESTIONS
     results = run_all_evaluations(
         input_dir=args.input,
@@ -385,13 +387,12 @@ def main():
         runs_dir=runs_dir,
         questions=selected_questions,
         retrieve_method=args.retrieve_method,
-        top_k=args.top_k
+        top_k=args.top_k,
+        report_type=args.report_type,
     )
 
-    # 打印汇总
     print_summary(results['summary'])
 
-    # 保存结果
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 

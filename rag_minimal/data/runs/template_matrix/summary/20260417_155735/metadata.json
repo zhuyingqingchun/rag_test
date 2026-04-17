@@ -1,0 +1,10 @@
+{
+  "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+  "timestamp": "20260417_155735",
+  "status": "success",
+  "report_type": "summary",
+  "report_type_name": "文档摘要报告",
+  "model": "next80b_fp8",
+  "retrieved_count": 5,
+  "used_evidence_count": 5
+}
