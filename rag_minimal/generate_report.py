@@ -19,11 +19,18 @@ except ImportError:
     print("错误: openai 未安装，请运行: pip install openai")
     sys.exit(1)
 
+from report_templates import (
+    REPORT_TEMPLATES,
+    DEFAULT_REPORT_TYPE,
+    get_report_template,
+)
+
 
 DEFAULT_REPORT_TEMPLATE = """# {title}
 
 ## 一、任务说明
 - 用户问题：{query}
+- 报告类型：{report_type_name}
 - 生成时间：{timestamp}
 
 ## 二、检索摘要
@@ -99,7 +106,9 @@ def format_citations(ref_ids: List[int]) -> str:
     return ''.join(f'[{ref_id}]' for ref_id in ordered)
 
 
-def build_planning_prompt(query: str, evidence_items: List[Dict[str, Any]]) -> str:
+def build_planning_prompt(query: str,
+                          evidence_items: List[Dict[str, Any]],
+                          report_template: Dict[str, Any]) -> str:
     evidence_lines = []
     for item in evidence_items:
         evidence_lines.append(
@@ -110,7 +119,22 @@ def build_planning_prompt(query: str, evidence_items: List[Dict[str, Any]]) -> s
     return f"""你是一个严格基于证据编排报告的助手。
 
 任务：
-根据给定证据，为下面的问题生成"报告规划 JSON"。
+根据给定证据，为下面的问题生成“报告规划 JSON”。
+
+报告类型：
+{report_template['name']}
+
+报告目标：
+{report_template['goal']}
+
+关键内容整理要求：
+{report_template['key_points_guidance']}
+
+综合分析要求：
+{report_template['analysis_guidance']}
+
+结论要求：
+{report_template['conclusion_guidance']}
 
 用户问题：
 {query}
@@ -122,7 +146,7 @@ def build_planning_prompt(query: str, evidence_items: List[Dict[str, Any]]) -> s
 1. 只能基于给定证据生成，不得补充证据中没有出现的事实、方法、结论。
 2. 每条关键内容必须绑定 evidence 编号列表，例如 [1, 3]。
 3. 综合分析和结论也必须绑定 evidence 编号列表。
-4. 如果证据不足，请明确写"根据当前检索证据无法确认"，不要猜测。
+4. 如果证据不足，请明确写“根据当前检索证据无法确认”，不要猜测。
 5. 只输出 JSON，不要输出解释、Markdown 或代码块。
 
 JSON 模板：
@@ -247,7 +271,8 @@ def call_chat_completion(client: OpenAI,
 def render_report(query: str,
                   evidence_items: List[Dict[str, Any]],
                   plan: Dict[str, Any],
-                  timestamp: str) -> str:
+                  timestamp: str,
+                  report_template: Dict[str, Any]) -> str:
     unique_sources = []
     seen_sources = set()
     for item in evidence_items:
@@ -276,9 +301,14 @@ def render_report(query: str,
             f"  {item['text']}"
         )
 
+    title = normalize_whitespace(plan.get('title', report_template['default_title'])) or report_template['default_title']
+    if report_template.get('title_prefix') and not title.startswith(report_template['title_prefix']):
+        title = f"{report_template['title_prefix']}{title}"
+
     return DEFAULT_REPORT_TEMPLATE.format(
-        title=normalize_whitespace(plan.get('title', '结构化报告')) or '结构化报告',
+        title=title,
         query=query,
+        report_type_name=report_template['name'],
         timestamp=timestamp,
         retrieved_count=len(evidence_items),
         sources=', '.join(unique_sources[:3]) if unique_sources else 'N/A',
@@ -335,7 +365,8 @@ def generate_report(query: str, context_path: str,
                     strict_grounding: bool = True,
                     max_evidence: int = 5,
                     max_chunk_chars: int = 500,
-                    retry_on_validation_fail: bool = True) -> Dict[str, Any]:
+                    retry_on_validation_fail: bool = True,
+                    report_type: str = DEFAULT_REPORT_TYPE) -> Dict[str, Any]:
     """生成报告"""
     context = load_retrieved_context(context_path)
     results = context['results']
@@ -347,6 +378,7 @@ def generate_report(query: str, context_path: str,
             "query": query
         }
 
+    report_template = get_report_template(report_type)
     evidence_items = build_evidence_items(
         results,
         max_evidence=max_evidence,
@@ -360,13 +392,13 @@ def generate_report(query: str, context_path: str,
     )
 
     system_prompt = (
-        "你是一个严格的结构化报告编排助手。你必须只依据给定证据输出内容，所有关键结论都必须绑定证据编号。"
+        f"你是一个严格的结构化报告编排助手，当前任务类型是{report_template['name']}。你必须只依据给定证据输出内容，所有关键结论都必须绑定证据编号。"
         if strict_grounding else
-        "你是一个专业的报告生成助手，请尽量基于检索结果生成结构化报告。"
+        f"你是一个专业的报告生成助手，当前任务类型是{report_template['name']}，请尽量基于检索结果生成结构化报告。"
     )
 
     try:
-        planning_prompt = build_planning_prompt(query, evidence_items)
+        planning_prompt = build_planning_prompt(query, evidence_items, report_template)
         response = call_chat_completion(
             client=client,
             model_name=model_name,
@@ -406,12 +438,13 @@ def generate_report(query: str, context_path: str,
                 "status": "error",
                 "message": "报告规划校验失败",
                 "query": query,
+                "report_type": report_type,
                 "plan_errors": plan_errors,
                 "raw_plan": raw_plan_text,
             }
 
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        report_content = render_report(query, evidence_items, plan, timestamp)
+        report_content = render_report(query, evidence_items, plan, timestamp, report_template)
         report_errors = validate_rendered_report(report_content, evidence_items)
 
         if report_errors:
@@ -419,12 +452,13 @@ def generate_report(query: str, context_path: str,
                 "status": "error",
                 "message": "渲染后的报告未通过校验",
                 "query": query,
+                "report_type": report_type,
                 "report_errors": report_errors,
                 "report_content": report_content,
             }
 
         if output_path is None:
-            output_path = f"./data/processed/report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+            output_path = f"./data/processed/report_{report_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
 
         output_dir = os.path.dirname(output_path) or '.'
         os.makedirs(output_dir, exist_ok=True)
@@ -435,6 +469,8 @@ def generate_report(query: str, context_path: str,
         return {
             "status": "success",
             "query": query,
+            "report_type": report_type,
+            "report_type_name": report_template['name'],
             "model": model_name,
             "retrieved_count": len(results),
             "used_evidence_count": len(evidence_items),
@@ -449,6 +485,7 @@ def generate_report(query: str, context_path: str,
             "status": "error",
             "message": str(e),
             "query": query,
+            "report_type": report_type,
             "error_detail": str(e)
         }
 
@@ -476,6 +513,8 @@ def save_run_record(query: str, context_path: str, report_result: Dict[str, Any]
         "query": query,
         "timestamp": timestamp,
         "status": report_result['status'],
+        "report_type": report_result.get('report_type', DEFAULT_REPORT_TYPE),
+        "report_type_name": report_result.get('report_type_name', get_report_template(DEFAULT_REPORT_TYPE)['name']),
         "model": report_result.get('model', 'N/A'),
         "retrieved_count": report_result.get('retrieved_count', 0),
         "used_evidence_count": report_result.get('used_evidence_count', 0)
@@ -515,6 +554,9 @@ def main():
                         help='每条证据保留的最大字符数')
     parser.add_argument('--retry-on-validation-fail', action='store_true',
                         help='规划 JSON 校验失败时自动重试一次')
+    parser.add_argument('--report-type', default=DEFAULT_REPORT_TYPE,
+                        choices=sorted(REPORT_TEMPLATES.keys()),
+                        help='报告类型模板')
 
     args = parser.parse_args()
 
@@ -522,6 +564,7 @@ def main():
     print(f"检索结果: {args.context}")
     print(f"模型: {args.model}")
     print(f"服务: {args.base_url}")
+    print(f"报告类型: {args.report_type}")
     print("-" * 60)
 
     result = generate_report(
@@ -535,6 +578,7 @@ def main():
         args.max_evidence,
         args.max_chunk_chars,
         args.retry_on_validation_fail,
+        args.report_type,
     )
 
     if result['status'] == 'success':
@@ -542,6 +586,7 @@ def main():
         print(f"输出: {result['output_path']}")
         print(f"使用: {result['usage']['total_tokens']} tokens")
         print(f"证据: {result.get('used_evidence_count', 0)} / {result.get('retrieved_count', 0)}")
+        print(f"模板: {result.get('report_type_name', args.report_type)}")
 
         if args.save_run:
             run_dir = save_run_record(args.query, args.context, result, args.runs_dir)

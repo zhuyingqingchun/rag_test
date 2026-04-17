@@ -1,0 +1,10 @@
+{
+  "query": "Transformer 的核心结构和关键机制是什么？",
+  "timestamp": "20260417_114120",
+  "status": "success",
+  "report_type": "research",
+  "report_type_name": "专题调研报告",
+  "model": "next80b_fp8",
+  "retrieved_count": 5,
+  "used_evidence_count": 5
+}

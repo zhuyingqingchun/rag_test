@@ -1,0 +1,60 @@
+--- a/rag_minimal/evaluate_main.py
++++ b/rag_minimal/evaluate_main.py
+@@ -1,38 +1,42 @@
+ # 评估问题集
+ EVALUATION_QUESTIONS = [
+     {
+-        "query": "电动舵机故障诊断的主要方法有哪些？",
++        "query": "Transformer 的核心结构和关键机制是什么？",
+         "relevant_docs": [
+-            "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
++            "transformer.pdf"
+         ],
+-        "expected_topics": ["FMECA", "FMEMECA", "AFMECA", "多参数联合监测"]
++        "expected_topics": ["self-attention", "multi-head attention", "positional encoding", "encoder", "decoder"]
+     },
+     {
+-        "query": "FMECA 在该研究中的作用是什么？",
++        "query": "BERT 与 GPT 的主要区别是什么？",
+         "relevant_docs": [
+-            "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
++            "bert.pdf",
++            "gpt.pdf",
++            "gpt2.pdf",
++            "gpt3.pdf"
+         ],
+-        "expected_topics": ["故障模式", "危害性分析", "映射关系"]
++        "expected_topics": ["bidirectional", "autoregressive", "masked language model", "pretraining", "decoder-only"]
+     },
+     {
+-        "query": "文中提到了哪些关键故障模式？",
++        "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+         "relevant_docs": [
+-            "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
++            "gpt2.pdf",
++            "gpt3.pdf"
+         ],
+-        "expected_topics": ["相间短路", "匝间短路", "轴承磨损", "滚道磨损"]
++        "expected_topics": ["parameters", "few-shot", "zero-shot", "scale", "language generation"]
+     },
+     {
+-        "query": "故障检测主要依赖哪些参数？",
++        "query": "RAG 系统的核心组成和基本流程是什么？",
+         "relevant_docs": [
+-            "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
++            "signal_rag_guide.md"
+         ],
+-        "expected_topics": ["电流", "温度", "振动", "转速", "传感器"]
++        "expected_topics": ["retrieval", "generation", "knowledge base", "embedding", "rerank"]
+     },
+     {
+-        "query": "该研究的方法与传统方法相比有什么特点？",
++        "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+         "relevant_docs": [
+-            "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"
++            "hello-algo_1.3.0_zh_cpp.pdf"
+         ],
+-        "expected_topics": ["人工智能", "系统性", "结构化"]
++        "expected_topics": ["array", "linked list", "stack", "queue", "tree", "graph", "sorting", "search"]
+     }
+ ]

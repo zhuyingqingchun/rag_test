@@ -1,0 +1,31 @@
+{
+  "title": "Transformer 的核心结构和关键机制是什么？",
+  "key_points": [
+    {
+      "point": "根据当前检索证据无法确认",
+      "evidence": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ],
+  "analysis": "当前所有证据均围绕飞机电动舵机的故障诊断方法展开，涉及小波分解、神经网络、模糊规则推理、状态估计、卡尔曼滤波等人工智能与控制理论方法，但未提及 Transformer 架构、自注意力机制、编码器-解码器结构或任何与 Transformer 相关的技术内容。因此，无法从证据中归纳出 Transformer 的核心结构或关键机制。",
+  "analysis_evidence": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "conclusion": "根据当前检索证据无法确认 Transformer 的核心结构和关键机制，因所有证据均与电动舵机故障诊断相关，未包含任何关于 Transformer 的信息。",
+  "conclusion_evidence": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ]
+}
