@@ -9,6 +9,8 @@
 - ✅ 文档导入（支持 txt、md、pdf）
 - ✅ 文本切分（按段落、字符、句子）
 - ✅ 基础检索（BM25、TF-IDF、关键词匹配）
+- ✅ 向量检索（Sentence-Transformers + FAISS / NumPy）
+- ✅ 混合检索（稀疏 + 向量）
 - ✅ 结构化报告生成（调用 Qwen API）
 - ✅ 完整流程自动化（pipeline_demo.py）
 - ✅ 运行记录留档
@@ -24,6 +26,8 @@ rag_minimal/
 ├── ingest.py            # 文档导入模块
 ├── chunk.py             # 文本切分模块
 ├── retrieve.py          # 检索模块
+├── vector_store.py      # 向量索引与查询模块
+├── build_vector_index.py  # 向量索引构建脚本
 ├── generate_report.py   # 报告生成模块
 ├── pipeline_demo.py     # 完整流程脚本
 ├── qwen_service_readme.md  # Qwen 服务说明
@@ -38,12 +42,17 @@ conda activate swdtorch12
 # 基础依赖
 pip install requests openai
 
-# 检索依赖（可选）
+# 稀疏检索依赖（可选）
 pip install rank-bm25 scikit-learn
+
+# 向量检索依赖（推荐）
+pip install sentence-transformers faiss-cpu
 
 # PDF 支持（可选）
 pip install PyPDF2
 ```
+
+> 如果暂时不安装 `faiss-cpu`，系统会自动回退到 NumPy 内积检索，但速度会更慢。
 
 ## 快速开始
 
@@ -61,7 +70,8 @@ python pipeline_demo.py \
     --query "RAG 系统的核心组成是什么？" \
     --input ./data/input_docs \
     --chunk-method paragraph \
-    --retrieve-method bm25 \
+    --retrieve-method hybrid \
+    --embedding-model BAAI/bge-m3 \
     --top-k 5 \
     --save-run
 ```
@@ -69,6 +79,7 @@ python pipeline_demo.py \
 ### 3. 查看结果
 
 - 检索结果：`data/processed/retrieved_context.json`
+- 向量索引：`data/processed/vector_index/`
 - 生成报告：`data/processed/report_*.md`
 - 运行记录：`data/runs/<timestamp>/`
 
@@ -98,23 +109,36 @@ python chunk.py \
 - `char` - 按字符数切分（支持重叠）
 - `sentence` - 按句子切分
 
-### 3. 检索 (retrieve.py)
+### 3. 构建向量索引 (build_vector_index.py)
+
+```bash
+python build_vector_index.py \
+    -c ./data/processed/docs_chunks.jsonl \
+    -o ./data/processed/vector_index \
+    -m BAAI/bge-m3
+```
+
+### 4. 检索 (retrieve.py)
 
 ```bash
 python retrieve.py \
     -q "RAG 系统的核心组成" \
     -c ./data/processed/docs_chunks.jsonl \
-    -m bm25 \
+    -m hybrid \
+    -i ./data/processed/vector_index \
+    -e BAAI/bge-m3 \
     -k 5 \
     -o ./data/processed/retrieved_context.json
 ```
 
 检索方法：
-- `bm25` - BM25 算法（推荐）
+- `bm25` - BM25 算法（推荐的稀疏基线）
 - `tfidf` - TF-IDF 算法
 - `keyword` - 关键词匹配
+- `vector` - 向量检索（需要先构建索引）
+- `hybrid` - 稀疏 + 向量混合检索
 
-### 4. 报告生成 (generate_report.py)
+### 5. 报告生成 (generate_report.py)
 
 ```bash
 python generate_report.py \
@@ -194,7 +218,8 @@ python pipeline_demo.py \
     --query "什么是 RAG？" \
     --input ./data/input_docs \
     --chunk-method paragraph \
-    --retrieve-method bm25 \
+    --retrieve-method hybrid \
+    --embedding-model BAAI/bge-m3 \
     --top-k 3 \
     --save-run
 
@@ -219,6 +244,8 @@ refrag/
     ├── ingest.py
     ├── chunk.py
     ├── retrieve.py
+    ├── vector_store.py
+    ├── build_vector_index.py
     ├── generate_report.py
     ├── pipeline_demo.py
     └── data/
@@ -227,14 +254,15 @@ refrag/
         └── runs/
 ```
 
-## 下一步扩展
+## 建议的下一步扩展
 
-- [ ] 向量数据库集成（FAISS、Milvus）
-- [ ] 重排序（Rerank）优化
+- [x] 本地向量索引（FAISS / NumPy）
+- [ ] Cross-Encoder / BGE-Reranker 重排序
 - [ ] 多格式导出（Word、PDF）
 - [ ] Web 界面
 - [ ] 批量处理
-- [ ] 评估框架
+- [ ] 评估框架（召回、MRR、faithfulness、context sufficiency）
+- [ ] Milvus / pgvector 等外部向量数据库
 
 ## 许可证
 

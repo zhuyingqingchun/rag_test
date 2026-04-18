@@ -15,13 +15,20 @@ try:
 except ImportError:
     BM25_AVAILABLE = False
 
+try:
+    from vector_store import score_all, search_index
+    VECTOR_AVAILABLE = True
+except Exception:
+    VECTOR_AVAILABLE = False
+
 from text_utils import tokenize, unique_tokens
 
 
 DEFAULT_HYBRID_WEIGHTS = {
-    'bm25': 0.5,
-    'tfidf': 0.3,
-    'keyword': 0.2,
+    'bm25': 0.35,
+    'tfidf': 0.15,
+    'keyword': 0.10,
+    'vector': 0.40,
 }
 
 
@@ -32,6 +39,10 @@ def load_chunks(chunks_path: str) -> List[Dict[str, Any]]:
             if line.strip():
                 chunks.append(json.loads(line))
     return chunks
+
+
+def _default_index_dir(chunks_path: str) -> str:
+    return os.path.join(os.path.dirname(os.path.abspath(chunks_path)), 'vector_index')
 
 
 def _minmax_normalize(scores: List[float]) -> List[float]:
@@ -76,6 +87,31 @@ def keyword_score_list(query: str, chunks: List[Dict[str, Any]]) -> List[float]:
     return scores
 
 
+def vector_score_list(query: str,
+                      chunks: List[Dict[str, Any]],
+                      index_dir: str,
+                      embedding_model: str = 'BAAI/bge-m3') -> List[float]:
+    if not VECTOR_AVAILABLE:
+        raise ImportError(
+            '向量检索依赖不可用，请安装 sentence-transformers，建议安装 faiss-cpu'
+        )
+    payload = score_all(query, index_dir=index_dir, model_name=embedding_model)
+    vector_scores = [float(score) for score in payload['scores']]
+    metadata = payload['metadata']
+
+    if len(vector_scores) == len(chunks):
+        return vector_scores
+
+    score_map = {
+        (item.get('doc_id'), item.get('chunk_id')): vector_scores[idx]
+        for idx, item in enumerate(metadata)
+    }
+    return [
+        float(score_map.get((chunk.get('doc_id'), chunk.get('chunk_id')), 0.0))
+        for chunk in chunks
+    ]
+
+
 def _topk_results_from_scores(chunks: List[Dict[str, Any]],
                               scores: List[float],
                               top_k: int = 5,
@@ -110,10 +146,25 @@ def keyword_search(query: str, chunks: List[Dict[str, Any]], top_k: int = 5) -> 
     return _topk_results_from_scores(chunks, scores, top_k)
 
 
+def vector_search(query: str,
+                  index_dir: str,
+                  top_k: int = 5,
+                  embedding_model: str = 'BAAI/bge-m3') -> List[Dict[str, Any]]:
+    if not VECTOR_AVAILABLE:
+        raise ImportError(
+            '向量检索依赖不可用，请安装 sentence-transformers，建议安装 faiss-cpu'
+        )
+    if not os.path.isdir(index_dir):
+        raise FileNotFoundError(f'向量索引目录不存在: {index_dir}')
+    return search_index(query, index_dir=index_dir, top_k=top_k, model_name=embedding_model)
+
+
 def hybrid_search(query: str,
                   chunks: List[Dict[str, Any]],
                   top_k: int = 5,
-                  weights: Dict[str, float] | None = None) -> List[Dict[str, Any]]:
+                  weights: Dict[str, float] | None = None,
+                  index_dir: str | None = None,
+                  embedding_model: str = 'BAAI/bge-m3') -> List[Dict[str, Any]]:
     if weights is None:
         weights = dict(DEFAULT_HYBRID_WEIGHTS)
 
@@ -125,6 +176,17 @@ def hybrid_search(query: str,
 
     active_methods['tfidf'] = tfidf_score_list(query, chunks)
     active_methods['keyword'] = keyword_score_list(query, chunks)
+
+    if VECTOR_AVAILABLE and index_dir and os.path.isdir(index_dir):
+        try:
+            active_methods['vector'] = vector_score_list(
+                query,
+                chunks,
+                index_dir=index_dir,
+                embedding_model=embedding_model,
+            )
+        except Exception:
+            pass
 
     normalized_scores = {
         name: _minmax_normalize(score_list)
@@ -153,16 +215,31 @@ def hybrid_search(query: str,
     return _topk_results_from_scores(chunks, fused_scores, top_k, score_breakdowns)
 
 
-def retrieve(query: str, chunks_path: str, method: str = 'bm25', top_k: int = 5) -> Dict[str, Any]:
+def retrieve(query: str,
+             chunks_path: str,
+             method: str = 'bm25',
+             top_k: int = 5,
+             index_dir: str | None = None,
+             embedding_model: str = 'BAAI/bge-m3') -> Dict[str, Any]:
+    resolved_index_dir = index_dir or _default_index_dir(chunks_path)
     chunks = load_chunks(chunks_path)
+
     if method == 'bm25':
         results = bm25_search(query, chunks, top_k) if BM25_AVAILABLE else keyword_search(query, chunks, top_k)
     elif method == 'tfidf':
         results = tfidf_search(query, chunks, top_k)
     elif method == 'keyword':
         results = keyword_search(query, chunks, top_k)
+    elif method == 'vector':
+        results = vector_search(query, resolved_index_dir, top_k, embedding_model=embedding_model)
     elif method == 'hybrid':
-        results = hybrid_search(query, chunks, top_k)
+        results = hybrid_search(
+            query,
+            chunks,
+            top_k,
+            index_dir=resolved_index_dir,
+            embedding_model=embedding_model,
+        )
     else:
         raise ValueError(f"不支持的检索方法: {method}")
 
@@ -173,6 +250,9 @@ def retrieve(query: str, chunks_path: str, method: str = 'bm25', top_k: int = 5)
         "results_count": len(results),
         "results": results,
     }
+    if method in {'vector', 'hybrid'}:
+        output['index_dir'] = resolved_index_dir
+        output['embedding_model'] = embedding_model
     if method == 'hybrid':
         output['hybrid_weights'] = dict(DEFAULT_HYBRID_WEIGHTS)
     return output
@@ -201,6 +281,10 @@ def save_results(results: Dict[str, Any], output_path: str) -> None:
     }
     if 'hybrid_weights' in results:
         output['hybrid_weights'] = results['hybrid_weights']
+    if 'index_dir' in results:
+        output['index_dir'] = results['index_dir']
+    if 'embedding_model' in results:
+        output['embedding_model'] = results['embedding_model']
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
@@ -211,16 +295,28 @@ def main() -> int:
     parser = argparse.ArgumentParser(description='基础检索模块')
     parser.add_argument('--query', '-q', required=True, help='查询语句')
     parser.add_argument('--chunks', '-c', default='./data/processed/docs_chunks.jsonl', help='chunk 数据文件路径')
-    parser.add_argument('--method', '-m', default='bm25', choices=['bm25', 'tfidf', 'keyword', 'hybrid'], help='检索方法')
+    parser.add_argument('--method', '-m', default='bm25', choices=['bm25', 'tfidf', 'keyword', 'vector', 'hybrid'], help='检索方法')
     parser.add_argument('--top-k', '-k', type=int, default=5, help='返回 top-k 个结果')
     parser.add_argument('--output', '-o', default='./data/processed/retrieved_context.json', help='输出文件路径')
+    parser.add_argument('--index-dir', '-i', default='', help='向量索引目录（vector / hybrid 时使用）')
+    parser.add_argument('--embedding-model', '-e', default='BAAI/bge-m3', help='embedding 模型名称')
     args = parser.parse_args()
 
-    results = retrieve(args.query, args.chunks, args.method, args.top_k)
+    results = retrieve(
+        args.query,
+        args.chunks,
+        args.method,
+        args.top_k,
+        index_dir=args.index_dir or None,
+        embedding_model=args.embedding_model,
+    )
     print(f"查询: {results['query']}")
     print(f"检索方法: {results['method']}")
     print(f"总块数: {results['total_chunks']}")
     print(f"召回块数: {results['results_count']}")
+    if 'index_dir' in results:
+        print(f"向量索引目录: {results['index_dir']}")
+        print(f"embedding 模型: {results['embedding_model']}")
     if results['results']:
         print("\n检索结果:")
         for r in results['results']:

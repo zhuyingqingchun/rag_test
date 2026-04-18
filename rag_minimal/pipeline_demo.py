@@ -35,7 +35,8 @@ def main() -> int:
     parser.add_argument('--model', '-m', default='next80b_fp8', help='Qwen 模型名称')
     parser.add_argument('--base-url', '-b', default='http://127.0.0.1:8000/v1', help='Qwen 服务地址')
     parser.add_argument('--chunk-method', '-c', default='paragraph', choices=['paragraph', 'char', 'sentence'], help='切分方法')
-    parser.add_argument('--retrieve-method', '-r', default='bm25', choices=['bm25', 'tfidf', 'keyword'], help='检索方法')
+    parser.add_argument('--retrieve-method', '-r', default='bm25', choices=['bm25', 'tfidf', 'keyword', 'vector', 'hybrid'], help='检索方法')
+    parser.add_argument('--embedding-model', '-e', default='BAAI/bge-m3', help='向量检索使用的 embedding 模型')
     parser.add_argument('--top-k', '-k', type=int, default=5, help='检索 top-k 结果')
     parser.add_argument('--save-run', '-s', action='store_true', help='保存运行记录')
     args = parser.parse_args()
@@ -44,6 +45,7 @@ def main() -> int:
     data_dir = base_dir / 'data'
     processed_dir = data_dir / 'processed'
     runs_dir = data_dir / 'runs'
+    vector_index_dir = processed_dir / 'vector_index'
     processed_dir.mkdir(parents=True, exist_ok=True)
     runs_dir.mkdir(parents=True, exist_ok=True)
 
@@ -55,7 +57,38 @@ def main() -> int:
     if not run_command(chunk_cmd, '文本切分'):
         return 1
 
-    retrieve_cmd = [sys.executable, str(base_dir / 'retrieve.py'), '--query', args.query, '--chunks', str(processed_dir / 'docs_chunks.jsonl'), '--method', args.retrieve_method, '--top-k', str(args.top_k), '--output', str(processed_dir / 'retrieved_context.json')]
+    if args.retrieve_method in {'vector', 'hybrid'}:
+        vector_cmd = [
+            sys.executable,
+            str(base_dir / 'build_vector_index.py'),
+            '--chunks',
+            str(processed_dir / 'docs_chunks.jsonl'),
+            '--output',
+            str(vector_index_dir),
+            '--model',
+            args.embedding_model,
+        ]
+        if not run_command(vector_cmd, '构建向量索引'):
+            return 1
+
+    retrieve_cmd = [
+        sys.executable,
+        str(base_dir / 'retrieve.py'),
+        '--query',
+        args.query,
+        '--chunks',
+        str(processed_dir / 'docs_chunks.jsonl'),
+        '--method',
+        args.retrieve_method,
+        '--top-k',
+        str(args.top_k),
+        '--output',
+        str(processed_dir / 'retrieved_context.json'),
+        '--embedding-model',
+        args.embedding_model,
+        '--index-dir',
+        str(vector_index_dir),
+    ]
     if not run_command(retrieve_cmd, '检索相关片段'):
         return 1
 
@@ -72,6 +105,9 @@ def main() -> int:
     print(f"输入目录: {args.input}")
     print(f"切分方法: {args.chunk_method}")
     print(f"检索方法: {args.retrieve_method}")
+    if args.retrieve_method in {'vector', 'hybrid'}:
+        print(f"embedding 模型: {args.embedding_model}")
+        print(f"向量索引目录: {vector_index_dir}")
     print(f"top-k: {args.top_k}")
     return 0
 

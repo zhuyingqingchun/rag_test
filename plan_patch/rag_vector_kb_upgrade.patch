@@ -1,0 +1,687 @@
+--- a/rag_minimal/retrieve.py
++++ b/rag_minimal/retrieve.py
+@@ -15,13 +15,20 @@
+ except ImportError:
+     BM25_AVAILABLE = False
+ 
++try:
++    from vector_store import score_all, search_index
++    VECTOR_AVAILABLE = True
++except Exception:
++    VECTOR_AVAILABLE = False
++
+ from text_utils import tokenize, unique_tokens
+ 
+ 
+ DEFAULT_HYBRID_WEIGHTS = {
+-    'bm25': 0.5,
+-    'tfidf': 0.3,
+-    'keyword': 0.2,
++    'bm25': 0.35,
++    'tfidf': 0.15,
++    'keyword': 0.10,
++    'vector': 0.40,
+ }
+ 
+ 
+@@ -32,6 +39,10 @@
+             if line.strip():
+                 chunks.append(json.loads(line))
+     return chunks
++
++
++def _default_index_dir(chunks_path: str) -> str:
++    return os.path.join(os.path.dirname(os.path.abspath(chunks_path)), 'vector_index')
+ 
+ 
+ def _minmax_normalize(scores: List[float]) -> List[float]:
+@@ -74,6 +85,31 @@
+         score = len(overlap) / len(query_terms) if query_terms else 0.0
+         scores.append(float(score))
+     return scores
++
++
++def vector_score_list(query: str,
++                      chunks: List[Dict[str, Any]],
++                      index_dir: str,
++                      embedding_model: str = 'BAAI/bge-m3') -> List[float]:
++    if not VECTOR_AVAILABLE:
++        raise ImportError(
++            '向量检索依赖不可用，请安装 sentence-transformers，建议安装 faiss-cpu'
++        )
++    payload = score_all(query, index_dir=index_dir, model_name=embedding_model)
++    vector_scores = [float(score) for score in payload['scores']]
++    metadata = payload['metadata']
++
++    if len(vector_scores) == len(chunks):
++        return vector_scores
++
++    score_map = {
++        (item.get('doc_id'), item.get('chunk_id')): vector_scores[idx]
++        for idx, item in enumerate(metadata)
++    }
++    return [
++        float(score_map.get((chunk.get('doc_id'), chunk.get('chunk_id')), 0.0))
++        for chunk in chunks
++    ]
+ 
+ 
+ def _topk_results_from_scores(chunks: List[Dict[str, Any]],
+@@ -110,10 +146,25 @@
+     return _topk_results_from_scores(chunks, scores, top_k)
+ 
+ 
++def vector_search(query: str,
++                  index_dir: str,
++                  top_k: int = 5,
++                  embedding_model: str = 'BAAI/bge-m3') -> List[Dict[str, Any]]:
++    if not VECTOR_AVAILABLE:
++        raise ImportError(
++            '向量检索依赖不可用，请安装 sentence-transformers，建议安装 faiss-cpu'
++        )
++    if not os.path.isdir(index_dir):
++        raise FileNotFoundError(f'向量索引目录不存在: {index_dir}')
++    return search_index(query, index_dir=index_dir, top_k=top_k, model_name=embedding_model)
++
++
+ def hybrid_search(query: str,
+                   chunks: List[Dict[str, Any]],
+                   top_k: int = 5,
+-                  weights: Dict[str, float] | None = None) -> List[Dict[str, Any]]:
++                  weights: Dict[str, float] | None = None,
++                  index_dir: str | None = None,
++                  embedding_model: str = 'BAAI/bge-m3') -> List[Dict[str, Any]]:
+     if weights is None:
+         weights = dict(DEFAULT_HYBRID_WEIGHTS)
+ 
+@@ -125,6 +176,17 @@
+ 
+     active_methods['tfidf'] = tfidf_score_list(query, chunks)
+     active_methods['keyword'] = keyword_score_list(query, chunks)
++
++    if VECTOR_AVAILABLE and index_dir and os.path.isdir(index_dir):
++        try:
++            active_methods['vector'] = vector_score_list(
++                query,
++                chunks,
++                index_dir=index_dir,
++                embedding_model=embedding_model,
++            )
++        except Exception:
++            pass
+ 
+     normalized_scores = {
+         name: _minmax_normalize(score_list)
+@@ -153,16 +215,31 @@
+     return _topk_results_from_scores(chunks, fused_scores, top_k, score_breakdowns)
+ 
+ 
+-def retrieve(query: str, chunks_path: str, method: str = 'bm25', top_k: int = 5) -> Dict[str, Any]:
++def retrieve(query: str,
++             chunks_path: str,
++             method: str = 'bm25',
++             top_k: int = 5,
++             index_dir: str | None = None,
++             embedding_model: str = 'BAAI/bge-m3') -> Dict[str, Any]:
++    resolved_index_dir = index_dir or _default_index_dir(chunks_path)
+     chunks = load_chunks(chunks_path)
++
+     if method == 'bm25':
+         results = bm25_search(query, chunks, top_k) if BM25_AVAILABLE else keyword_search(query, chunks, top_k)
+     elif method == 'tfidf':
+         results = tfidf_search(query, chunks, top_k)
+     elif method == 'keyword':
+         results = keyword_search(query, chunks, top_k)
++    elif method == 'vector':
++        results = vector_search(query, resolved_index_dir, top_k, embedding_model=embedding_model)
+     elif method == 'hybrid':
+-        results = hybrid_search(query, chunks, top_k)
++        results = hybrid_search(
++            query,
++            chunks,
++            top_k,
++            index_dir=resolved_index_dir,
++            embedding_model=embedding_model,
++        )
+     else:
+         raise ValueError(f"不支持的检索方法: {method}")
+ 
+@@ -173,6 +250,9 @@
+         "results_count": len(results),
+         "results": results,
+     }
++    if method in {'vector', 'hybrid'}:
++        output['index_dir'] = resolved_index_dir
++        output['embedding_model'] = embedding_model
+     if method == 'hybrid':
+         output['hybrid_weights'] = dict(DEFAULT_HYBRID_WEIGHTS)
+     return output
+@@ -201,6 +281,10 @@
+     }
+     if 'hybrid_weights' in results:
+         output['hybrid_weights'] = results['hybrid_weights']
++    if 'index_dir' in results:
++        output['index_dir'] = results['index_dir']
++    if 'embedding_model' in results:
++        output['embedding_model'] = results['embedding_model']
+     with open(output_path, 'w', encoding='utf-8') as f:
+         json.dump(output, f, ensure_ascii=False, indent=2)
+ 
+@@ -211,16 +295,28 @@
+     parser = argparse.ArgumentParser(description='基础检索模块')
+     parser.add_argument('--query', '-q', required=True, help='查询语句')
+     parser.add_argument('--chunks', '-c', default='./data/processed/docs_chunks.jsonl', help='chunk 数据文件路径')
+-    parser.add_argument('--method', '-m', default='bm25', choices=['bm25', 'tfidf', 'keyword', 'hybrid'], help='检索方法')
++    parser.add_argument('--method', '-m', default='bm25', choices=['bm25', 'tfidf', 'keyword', 'vector', 'hybrid'], help='检索方法')
+     parser.add_argument('--top-k', '-k', type=int, default=5, help='返回 top-k 个结果')
+     parser.add_argument('--output', '-o', default='./data/processed/retrieved_context.json', help='输出文件路径')
++    parser.add_argument('--index-dir', '-i', default='', help='向量索引目录（vector / hybrid 时使用）')
++    parser.add_argument('--embedding-model', '-e', default='BAAI/bge-m3', help='embedding 模型名称')
+     args = parser.parse_args()
+ 
+-    results = retrieve(args.query, args.chunks, args.method, args.top_k)
++    results = retrieve(
++        args.query,
++        args.chunks,
++        args.method,
++        args.top_k,
++        index_dir=args.index_dir or None,
++        embedding_model=args.embedding_model,
++    )
+     print(f"查询: {results['query']}")
+     print(f"检索方法: {results['method']}")
+     print(f"总块数: {results['total_chunks']}")
+     print(f"召回块数: {results['results_count']}")
++    if 'index_dir' in results:
++        print(f"向量索引目录: {results['index_dir']}")
++        print(f"embedding 模型: {results['embedding_model']}")
+     if results['results']:
+         print("\n检索结果:")
+         for r in results['results']:
+--- a/rag_minimal/pipeline_demo.py
++++ b/rag_minimal/pipeline_demo.py
+@@ -35,7 +35,8 @@
+     parser.add_argument('--model', '-m', default='next80b_fp8', help='Qwen 模型名称')
+     parser.add_argument('--base-url', '-b', default='http://127.0.0.1:8000/v1', help='Qwen 服务地址')
+     parser.add_argument('--chunk-method', '-c', default='paragraph', choices=['paragraph', 'char', 'sentence'], help='切分方法')
+-    parser.add_argument('--retrieve-method', '-r', default='bm25', choices=['bm25', 'tfidf', 'keyword'], help='检索方法')
++    parser.add_argument('--retrieve-method', '-r', default='bm25', choices=['bm25', 'tfidf', 'keyword', 'vector', 'hybrid'], help='检索方法')
++    parser.add_argument('--embedding-model', '-e', default='BAAI/bge-m3', help='向量检索使用的 embedding 模型')
+     parser.add_argument('--top-k', '-k', type=int, default=5, help='检索 top-k 结果')
+     parser.add_argument('--save-run', '-s', action='store_true', help='保存运行记录')
+     args = parser.parse_args()
+@@ -44,6 +45,7 @@
+     data_dir = base_dir / 'data'
+     processed_dir = data_dir / 'processed'
+     runs_dir = data_dir / 'runs'
++    vector_index_dir = processed_dir / 'vector_index'
+     processed_dir.mkdir(parents=True, exist_ok=True)
+     runs_dir.mkdir(parents=True, exist_ok=True)
+ 
+@@ -55,7 +57,38 @@
+     if not run_command(chunk_cmd, '文本切分'):
+         return 1
+ 
+-    retrieve_cmd = [sys.executable, str(base_dir / 'retrieve.py'), '--query', args.query, '--chunks', str(processed_dir / 'docs_chunks.jsonl'), '--method', args.retrieve_method, '--top-k', str(args.top_k), '--output', str(processed_dir / 'retrieved_context.json')]
++    if args.retrieve_method in {'vector', 'hybrid'}:
++        vector_cmd = [
++            sys.executable,
++            str(base_dir / 'build_vector_index.py'),
++            '--chunks',
++            str(processed_dir / 'docs_chunks.jsonl'),
++            '--output',
++            str(vector_index_dir),
++            '--model',
++            args.embedding_model,
++        ]
++        if not run_command(vector_cmd, '构建向量索引'):
++            return 1
++
++    retrieve_cmd = [
++        sys.executable,
++        str(base_dir / 'retrieve.py'),
++        '--query',
++        args.query,
++        '--chunks',
++        str(processed_dir / 'docs_chunks.jsonl'),
++        '--method',
++        args.retrieve_method,
++        '--top-k',
++        str(args.top_k),
++        '--output',
++        str(processed_dir / 'retrieved_context.json'),
++        '--embedding-model',
++        args.embedding_model,
++        '--index-dir',
++        str(vector_index_dir),
++    ]
+     if not run_command(retrieve_cmd, '检索相关片段'):
+         return 1
+ 
+@@ -72,6 +105,9 @@
+     print(f"输入目录: {args.input}")
+     print(f"切分方法: {args.chunk_method}")
+     print(f"检索方法: {args.retrieve_method}")
++    if args.retrieve_method in {'vector', 'hybrid'}:
++        print(f"embedding 模型: {args.embedding_model}")
++        print(f"向量索引目录: {vector_index_dir}")
+     print(f"top-k: {args.top_k}")
+     return 0
+ 
+--- a/rag_minimal/README.md
++++ b/rag_minimal/README.md
+@@ -9,6 +9,8 @@
+ - ✅ 文档导入（支持 txt、md、pdf）
+ - ✅ 文本切分（按段落、字符、句子）
+ - ✅ 基础检索（BM25、TF-IDF、关键词匹配）
++- ✅ 向量检索（Sentence-Transformers + FAISS / NumPy）
++- ✅ 混合检索（稀疏 + 向量）
+ - ✅ 结构化报告生成（调用 Qwen API）
+ - ✅ 完整流程自动化（pipeline_demo.py）
+ - ✅ 运行记录留档
+@@ -24,6 +26,8 @@
+ ├── ingest.py            # 文档导入模块
+ ├── chunk.py             # 文本切分模块
+ ├── retrieve.py          # 检索模块
++├── vector_store.py      # 向量索引与查询模块
++├── build_vector_index.py  # 向量索引构建脚本
+ ├── generate_report.py   # 报告生成模块
+ ├── pipeline_demo.py     # 完整流程脚本
+ ├── qwen_service_readme.md  # Qwen 服务说明
+@@ -38,12 +42,17 @@
+ # 基础依赖
+ pip install requests openai
+ 
+-# 检索依赖（可选）
++# 稀疏检索依赖（可选）
+ pip install rank-bm25 scikit-learn
++
++# 向量检索依赖（推荐）
++pip install sentence-transformers faiss-cpu
+ 
+ # PDF 支持（可选）
+ pip install PyPDF2
+ ```
++
++> 如果暂时不安装 `faiss-cpu`，系统会自动回退到 NumPy 内积检索，但速度会更慢。
+ 
+ ## 快速开始
+ 
+@@ -61,7 +70,8 @@
+     --query "RAG 系统的核心组成是什么？" \
+     --input ./data/input_docs \
+     --chunk-method paragraph \
+-    --retrieve-method bm25 \
++    --retrieve-method hybrid \
++    --embedding-model BAAI/bge-m3 \
+     --top-k 5 \
+     --save-run
+ ```
+@@ -69,6 +79,7 @@
+ ### 3. 查看结果
+ 
+ - 检索结果：`data/processed/retrieved_context.json`
++- 向量索引：`data/processed/vector_index/`
+ - 生成报告：`data/processed/report_*.md`
+ - 运行记录：`data/runs/<timestamp>/`
+ 
+@@ -98,23 +109,36 @@
+ - `char` - 按字符数切分（支持重叠）
+ - `sentence` - 按句子切分
+ 
+-### 3. 检索 (retrieve.py)
++### 3. 构建向量索引 (build_vector_index.py)
++
++```bash
++python build_vector_index.py \
++    -c ./data/processed/docs_chunks.jsonl \
++    -o ./data/processed/vector_index \
++    -m BAAI/bge-m3
++```
++
++### 4. 检索 (retrieve.py)
+ 
+ ```bash
+ python retrieve.py \
+     -q "RAG 系统的核心组成" \
+     -c ./data/processed/docs_chunks.jsonl \
+-    -m bm25 \
++    -m hybrid \
++    -i ./data/processed/vector_index \
++    -e BAAI/bge-m3 \
+     -k 5 \
+     -o ./data/processed/retrieved_context.json
+ ```
+ 
+ 检索方法：
+-- `bm25` - BM25 算法（推荐）
++- `bm25` - BM25 算法（推荐的稀疏基线）
+ - `tfidf` - TF-IDF 算法
+ - `keyword` - 关键词匹配
+-
+-### 4. 报告生成 (generate_report.py)
++- `vector` - 向量检索（需要先构建索引）
++- `hybrid` - 稀疏 + 向量混合检索
++
++### 5. 报告生成 (generate_report.py)
+ 
+ ```bash
+ python generate_report.py \
+@@ -194,7 +218,8 @@
+     --query "什么是 RAG？" \
+     --input ./data/input_docs \
+     --chunk-method paragraph \
+-    --retrieve-method bm25 \
++    --retrieve-method hybrid \
++    --embedding-model BAAI/bge-m3 \
+     --top-k 3 \
+     --save-run
+ 
+@@ -219,6 +244,8 @@
+     ├── ingest.py
+     ├── chunk.py
+     ├── retrieve.py
++    ├── vector_store.py
++    ├── build_vector_index.py
+     ├── generate_report.py
+     ├── pipeline_demo.py
+     └── data/
+@@ -227,14 +254,15 @@
+         └── runs/
+ ```
+ 
+-## 下一步扩展
+-
+-- [ ] 向量数据库集成（FAISS、Milvus）
+-- [ ] 重排序（Rerank）优化
++## 建议的下一步扩展
++
++- [x] 本地向量索引（FAISS / NumPy）
++- [ ] Cross-Encoder / BGE-Reranker 重排序
+ - [ ] 多格式导出（Word、PDF）
+ - [ ] Web 界面
+ - [ ] 批量处理
+-- [ ] 评估框架
++- [ ] 评估框架（召回、MRR、faithfulness、context sufficiency）
++- [ ] Milvus / pgvector 等外部向量数据库
+ 
+ ## 许可证
+ 
+--- a/rag_minimal/vector_store.py
++++ b/rag_minimal/vector_store.py
+@@ -0,0 +1,241 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""向量索引构建与查询模块。"""
++from __future__ import annotations
++
++import json
++import os
++import sys
++from pathlib import Path
++from typing import Any, Dict, List
++
++import numpy as np
++
++try:
++    import faiss  # type: ignore
++    FAISS_AVAILABLE = True
++except ImportError:
++    FAISS_AVAILABLE = False
++
++
++_MODEL_CACHE: Dict[str, Any] = {}
++
++
++def load_chunks(chunks_path: str) -> List[Dict[str, Any]]:
++    chunks: List[Dict[str, Any]] = []
++    with open(chunks_path, 'r', encoding='utf-8') as f:
++        for line in f:
++            if line.strip():
++                chunks.append(json.loads(line))
++    return chunks
++
++
++def _get_model(model_name: str):
++    if model_name not in _MODEL_CACHE:
++        try:
++            from sentence_transformers import SentenceTransformer
++        except ImportError as exc:
++            raise ImportError(
++                '未安装 sentence-transformers，请运行: pip install sentence-transformers'
++            ) from exc
++        _MODEL_CACHE[model_name] = SentenceTransformer(model_name)
++    return _MODEL_CACHE[model_name]
++
++
++def encode_texts(texts: List[str], model_name: str = 'BAAI/bge-m3', batch_size: int = 32) -> np.ndarray:
++    model = _get_model(model_name)
++    embeddings = model.encode(
++        texts,
++        batch_size=batch_size,
++        show_progress_bar=False,
++        convert_to_numpy=True,
++        normalize_embeddings=True,
++    )
++    return np.asarray(embeddings, dtype='float32')
++
++
++def build_index(chunks_path: str,
++                output_dir: str,
++                model_name: str = 'BAAI/bge-m3',
++                batch_size: int = 32) -> Dict[str, Any]:
++    chunks = load_chunks(chunks_path)
++    if not chunks:
++        raise ValueError('chunks 为空，无法构建向量索引')
++
++    texts = [chunk.get('text', '') for chunk in chunks]
++    embeddings = encode_texts(texts, model_name=model_name, batch_size=batch_size)
++
++    output_path = Path(output_dir)
++    output_path.mkdir(parents=True, exist_ok=True)
++
++    metadata = [
++        {
++            'doc_id': chunk.get('doc_id'),
++            'chunk_id': chunk.get('chunk_id'),
++            'source': chunk.get('source'),
++            'text': chunk.get('text', ''),
++            'position': idx,
++        }
++        for idx, chunk in enumerate(chunks)
++    ]
++
++    config = {
++        'model_name': model_name,
++        'dimension': int(embeddings.shape[1]),
++        'total_chunks': len(chunks),
++        'backend': 'faiss' if FAISS_AVAILABLE else 'numpy',
++    }
++
++    with open(output_path / 'metadata.json', 'w', encoding='utf-8') as f:
++        json.dump(metadata, f, ensure_ascii=False, indent=2)
++
++    with open(output_path / 'config.json', 'w', encoding='utf-8') as f:
++        json.dump(config, f, ensure_ascii=False, indent=2)
++
++    np.save(output_path / 'embeddings.npy', embeddings)
++
++    if FAISS_AVAILABLE:
++        index = faiss.IndexFlatIP(embeddings.shape[1])
++        index.add(embeddings.astype('float32'))
++        faiss.write_index(index, str(output_path / 'index.faiss'))
++
++    return {
++        'output_dir': str(output_path),
++        'total_chunks': len(chunks),
++        'dimension': int(embeddings.shape[1]),
++        'backend': config['backend'],
++        'model_name': model_name,
++    }
++
++
++def load_index_bundle(index_dir: str) -> Dict[str, Any]:
++    base = Path(index_dir)
++    if not base.exists():
++        raise FileNotFoundError(f'索引目录不存在: {index_dir}')
++
++    config_path = base / 'config.json'
++    metadata_path = base / 'metadata.json'
++    embeddings_path = base / 'embeddings.npy'
++    index_path = base / 'index.faiss'
++
++    if not config_path.exists() or not metadata_path.exists():
++        raise FileNotFoundError(f'索引目录缺少配置文件: {index_dir}')
++
++    with open(config_path, 'r', encoding='utf-8') as f:
++        config = json.load(f)
++
++    with open(metadata_path, 'r', encoding='utf-8') as f:
++        metadata = json.load(f)
++
++    index = None
++    embeddings = None
++    if index_path.exists() and FAISS_AVAILABLE:
++        index = faiss.read_index(str(index_path))
++    elif embeddings_path.exists():
++        embeddings = np.load(embeddings_path).astype('float32')
++    else:
++        raise FileNotFoundError(f'索引目录缺少 embeddings.npy: {index_dir}')
++
++    return {
++        'config': config,
++        'metadata': metadata,
++        'index': index,
++        'embeddings': embeddings,
++    }
++
++
++def score_all(query: str, index_dir: str, model_name: str | None = None) -> Dict[str, Any]:
++    bundle = load_index_bundle(index_dir)
++    config = bundle['config']
++    metadata = bundle['metadata']
++    query_model = model_name or config.get('model_name', 'BAAI/bge-m3')
++    query_embedding = encode_texts([query], model_name=query_model, batch_size=1)
++
++    if bundle['index'] is not None:
++        total = len(metadata)
++        scores, indices = bundle['index'].search(query_embedding.astype('float32'), total)
++        ordered_scores = [0.0] * total
++        for pos, idx in enumerate(indices[0]):
++            if int(idx) >= 0:
++                ordered_scores[int(idx)] = float(scores[0][pos])
++    else:
++        embeddings = bundle['embeddings']
++        ordered_scores = (embeddings @ query_embedding[0]).astype('float32').tolist()
++
++    return {
++        'scores': [float(score) for score in ordered_scores],
++        'metadata': metadata,
++        'config': config,
++    }
++
++
++def search_index(query: str,
++                 index_dir: str,
++                 top_k: int = 5,
++                 model_name: str | None = None) -> List[Dict[str, Any]]:
++    payload = score_all(query, index_dir=index_dir, model_name=model_name)
++    scores = payload['scores']
++    metadata = payload['metadata']
++
++    ranked_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:top_k]
++    results: List[Dict[str, Any]] = []
++    for idx in ranked_indices:
++        if scores[idx] > 0:
++            results.append(
++                {
++                    'chunk': metadata[idx],
++                    'score': float(scores[idx]),
++                    'rank': len(results) + 1,
++                }
++            )
++    return results
++
++
++def main() -> int:
++    import argparse
++
++    parser = argparse.ArgumentParser(description='向量索引构建与查询模块')
++    subparsers = parser.add_subparsers(dest='command', required=True)
++
++    build_parser = subparsers.add_parser('build', help='构建向量索引')
++    build_parser.add_argument('--chunks', '-c', required=True, help='chunk 数据文件路径')
++    build_parser.add_argument('--output', '-o', required=True, help='索引输出目录')
++    build_parser.add_argument('--model', '-m', default='BAAI/bge-m3', help='embedding 模型名称')
++    build_parser.add_argument('--batch-size', '-b', type=int, default=32, help='编码 batch size')
++
++    query_parser = subparsers.add_parser('query', help='查询向量索引')
++    query_parser.add_argument('--query', '-q', required=True, help='查询语句')
++    query_parser.add_argument('--index-dir', '-i', required=True, help='索引目录')
++    query_parser.add_argument('--model', '-m', default='', help='可选：覆盖索引里保存的 embedding 模型')
++    query_parser.add_argument('--top-k', '-k', type=int, default=5, help='返回 top-k 个结果')
++
++    args = parser.parse_args()
++
++    if args.command == 'build':
++        result = build_index(args.chunks, args.output, model_name=args.model, batch_size=args.batch_size)
++        print(f"向量索引构建完成: {result['output_dir']}")
++        print(f"总块数: {result['total_chunks']}")
++        print(f"维度: {result['dimension']}")
++        print(f"后端: {result['backend']}")
++        print(f"模型: {result['model_name']}")
++        return 0
++
++    if args.command == 'query':
++        results = search_index(
++            args.query,
++            index_dir=args.index_dir,
++            top_k=args.top_k,
++            model_name=args.model or None,
++        )
++        print(f'查询: {args.query}')
++        print(f'命中数: {len(results)}')
++        for item in results:
++            print(f"[{item['rank']}] score={item['score']:.4f}")
++            print(f"    {item['chunk']['text'][:120]}...")
++        return 0
++
++    return 1
++
++
++if __name__ == '__main__':
++    sys.exit(main())
+--- a/rag_minimal/build_vector_index.py
++++ b/rag_minimal/build_vector_index.py
+@@ -0,0 +1,31 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""构建向量索引的便捷脚本。"""
++from __future__ import annotations
++
++import sys
++
++from vector_store import build_index
++
++
++def main() -> int:
++    import argparse
++
++    parser = argparse.ArgumentParser(description='构建向量索引')
++    parser.add_argument('--chunks', '-c', default='./data/processed/docs_chunks.jsonl', help='chunk 数据文件路径')
++    parser.add_argument('--output', '-o', default='./data/processed/vector_index', help='索引输出目录')
++    parser.add_argument('--model', '-m', default='BAAI/bge-m3', help='embedding 模型名称')
++    parser.add_argument('--batch-size', '-b', type=int, default=32, help='编码 batch size')
++    args = parser.parse_args()
++
++    result = build_index(args.chunks, args.output, model_name=args.model, batch_size=args.batch_size)
++    print(f"向量索引构建完成: {result['output_dir']}")
++    print(f"总块数: {result['total_chunks']}")
++    print(f"维度: {result['dimension']}")
++    print(f"后端: {result['backend']}")
++    print(f"模型: {result['model_name']}")
++    return 0
++
++
++if __name__ == '__main__':
++    sys.exit(main())
