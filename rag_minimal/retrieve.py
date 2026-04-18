@@ -7,6 +7,7 @@ import json
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List
 
 try:
@@ -53,6 +54,40 @@ def _minmax_normalize(scores: List[float]) -> List[float]:
     if max_score == min_score:
         return [1.0 if score > 0 else 0.0 for score in scores]
     return [(score - min_score) / (max_score - min_score) for score in scores]
+
+
+def normalize_hybrid_weights(weights: Dict[str, float] | None = None) -> Dict[str, float]:
+    base = dict(DEFAULT_HYBRID_WEIGHTS)
+    if not weights:
+        return base
+    for key, value in weights.items():
+        if key not in base:
+            raise ValueError(f'未知 hybrid 权重字段: {key}')
+        numeric_value = float(value)
+        if numeric_value < 0:
+            raise ValueError(f'权重必须 >= 0: {key}={numeric_value}')
+        base[key] = numeric_value
+    if sum(base.values()) <= 0:
+        raise ValueError('hybrid 权重总和必须 > 0')
+    return base
+
+
+def parse_hybrid_weights_arg(raw_value: str | None) -> Dict[str, float] | None:
+    if not raw_value:
+        return None
+    raw_value = raw_value.strip()
+    if not raw_value:
+        return None
+
+    candidate = Path(raw_value)
+    if candidate.exists():
+        payload = json.loads(candidate.read_text(encoding='utf-8'))
+    else:
+        payload = json.loads(raw_value)
+
+    if not isinstance(payload, dict):
+        raise ValueError('hybrid 权重必须是 JSON 对象或 JSON 文件路径')
+    return normalize_hybrid_weights({str(k): float(v) for k, v in payload.items()})
 
 
 def bm25_score_list(query: str, chunks: List[Dict[str, Any]]) -> List[float]:
@@ -165,8 +200,7 @@ def hybrid_search(query: str,
                   weights: Dict[str, float] | None = None,
                   index_dir: str | None = None,
                   embedding_model: str = 'BAAI/bge-m3') -> List[Dict[str, Any]]:
-    if weights is None:
-        weights = dict(DEFAULT_HYBRID_WEIGHTS)
+    weights = normalize_hybrid_weights(weights)
 
     active_methods: Dict[str, List[float]] = {}
     if BM25_AVAILABLE:
@@ -220,7 +254,8 @@ def retrieve(query: str,
              method: str = 'bm25',
              top_k: int = 5,
              index_dir: str | None = None,
-             embedding_model: str = 'BAAI/bge-m3') -> Dict[str, Any]:
+             embedding_model: str = 'BAAI/bge-m3',
+             hybrid_weights: Dict[str, float] | None = None) -> Dict[str, Any]:
     resolved_index_dir = index_dir or _default_index_dir(chunks_path)
     chunks = load_chunks(chunks_path)
 
@@ -233,10 +268,12 @@ def retrieve(query: str,
     elif method == 'vector':
         results = vector_search(query, resolved_index_dir, top_k, embedding_model=embedding_model)
     elif method == 'hybrid':
+        applied_weights = normalize_hybrid_weights(hybrid_weights)
         results = hybrid_search(
             query,
             chunks,
             top_k,
+            weights=applied_weights,
             index_dir=resolved_index_dir,
             embedding_model=embedding_model,
         )
@@ -254,7 +291,7 @@ def retrieve(query: str,
         output['index_dir'] = resolved_index_dir
         output['embedding_model'] = embedding_model
     if method == 'hybrid':
-        output['hybrid_weights'] = dict(DEFAULT_HYBRID_WEIGHTS)
+        output['hybrid_weights'] = normalize_hybrid_weights(hybrid_weights)
     return output
 
 
@@ -300,6 +337,7 @@ def main() -> int:
     parser.add_argument('--output', '-o', default='./data/processed/retrieved_context.json', help='输出文件路径')
     parser.add_argument('--index-dir', '-i', default='', help='向量索引目录（vector / hybrid 时使用）')
     parser.add_argument('--embedding-model', '-e', default='BAAI/bge-m3', help='embedding 模型名称')
+    parser.add_argument('--hybrid-weights', default='', help='hybrid 权重 JSON 字符串或 JSON 文件路径')
     args = parser.parse_args()
 
     results = retrieve(
@@ -309,6 +347,7 @@ def main() -> int:
         args.top_k,
         index_dir=args.index_dir or None,
         embedding_model=args.embedding_model,
+        hybrid_weights=parse_hybrid_weights_arg(args.hybrid_weights),
     )
     print(f"查询: {results['query']}")
     print(f"检索方法: {results['method']}")
@@ -317,6 +356,8 @@ def main() -> int:
     if 'index_dir' in results:
         print(f"向量索引目录: {results['index_dir']}")
         print(f"embedding 模型: {results['embedding_model']}")
+    if 'hybrid_weights' in results:
+        print(f"hybrid 权重: {json.dumps(results['hybrid_weights'], ensure_ascii=False)}")
     if results['results']:
         print("\n检索结果:")
         for r in results['results']:

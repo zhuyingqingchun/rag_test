@@ -28,6 +28,8 @@ rag_minimal/
 ├── retrieve.py          # 检索模块
 ├── vector_store.py      # 向量索引与查询模块
 ├── build_vector_index.py  # 向量索引构建脚本
+├── evaluate_retrieval.py  # 检索离线评测脚本
+├── tune_hybrid_weights.py # hybrid 权重扫描脚本
 ├── generate_report.py   # 报告生成模块
 ├── pipeline_demo.py     # 完整流程脚本
 ├── qwen_service_readme.md  # Qwen 服务说明
@@ -138,7 +140,43 @@ python retrieve.py \
 - `vector` - 向量检索（需要先构建索引）
 - `hybrid` - 稀疏 + 向量混合检索
 
-### 5. 报告生成 (generate_report.py)
+### 5. 检索离线评测 (evaluate_retrieval.py)
+
+```bash
+python evaluate_retrieval.py \
+    --eval-file ./data/eval/retrieval_eval.json \
+    --chunks ./data/processed/docs_chunks.jsonl \
+    --methods bm25,vector,hybrid \
+    --top-k 5 \
+    --index-dir ./data/processed/vector_index \
+    --embedding-model BAAI/bge-m3 \
+    --output ./data/processed/retrieval_eval_report.json
+```
+
+支持的 gold 字段：
+- `relevant_pairs`: 精确到 `doc_id + chunk_id`
+- `relevant_chunk_ids`: 只按 chunk_id 判断
+- `relevant_doc_ids`: 只按 doc_id 判断
+- `expected_substrings`: 弱标注，按片段文本包含关系判断
+
+### 6. Hybrid 权重扫描 (tune_hybrid_weights.py)
+
+```bash
+python tune_hybrid_weights.py \
+    --eval-file ./data/eval/retrieval_eval.json \
+    --chunks ./data/processed/docs_chunks.jsonl \
+    --top-k 5 \
+    --index-dir ./data/processed/vector_index \
+    --embedding-model BAAI/bge-m3 \
+    --output ./data/processed/hybrid_weight_scan.json
+```
+
+该脚本会输出：
+- 每组权重的 recall / precision / MRR
+- 一个综合 score（用于排序）
+- `overlap_vs_default_at_k`，用于观察候选权重相对默认权重的结果稳定性
+
+### 7. 报告生成 (generate_report.py)
 
 ```bash
 python generate_report.py \
@@ -261,7 +299,9 @@ refrag/
 - [ ] 多格式导出（Word、PDF）
 - [ ] Web 界面
 - [ ] 批量处理
-- [ ] 评估框架（召回、MRR、faithfulness、context sufficiency）
+- [x] 检索评测框架（召回、MRR、precision、hit rate）
+- [x] Hybrid 权重扫描与稳定性对比
+- [ ] 生成评测（faithfulness、context sufficiency）
 - [ ] Milvus / pgvector 等外部向量数据库
 
 ## 许可证

@@ -1,0 +1,743 @@
+--- a/rag_minimal/retrieve.py
++++ b/rag_minimal/retrieve.py
+@@ -7,6 +7,7 @@
+ import os
+ import sys
+ from datetime import datetime
++from pathlib import Path
+ from typing import Any, Dict, List
+ 
+ try:
+@@ -53,6 +54,40 @@
+     if max_score == min_score:
+         return [1.0 if score > 0 else 0.0 for score in scores]
+     return [(score - min_score) / (max_score - min_score) for score in scores]
++
++
++def normalize_hybrid_weights(weights: Dict[str, float] | None = None) -> Dict[str, float]:
++    base = dict(DEFAULT_HYBRID_WEIGHTS)
++    if not weights:
++        return base
++    for key, value in weights.items():
++        if key not in base:
++            raise ValueError(f'未知 hybrid 权重字段: {key}')
++        numeric_value = float(value)
++        if numeric_value < 0:
++            raise ValueError(f'权重必须 >= 0: {key}={numeric_value}')
++        base[key] = numeric_value
++    if sum(base.values()) <= 0:
++        raise ValueError('hybrid 权重总和必须 > 0')
++    return base
++
++
++def parse_hybrid_weights_arg(raw_value: str | None) -> Dict[str, float] | None:
++    if not raw_value:
++        return None
++    raw_value = raw_value.strip()
++    if not raw_value:
++        return None
++
++    candidate = Path(raw_value)
++    if candidate.exists():
++        payload = json.loads(candidate.read_text(encoding='utf-8'))
++    else:
++        payload = json.loads(raw_value)
++
++    if not isinstance(payload, dict):
++        raise ValueError('hybrid 权重必须是 JSON 对象或 JSON 文件路径')
++    return normalize_hybrid_weights({str(k): float(v) for k, v in payload.items()})
+ 
+ 
+ def bm25_score_list(query: str, chunks: List[Dict[str, Any]]) -> List[float]:
+@@ -165,8 +200,7 @@
+                   weights: Dict[str, float] | None = None,
+                   index_dir: str | None = None,
+                   embedding_model: str = 'BAAI/bge-m3') -> List[Dict[str, Any]]:
+-    if weights is None:
+-        weights = dict(DEFAULT_HYBRID_WEIGHTS)
++    weights = normalize_hybrid_weights(weights)
+ 
+     active_methods: Dict[str, List[float]] = {}
+     if BM25_AVAILABLE:
+@@ -220,7 +254,8 @@
+              method: str = 'bm25',
+              top_k: int = 5,
+              index_dir: str | None = None,
+-             embedding_model: str = 'BAAI/bge-m3') -> Dict[str, Any]:
++             embedding_model: str = 'BAAI/bge-m3',
++             hybrid_weights: Dict[str, float] | None = None) -> Dict[str, Any]:
+     resolved_index_dir = index_dir or _default_index_dir(chunks_path)
+     chunks = load_chunks(chunks_path)
+ 
+@@ -233,10 +268,12 @@
+     elif method == 'vector':
+         results = vector_search(query, resolved_index_dir, top_k, embedding_model=embedding_model)
+     elif method == 'hybrid':
++        applied_weights = normalize_hybrid_weights(hybrid_weights)
+         results = hybrid_search(
+             query,
+             chunks,
+             top_k,
++            weights=applied_weights,
+             index_dir=resolved_index_dir,
+             embedding_model=embedding_model,
+         )
+@@ -254,7 +291,7 @@
+         output['index_dir'] = resolved_index_dir
+         output['embedding_model'] = embedding_model
+     if method == 'hybrid':
+-        output['hybrid_weights'] = dict(DEFAULT_HYBRID_WEIGHTS)
++        output['hybrid_weights'] = normalize_hybrid_weights(hybrid_weights)
+     return output
+ 
+ 
+@@ -300,6 +337,7 @@
+     parser.add_argument('--output', '-o', default='./data/processed/retrieved_context.json', help='输出文件路径')
+     parser.add_argument('--index-dir', '-i', default='', help='向量索引目录（vector / hybrid 时使用）')
+     parser.add_argument('--embedding-model', '-e', default='BAAI/bge-m3', help='embedding 模型名称')
++    parser.add_argument('--hybrid-weights', default='', help='hybrid 权重 JSON 字符串或 JSON 文件路径')
+     args = parser.parse_args()
+ 
+     results = retrieve(
+@@ -309,6 +347,7 @@
+         args.top_k,
+         index_dir=args.index_dir or None,
+         embedding_model=args.embedding_model,
++        hybrid_weights=parse_hybrid_weights_arg(args.hybrid_weights),
+     )
+     print(f"查询: {results['query']}")
+     print(f"检索方法: {results['method']}")
+@@ -317,6 +356,8 @@
+     if 'index_dir' in results:
+         print(f"向量索引目录: {results['index_dir']}")
+         print(f"embedding 模型: {results['embedding_model']}")
++    if 'hybrid_weights' in results:
++        print(f"hybrid 权重: {json.dumps(results['hybrid_weights'], ensure_ascii=False)}")
+     if results['results']:
+         print("\n检索结果:")
+         for r in results['results']:
+--- /dev/null
++++ b/rag_minimal/evaluate_retrieval.py
+@@ -0,0 +1,338 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""离线检索评测：比较 bm25 / vector / hybrid 的效果。"""
++from __future__ import annotations
++
++import json
++import os
++import sys
++from dataclasses import dataclass
++from datetime import datetime
++from pathlib import Path
++from typing import Any, Dict, Iterable, Tuple
++
++from retrieve import DEFAULT_HYBRID_WEIGHTS, parse_hybrid_weights_arg, retrieve
++
++
++@dataclass
++class GoldSpec:
++    pairs: set[Tuple[str, str]]
++    doc_ids: set[str]
++    chunk_ids: set[str]
++    substrings: list[str]
++
++
++def _as_list(value: Any) -> list[Any]:
++    if value is None:
++        return []
++    if isinstance(value, list):
++        return value
++    return [value]
++
++
++def load_eval_cases(path: str) -> list[dict[str, Any]]:
++    source = Path(path)
++    if not source.exists():
++        raise FileNotFoundError(f'评测文件不存在: {path}')
++
++    raw = source.read_text(encoding='utf-8').strip()
++    if not raw:
++        raise ValueError(f'评测文件为空: {path}')
++
++    if source.suffix.lower() == '.jsonl':
++        cases = [json.loads(line) for line in raw.splitlines() if line.strip()]
++    else:
++        payload = json.loads(raw)
++        if isinstance(payload, list):
++            cases = payload
++        elif isinstance(payload, dict):
++            for key in ('cases', 'examples', 'data', 'items'):
++                if isinstance(payload.get(key), list):
++                    cases = payload[key]
++                    break
++            else:
++                raise ValueError('JSON 评测文件需要是数组，或包含 cases/examples/data/items 字段')
++        else:
++            raise ValueError('无法解析评测文件格式')
++
++    if not cases:
++        raise ValueError('评测样本数为 0')
++    return cases
++
++
++def _extract_query(case: dict[str, Any]) -> str:
++    for key in ('query', 'question', 'instruction'):
++        value = str(case.get(key, '')).strip()
++        if value:
++            return value
++    raise ValueError(f'评测样本缺少 query/question 字段: {case}')
++
++
++def _normalize_pairs(values: Iterable[Any]) -> set[Tuple[str, str]]:
++    pairs: set[Tuple[str, str]] = set()
++    for item in values:
++        if isinstance(item, str):
++            normalized = item.replace('#', ':').replace('/', ':')
++            if ':' in normalized:
++                left, right = normalized.split(':', 1)
++                pairs.add((left.strip(), right.strip()))
++        elif isinstance(item, dict):
++            doc_id = str(item.get('doc_id', '')).strip()
++            chunk_id = str(item.get('chunk_id', '')).strip()
++            if doc_id and chunk_id:
++                pairs.add((doc_id, chunk_id))
++    return pairs
++
++
++def build_gold_spec(case: dict[str, Any]) -> GoldSpec:
++    pair_values: list[Any] = []
++    for key in ('relevant_pairs', 'positive_pairs', 'gold_pairs'):
++        pair_values.extend(_as_list(case.get(key)))
++
++    doc_values: list[Any] = []
++    for key in ('relevant_doc_ids', 'positive_doc_ids', 'doc_ids'):
++        doc_values.extend(_as_list(case.get(key)))
++
++    chunk_values: list[Any] = []
++    for key in ('relevant_chunk_ids', 'positive_chunk_ids', 'chunk_ids'):
++        chunk_values.extend(_as_list(case.get(key)))
++
++    substrings: list[str] = []
++    for key in ('expected_substrings', 'expected_keywords', 'keywords'):
++        substrings.extend([str(x).strip() for x in _as_list(case.get(key)) if str(x).strip()])
++
++    spec = GoldSpec(
++        pairs=_normalize_pairs(pair_values),
++        doc_ids={str(x).strip() for x in doc_values if str(x).strip()},
++        chunk_ids={str(x).strip() for x in chunk_values if str(x).strip()},
++        substrings=substrings,
++    )
++    if not any((spec.pairs, spec.doc_ids, spec.chunk_ids, spec.substrings)):
++        raise ValueError(
++            '评测样本缺少 gold 标注；至少提供 relevant_pairs / relevant_doc_ids / '
++            'relevant_chunk_ids / expected_substrings 之一'
++        )
++    return spec
++
++
++def _is_relevant(result: dict[str, Any], gold: GoldSpec) -> bool:
++    chunk = result['chunk']
++    doc_id = str(chunk.get('doc_id', '')).strip()
++    chunk_id = str(chunk.get('chunk_id', '')).strip()
++    text = str(chunk.get('text', ''))
++
++    if gold.pairs:
++        return (doc_id, chunk_id) in gold.pairs
++    if gold.chunk_ids:
++        return chunk_id in gold.chunk_ids
++    if gold.doc_ids:
++        return doc_id in gold.doc_ids
++    return any(fragment in text for fragment in gold.substrings)
++
++
++def _gold_size(gold: GoldSpec) -> int:
++    if gold.pairs:
++        return len(gold.pairs)
++    if gold.chunk_ids:
++        return len(gold.chunk_ids)
++    if gold.doc_ids:
++        return len(gold.doc_ids)
++    return 1
++
++
++def evaluate_single_case(case: dict[str, Any],
++                         chunks_path: str,
++                         method: str,
++                         top_k: int,
++                         index_dir: str | None,
++                         embedding_model: str,
++                         hybrid_weights: dict[str, float] | None = None) -> dict[str, Any]:
++    query = _extract_query(case)
++    gold = build_gold_spec(case)
++    payload = retrieve(
++        query=query,
++        chunks_path=chunks_path,
++        method=method,
++        top_k=top_k,
++        index_dir=index_dir,
++        embedding_model=embedding_model,
++        hybrid_weights=hybrid_weights,
++    )
++
++    matched_ranks: list[int] = []
++    matched_items: list[dict[str, Any]] = []
++    for item in payload['results']:
++        if _is_relevant(item, gold):
++            matched_ranks.append(int(item['rank']))
++            matched_items.append(
++                {
++                    'rank': int(item['rank']),
++                    'score': float(item['score']),
++                    'doc_id': item['chunk'].get('doc_id'),
++                    'chunk_id': item['chunk'].get('chunk_id'),
++                    'source': item['chunk'].get('source'),
++                    'text_preview': str(item['chunk'].get('text', ''))[:120],
++                }
++            )
++
++    relevant_hits = len(matched_ranks)
++    precision_at_k = relevant_hits / max(len(payload['results']), 1)
++    recall_at_k = min(relevant_hits, _gold_size(gold)) / max(_gold_size(gold), 1)
++    first_relevant_rank = matched_ranks[0] if matched_ranks else None
++    mrr_at_k = 1.0 / first_relevant_rank if first_relevant_rank else 0.0
++    hit_at_k = 1.0 if matched_ranks else 0.0
++
++    return {
++        'case_id': case.get('id') or case.get('case_id') or query,
++        'query': query,
++        'method': method,
++        'top_k': top_k,
++        'hit_at_k': round(hit_at_k, 6),
++        'precision_at_k': round(precision_at_k, 6),
++        'recall_at_k': round(recall_at_k, 6),
++        'mrr_at_k': round(mrr_at_k, 6),
++        'first_relevant_rank': first_relevant_rank,
++        'matched_ranks': matched_ranks,
++        'matched_items': matched_items,
++        'results': [
++            {
++                'rank': int(item['rank']),
++                'score': float(item['score']),
++                'doc_id': item['chunk'].get('doc_id'),
++                'chunk_id': item['chunk'].get('chunk_id'),
++                'source': item['chunk'].get('source'),
++                'text_preview': str(item['chunk'].get('text', ''))[:120],
++            }
++            for item in payload['results']
++        ],
++        'hybrid_weights': payload.get('hybrid_weights'),
++    }
++
++
++def summarize_case_results(case_results: list[dict[str, Any]]) -> dict[str, Any]:
++    count = len(case_results)
++    if count == 0:
++        raise ValueError('没有评测结果可汇总')
++
++    def _mean(key: str) -> float:
++        return round(sum(float(item[key]) for item in case_results) / count, 6)
++
++    ranks = [item['first_relevant_rank'] for item in case_results if item['first_relevant_rank']]
++    return {
++        'queries': count,
++        'hit_at_k': _mean('hit_at_k'),
++        'precision_at_k': _mean('precision_at_k'),
++        'recall_at_k': _mean('recall_at_k'),
++        'mrr_at_k': _mean('mrr_at_k'),
++        'avg_first_relevant_rank': round(sum(ranks) / len(ranks), 6) if ranks else None,
++    }
++
++
++def evaluate_method(cases: list[dict[str, Any]],
++                    chunks_path: str,
++                    method: str,
++                    top_k: int,
++                    index_dir: str | None,
++                    embedding_model: str,
++                    hybrid_weights: dict[str, float] | None = None) -> dict[str, Any]:
++    case_results = [
++        evaluate_single_case(
++            case=case,
++            chunks_path=chunks_path,
++            method=method,
++            top_k=top_k,
++            index_dir=index_dir,
++            embedding_model=embedding_model,
++            hybrid_weights=hybrid_weights,
++        )
++        for case in cases
++    ]
++    return {
++        'method': method,
++        'top_k': top_k,
++        'summary': summarize_case_results(case_results),
++        'hybrid_weights': hybrid_weights,
++        'cases': case_results,
++    }
++
++
++def evaluate_methods(cases: list[dict[str, Any]],
++                     chunks_path: str,
++                     methods: list[str],
++                     top_k: int,
++                     index_dir: str | None,
++                     embedding_model: str,
++                     hybrid_weights: dict[str, float] | None = None) -> dict[str, Any]:
++    reports = {}
++    for method in methods:
++        report = evaluate_method(
++            cases=cases,
++            chunks_path=chunks_path,
++            method=method,
++            top_k=top_k,
++            index_dir=index_dir,
++            embedding_model=embedding_model,
++            hybrid_weights=hybrid_weights if method == 'hybrid' else None,
++        )
++        reports[method] = report
++    return reports
++
++
++def main() -> int:
++    import argparse
++
++    parser = argparse.ArgumentParser(description='离线检索评测：比较 bm25 / vector / hybrid')
++    parser.add_argument('--eval-file', required=True, help='评测样本 JSON / JSONL 文件')
++    parser.add_argument('--chunks', required=True, help='chunk 数据文件路径')
++    parser.add_argument('--methods', default='bm25,vector,hybrid', help='逗号分隔的方法列表')
++    parser.add_argument('--top-k', type=int, default=5, help='使用 top-k 结果计算指标')
++    parser.add_argument('--index-dir', default='', help='向量索引目录')
++    parser.add_argument('--embedding-model', default='BAAI/bge-m3', help='embedding 模型')
++    parser.add_argument('--hybrid-weights', default='', help='hybrid 权重 JSON 字符串或 JSON 文件路径')
++    parser.add_argument('--output', default='./data/processed/retrieval_eval_report.json', help='输出报告路径')
++    args = parser.parse_args()
++
++    cases = load_eval_cases(args.eval_file)
++    methods = [item.strip() for item in args.methods.split(',') if item.strip()]
++    hybrid_weights = parse_hybrid_weights_arg(args.hybrid_weights) or dict(DEFAULT_HYBRID_WEIGHTS)
++
++    reports = evaluate_methods(
++        cases=cases,
++        chunks_path=args.chunks,
++        methods=methods,
++        top_k=args.top_k,
++        index_dir=args.index_dir or None,
++        embedding_model=args.embedding_model,
++        hybrid_weights=hybrid_weights,
++    )
++
++    output = {
++        'timestamp': datetime.now().isoformat(),
++        'eval_file': os.path.abspath(args.eval_file),
++        'chunks': os.path.abspath(args.chunks),
++        'index_dir': os.path.abspath(args.index_dir) if args.index_dir else '',
++        'embedding_model': args.embedding_model,
++        'top_k': args.top_k,
++        'methods': methods,
++        'reports': reports,
++    }
++
++    output_path = Path(args.output)
++    output_path.parent.mkdir(parents=True, exist_ok=True)
++    output_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding='utf-8')
++
++    print(f'评测样本数: {len(cases)}')
++    print(f'输出报告: {output_path}')
++    for method in methods:
++        summary = reports[method]['summary']
++        print(
++            f"[{method}] hit@{args.top_k}={summary['hit_at_k']:.4f} "
++            f"precision@{args.top_k}={summary['precision_at_k']:.4f} "
++            f"recall@{args.top_k}={summary['recall_at_k']:.4f} "
++            f"mrr@{args.top_k}={summary['mrr_at_k']:.4f}"
++        )
++    return 0
++
++
++if __name__ == '__main__':
++    sys.exit(main())
+--- /dev/null
++++ b/rag_minimal/tune_hybrid_weights.py
+@@ -0,0 +1,214 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""扫描 hybrid 权重，比较效果并观察对默认权重的稳定性。"""
++from __future__ import annotations
++
++import json
++import os
++import sys
++from datetime import datetime
++from pathlib import Path
++from typing import Any, Tuple
++
++from evaluate_retrieval import evaluate_method, load_eval_cases
++from retrieve import DEFAULT_HYBRID_WEIGHTS, normalize_hybrid_weights, retrieve
++
++
++PRESET_WEIGHT_CANDIDATES: list[dict[str, Any]] = [
++    {
++        'name': 'default',
++        'weights': dict(DEFAULT_HYBRID_WEIGHTS),
++    },
++    {
++        'name': 'vector_heavy',
++        'weights': {'bm25': 0.25, 'tfidf': 0.10, 'keyword': 0.05, 'vector': 0.60},
++    },
++    {
++        'name': 'bm25_vector_balanced',
++        'weights': {'bm25': 0.50, 'tfidf': 0.00, 'keyword': 0.00, 'vector': 0.50},
++    },
++    {
++        'name': 'sparse_friendly',
++        'weights': {'bm25': 0.45, 'tfidf': 0.20, 'keyword': 0.10, 'vector': 0.25},
++    },
++    {
++        'name': 'vector_plus_bm25',
++        'weights': {'bm25': 0.40, 'tfidf': 0.05, 'keyword': 0.05, 'vector': 0.50},
++    },
++]
++
++
++def _load_extra_candidates(path: str | None) -> list[dict[str, Any]]:
++    if not path:
++        return []
++    payload = json.loads(Path(path).read_text(encoding='utf-8'))
++    if isinstance(payload, dict):
++        payload = [payload]
++    if not isinstance(payload, list):
++        raise ValueError('额外权重文件必须是 JSON 数组或单个 JSON 对象')
++
++    normalized: list[dict[str, Any]] = []
++    for idx, item in enumerate(payload):
++        if not isinstance(item, dict):
++            raise ValueError('额外权重候选必须是对象')
++        name = str(item.get('name') or f'custom_{idx + 1}')
++        weights = item.get('weights', item)
++        if not isinstance(weights, dict):
++            raise ValueError(f'候选 {name} 的 weights 必须是对象')
++        normalized.append(
++            {
++                'name': name,
++                'weights': normalize_hybrid_weights({str(k): float(v) for k, v in weights.items()}),
++            }
++        )
++    return normalized
++
++
++def _pairs_from_results(results: list[dict[str, Any]]) -> set[Tuple[str, str]]:
++    return {
++        (str(item['chunk'].get('doc_id', '')), str(item['chunk'].get('chunk_id', '')))
++        for item in results
++    }
++
++
++def _jaccard(a: set[Tuple[str, str]], b: set[Tuple[str, str]]) -> float:
++    if not a and not b:
++        return 1.0
++    union = a | b
++    if not union:
++        return 1.0
++    return len(a & b) / len(union)
++
++
++def _stability_against_default(cases: list[dict[str, Any]],
++                               chunks_path: str,
++                               top_k: int,
++                               index_dir: str | None,
++                               embedding_model: str,
++                               candidate_weights: dict[str, float]) -> float:
++    default_weights = dict(DEFAULT_HYBRID_WEIGHTS)
++    scores: list[float] = []
++    for case in cases:
++        query = str(case.get('query') or case.get('question') or case.get('instruction') or '').strip()
++        if not query:
++            continue
++        default_results = retrieve(
++            query=query,
++            chunks_path=chunks_path,
++            method='hybrid',
++            top_k=top_k,
++            index_dir=index_dir,
++            embedding_model=embedding_model,
++            hybrid_weights=default_weights,
++        )['results']
++        candidate_results = retrieve(
++            query=query,
++            chunks_path=chunks_path,
++            method='hybrid',
++            top_k=top_k,
++            index_dir=index_dir,
++            embedding_model=embedding_model,
++            hybrid_weights=candidate_weights,
++        )['results']
++        scores.append(_jaccard(_pairs_from_results(default_results), _pairs_from_results(candidate_results)))
++    if not scores:
++        return 0.0
++    return round(sum(scores) / len(scores), 6)
++
++
++def main() -> int:
++    import argparse
++
++    parser = argparse.ArgumentParser(description='扫描 hybrid 权重，并评估效果与稳定性')
++    parser.add_argument('--eval-file', required=True, help='评测样本 JSON / JSONL 文件')
++    parser.add_argument('--chunks', required=True, help='chunk 数据文件路径')
++    parser.add_argument('--top-k', type=int, default=5, help='评测 top-k')
++    parser.add_argument('--index-dir', default='', help='向量索引目录')
++    parser.add_argument('--embedding-model', default='BAAI/bge-m3', help='embedding 模型')
++    parser.add_argument('--extra-candidates', default='', help='额外候选权重 JSON 文件')
++    parser.add_argument('--output', default='./data/processed/hybrid_weight_scan.json', help='扫描结果输出路径')
++    args = parser.parse_args()
++
++    cases = load_eval_cases(args.eval_file)
++    candidates = list(PRESET_WEIGHT_CANDIDATES)
++    candidates.extend(_load_extra_candidates(args.extra_candidates or None))
++
++    leaderboard: list[dict[str, Any]] = []
++    for candidate in candidates:
++        name = candidate['name']
++        weights = normalize_hybrid_weights(candidate['weights'])
++        report = evaluate_method(
++            cases=cases,
++            chunks_path=args.chunks,
++            method='hybrid',
++            top_k=args.top_k,
++            index_dir=args.index_dir or None,
++            embedding_model=args.embedding_model,
++            hybrid_weights=weights,
++        )
++        summary = report['summary']
++        stability = _stability_against_default(
++            cases=cases,
++            chunks_path=args.chunks,
++            top_k=args.top_k,
++            index_dir=args.index_dir or None,
++            embedding_model=args.embedding_model,
++            candidate_weights=weights,
++        )
++        score = round(
++            summary['recall_at_k'] * 0.5 +
++            summary['mrr_at_k'] * 0.3 +
++            summary['precision_at_k'] * 0.2,
++            6,
++        )
++        leaderboard.append(
++            {
++                'name': name,
++                'weights': weights,
++                'summary': summary,
++                'score': score,
++                'overlap_vs_default_at_k': stability,
++            }
++        )
++
++    leaderboard.sort(key=lambda item: (item['score'], item['summary']['recall_at_k'], item['summary']['mrr_at_k']), reverse=True)
++
++    output = {
++        'timestamp': datetime.now().isoformat(),
++        'eval_file': os.path.abspath(args.eval_file),
++        'chunks': os.path.abspath(args.chunks),
++        'index_dir': os.path.abspath(args.index_dir) if args.index_dir else '',
++        'embedding_model': args.embedding_model,
++        'top_k': args.top_k,
++        'leaderboard': leaderboard,
++        'best': leaderboard[0] if leaderboard else None,
++    }
++
++    output_path = Path(args.output)
++    output_path.parent.mkdir(parents=True, exist_ok=True)
++    output_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding='utf-8')
++
++    print(f'评测样本数: {len(cases)}')
++    print(f'输出文件: {output_path}')
++    if leaderboard:
++        best = leaderboard[0]
++        print(
++            f"最优候选: {best['name']} "
++            f"score={best['score']:.4f} "
++            f"recall@{args.top_k}={best['summary']['recall_at_k']:.4f} "
++            f"mrr@{args.top_k}={best['summary']['mrr_at_k']:.4f} "
++            f"overlap_vs_default={best['overlap_vs_default_at_k']:.4f}"
++        )
++        print('候选排名:')
++        for item in leaderboard:
++            print(
++                f"  - {item['name']}: score={item['score']:.4f}, "
++                f"recall={item['summary']['recall_at_k']:.4f}, "
++                f"mrr={item['summary']['mrr_at_k']:.4f}, "
++                f"overlap={item['overlap_vs_default_at_k']:.4f}"
++            )
++    return 0
++
++
++if __name__ == '__main__':
++    sys.exit(main())
+--- a/rag_minimal/README.md
++++ b/rag_minimal/README.md
+@@ -28,6 +28,8 @@
+ ├── retrieve.py          # 检索模块
+ ├── vector_store.py      # 向量索引与查询模块
+ ├── build_vector_index.py  # 向量索引构建脚本
++├── evaluate_retrieval.py  # 检索离线评测脚本
++├── tune_hybrid_weights.py # hybrid 权重扫描脚本
+ ├── generate_report.py   # 报告生成模块
+ ├── pipeline_demo.py     # 完整流程脚本
+ ├── qwen_service_readme.md  # Qwen 服务说明
+@@ -138,7 +140,43 @@
+ - `vector` - 向量检索（需要先构建索引）
+ - `hybrid` - 稀疏 + 向量混合检索
+ 
+-### 5. 报告生成 (generate_report.py)
++### 5. 检索离线评测 (evaluate_retrieval.py)
++
++```bash
++python evaluate_retrieval.py \
++    --eval-file ./data/eval/retrieval_eval.json \
++    --chunks ./data/processed/docs_chunks.jsonl \
++    --methods bm25,vector,hybrid \
++    --top-k 5 \
++    --index-dir ./data/processed/vector_index \
++    --embedding-model BAAI/bge-m3 \
++    --output ./data/processed/retrieval_eval_report.json
++```
++
++支持的 gold 字段：
++- `relevant_pairs`: 精确到 `doc_id + chunk_id`
++- `relevant_chunk_ids`: 只按 chunk_id 判断
++- `relevant_doc_ids`: 只按 doc_id 判断
++- `expected_substrings`: 弱标注，按片段文本包含关系判断
++
++### 6. Hybrid 权重扫描 (tune_hybrid_weights.py)
++
++```bash
++python tune_hybrid_weights.py \
++    --eval-file ./data/eval/retrieval_eval.json \
++    --chunks ./data/processed/docs_chunks.jsonl \
++    --top-k 5 \
++    --index-dir ./data/processed/vector_index \
++    --embedding-model BAAI/bge-m3 \
++    --output ./data/processed/hybrid_weight_scan.json
++```
++
++该脚本会输出：
++- 每组权重的 recall / precision / MRR
++- 一个综合 score（用于排序）
++- `overlap_vs_default_at_k`，用于观察候选权重相对默认权重的结果稳定性
++
++### 7. 报告生成 (generate_report.py)
+ 
+ ```bash
+ python generate_report.py \
+@@ -261,7 +299,9 @@
+ - [ ] 多格式导出（Word、PDF）
+ - [ ] Web 界面
+ - [ ] 批量处理
+-- [ ] 评估框架（召回、MRR、faithfulness、context sufficiency）
++- [x] 检索评测框架（召回、MRR、precision、hit rate）
++- [x] Hybrid 权重扫描与稳定性对比
++- [ ] 生成评测（faithfulness、context sufficiency）
+ - [ ] Milvus / pgvector 等外部向量数据库
+ 
+ ## 许可证
