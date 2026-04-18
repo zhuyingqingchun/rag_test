@@ -367,7 +367,7 @@ def main():
     parser.add_argument('--runs', '-r', default='./data/runs/evaluation_v3', help='运行记录目录')
     parser.add_argument('--output', '-o', default='./evaluation_results_v3.json', help='输出结果文件')
     parser.add_argument('--questions', '-q', type=int, default=None, help='评估问题数量（默认全部）')
-    parser.add_argument('--retrieve-method', '-m', default='bm25', choices=['bm25', 'tfidf', 'keyword'], help='检索方法')
+    parser.add_argument('--retrieve-method', '-m', default='bm25', choices=['bm25', 'tfidf', 'keyword', 'hybrid'], help='检索方法')
     parser.add_argument('--top-k', '-k', type=int, default=5, help='评估 top-k')
     parser.add_argument('--report-type', default=DEFAULT_REPORT_TYPE,
                         choices=sorted(REPORT_TEMPLATES.keys()),

@@ -106,7 +106,7 @@ def main() -> int:
     parser.add_argument("--runs-root", default="./data/runs/template_matrix", help="模板评估运行记录目录")
     parser.add_argument("--output", "-o", default="./template_matrix_results.json", help="输出结果 JSON 文件")
     parser.add_argument("--questions", "-q", type=int, default=None, help="评估问题数量（默认全部）")
-    parser.add_argument("--retrieve-method", "-m", default="bm25", choices=["bm25", "tfidf", "keyword"], help="检索方法")
+    parser.add_argument("--retrieve-method", "-m", default="bm25", choices=["bm25", "tfidf", "keyword", "hybrid"], help="检索方法")
     parser.add_argument("--top-k", "-k", type=int, default=5, help="评估 top-k")
     parser.add_argument("--report-types", nargs="+", default=None, choices=sorted(REPORT_TEMPLATES.keys()), help="要评估的报告模板列表")
 

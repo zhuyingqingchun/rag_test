@@ -1,0 +1,646 @@
+{
+  "summary": {
+    "report_type": "comparison",
+    "report_type_name": "对比分析报告",
+    "总耗时": 29.01,
+    "问题数量": 5,
+    "成功数量": 2,
+    "失败数量": 3,
+    "平均耗时": {
+      "导入": 0.0,
+      "切分": 0.0,
+      "检索": 1.46,
+      "生成": 4.34
+    },
+    "检索指标平均值": {
+      "Recall@5": 0.4,
+      "Precision@5": 0.24,
+      "Hit@5": 0.4,
+      "平均相关性": 0.68
+    },
+    "报告指标平均值": {
+      "结构完整率": 1.0,
+      "引用覆盖率": 1.0,
+      "事实一致性": 0.45,
+      "综合得分": 0.82
+    }
+  },
+  "details": [
+    {
+      "query": "Transformer 的核心结构和关键机制是什么？",
+      "timestamp": "2026-04-18T22:39:21.474857",
+      "relevant_docs": [
+        "transformer.pdf"
+      ],
+      "report_type": "comparison",
+      "retrieve": {
+        "status": "success",
+        "time": 1.46,
+        "context_file": "data/processed/eval_hybrid/eval_retrieved_comparison_16997771.json"
+      },
+      "retrieval": {
+        "status": "success",
+        "query": "Transformer 的核心结构和关键机制是什么？",
+        "total_chunks": 763,
+        "results_count": 5,
+        "labeled_eval": true,
+        "metrics": {
+          "recall@k": 0.0,
+          "precision@k": 0.0,
+          "hit_rate": false,
+          "avg_relevance": 0.0
+        },
+        "relevance_scores": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "top_k_results": [
+          {
+            "rank": 1,
+            "source": "data/input_docs/rag_introduction.md",
+            "normalized_source": "rag_introduction.md",
+            "score": 0.7090909090909091,
+            "relevance": 0,
+            "preview": "## 什么是 RAG？"
+          },
+          {
+            "rank": 2,
+            "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+            "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+            "score": 0.6854896179807819,
+            "relevance": 0,
+            "preview": "第15 章贪心\nwww.hello‑algo.com\n328\n1. 可以保证找到最优解：贪心算法在这种情况下往往是最优选择，因为它往往比回溯、动态规划更高效。\n2. 可以找到近似最优解：贪心算法在这种"
+          },
+          {
+            "rank": 3,
+            "source": "data/input_docs/rag_introduction.md",
+            "normalized_source": "rag_introduction.md",
+            "score": 0.6749868848321141,
+            "relevance": 0,
+            "preview": "## RAG 的核心组件"
+          },
+          {
+            "rank": 4,
+            "source": "data/input_docs/pdf_test.md",
+            "normalized_source": "pdf_test.md",
+            "score": 0.6452774565256255,
+            "relevance": 0,
+            "preview": "## 第二章：核心组件"
+          },
+          {
+            "rank": 5,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.6324141963745618,
+            "relevance": 0,
+            "preview": "西北工业大学博士学位论文\n第二章电动舵机故障诊断模型和平台建立\n16\n2.1.1 EMA 的组成和工作原理\n电动舵机一般由伺服控制的伺服电机、齿轮减速装置和实现直线运动的滚珠\n丝杆副组成[111][1"
+          }
+        ]
+      },
+      "report": {
+        "status": "failed",
+        "time": 2.733567476272583,
+        "stderr": ""
+      }
+    },
+    {
+      "query": "BERT 与 GPT 的主要区别是什么？",
+      "timestamp": "2026-04-18T22:39:25.671448",
+      "relevant_docs": [
+        "bert.pdf",
+        "gpt.pdf",
+        "gpt2.pdf",
+        "gpt3.pdf"
+      ],
+      "report_type": "comparison",
+      "retrieve": {
+        "status": "success",
+        "time": 1.44,
+        "context_file": "data/processed/eval_hybrid/eval_retrieved_comparison_63201353.json"
+      },
+      "retrieval": {
+        "status": "success",
+        "query": "BERT 与 GPT 的主要区别是什么？",
+        "total_chunks": 763,
+        "results_count": 5,
+        "labeled_eval": true,
+        "metrics": {
+          "recall@k": 0.0,
+          "precision@k": 0.0,
+          "hit_rate": false,
+          "avg_relevance": 0.0
+        },
+        "relevance_scores": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "top_k_results": [
+          {
+            "rank": 1,
+            "source": "data/input_docs/rag_introduction.md",
+            "normalized_source": "rag_introduction.md",
+            "score": 0.75,
+            "relevance": 0,
+            "preview": "## 什么是 RAG？"
+          },
+          {
+            "rank": 2,
+            "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+            "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+            "score": 0.6229871994582221,
+            "relevance": 0,
+            "preview": "第7 章树\nwww.hello‑algo.com\n160\n‧ 前序、中序、后序遍历皆属于深度优先搜索，它们体现了“先走到尽头，再回溯继续”的遍历方式，通\n常使用递归来实现。\n‧ 二叉搜索树是一种高效的"
+          },
+          {
+            "rank": 3,
+            "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+            "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+            "score": 0.5788593034394744,
+            "relevance": 0,
+            "preview": "第4 章数组与链表\nwww.hello‑algo.com\n84\nQ：在Python 中初始化n = [1, 2, 3] 后，这3 个元素的地址是相连的，但是初始化m = [2, 1, 3] 会\n发现它"
+          },
+          {
+            "rank": 4,
+            "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+            "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+            "score": 0.5724666368823937,
+            "relevance": 0,
+            "preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释"
+          },
+          {
+            "rank": 5,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.5315320900204735,
+            "relevance": 0,
+            "preview": "西北工业大学博士学位论文\n第三章基于IMM-UKF 的EMA 突变型故障诊断方法\n55\n本文通过引入主动匹配机制来改进IMM-UKF 故障诊断算法，以期减少故障模\n型集中各类故障诊断模型的数量，并提高"
+          }
+        ]
+      },
+      "report": {
+        "status": "failed",
+        "time": 2.696357488632202,
+        "stderr": ""
+      }
+    },
+    {
+      "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+      "timestamp": "2026-04-18T22:39:29.807438",
+      "relevant_docs": [
+        "gpt2.pdf",
+        "gpt3.pdf"
+      ],
+      "report_type": "comparison",
+      "retrieve": {
+        "status": "success",
+        "time": 1.47,
+        "context_file": "data/processed/eval_hybrid/eval_retrieved_comparison_67647221.json"
+      },
+      "retrieval": {
+        "status": "success",
+        "query": "GPT-2 与 GPT-3 在模型规模和能力方面有哪些差异？",
+        "total_chunks": 763,
+        "results_count": 5,
+        "labeled_eval": true,
+        "metrics": {
+          "recall@k": 0.0,
+          "precision@k": 0.0,
+          "hit_rate": false,
+          "avg_relevance": 0.2
+        },
+        "relevance_scores": [
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "top_k_results": [
+          {
+            "rank": 1,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.8857142857142857,
+            "relevance": 0,
+            "preview": "西北工业大学博士学位论文\n第三章基于IMM-UKF 的EMA 突变型故障诊断方法\n53\n在实际工程应用中，一方面，模型集的包含的故障模型数量足够多，模型集的\n覆盖面足够大，才能获得具有足够精确度的状态"
+          },
+          {
+            "rank": 2,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.8498715326455314,
+            "relevance": 0,
+            "preview": "西北工业大学博士学位论文\n第五章基于模糊规则推理的EMA 智能故障诊断方法\n117\n从表5-9 所示的测试结果发现，本文所提出方法对测试样本中的单故障模式和\n多故障模式都具有100%的识别率。故障模式"
+          },
+          {
+            "rank": 3,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.820925193395025,
+            "relevance": 0,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n6\n考虑到基于解析模型的故障诊断方法的优劣依赖于模型的精确性，对于电动\n舵机这一类具有模型不确定性和未知输入扰动的系统，需要进一步研究具有鲁棒\n性的故障诊断方法，"
+          },
+          {
+            "rank": 4,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.8194589291339807,
+            "relevance": 0,
+            "preview": "西北工业大学博士学位论文\n第一章绪论\n13\n故障概率回馈到滤波器交互输入阶段，有助于抑制残差偏差对卡尔曼滤波器的影\n响。\n第四章基于DWNN 的EMA 渐变型故障诊断方法\n本章所研究方法能够进行智能故"
+          },
+          {
+            "rank": 5,
+            "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "normalized_source": "基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+            "score": 0.7837554659362774,
+            "relevance": 1,
+            "preview": "西北工业大学博士学位论文\n第二章电动舵机故障诊断模型和平台建立\n31\n表2-7 中，电动舵机故障的严重程度分类如下：\n“1”，灾难性的，会导致死亡、重大伤害或设备全部损失；\n“2”，关键性的，可能造成"
+          }
+        ]
+      },
+      "report": {
+        "status": "failed",
+        "time": 4.889090299606323,
+        "stderr": ""
+      }
+    },
+    {
+      "query": "RAG 系统的核心组成和基本流程是什么？",
+      "timestamp": "2026-04-18T22:39:36.166331",
+      "relevant_docs": [
+        "signal_rag_guide.md"
+      ],
+      "report_type": "comparison",
+      "retrieve": {
+        "status": "success",
+        "time": 1.49,
+        "context_file": "data/processed/eval_hybrid/eval_retrieved_comparison_25628744.json"
+      },
+      "retrieval": {
+        "status": "success",
+        "query": "RAG 系统的核心组成和基本流程是什么？",
+        "total_chunks": 763,
+        "results_count": 5,
+        "labeled_eval": true,
+        "metrics": {
+          "recall@k": 1.0,
+          "precision@k": 0.2,
+          "hit_rate": true,
+          "avg_relevance": 1.2
+        },
+        "relevance_scores": [
+          1,
+          1,
+          1,
+          2,
+          1
+        ],
+        "top_k_results": [
+          {
+            "rank": 1,
+            "source": "data/input_docs/pdf_test.md",
+            "normalized_source": "pdf_test.md",
+            "score": 0.7697270134449665,
+            "relevance": 1,
+            "preview": "RAG 系统包含三个核心组件："
+          },
+          {
+            "rank": 2,
+            "source": "data/input_docs/rag_introduction.md",
+            "normalized_source": "rag_introduction.md",
+            "score": 0.7666666666666666,
+            "relevance": 1,
+            "preview": "## RAG 的核心组件"
+          },
+          {
+            "rank": 3,
+            "source": "data/input_docs/rag_introduction.md",
+            "normalized_source": "rag_introduction.md",
+            "score": 0.7330380968217615,
+            "relevance": 1,
+            "preview": "## 什么是 RAG？"
+          },
+          {
+            "rank": 4,
+            "source": "data/input_docs/signal_rag_guide.md",
+            "normalized_source": "signal_rag_guide.md",
+            "score": 0.719904962617299,
+            "relevance": 2,
+            "preview": "本文档介绍如何使用信号数据专用的RAG（检索增强生成）系统。该系统包含以下核心组件："
+          },
+          {
+            "rank": 5,
+            "source": "data/input_docs/rag_introduction.md",
+            "normalized_source": "rag_introduction.md",
+            "score": 0.5655352267962361,
+            "relevance": 1,
+            "preview": "## RAG 的工作流程"
+          }
+        ]
+      },
+      "report": {
+        "status": "success",
+        "time": 4.39,
+        "file": "data/runs/eval_hybrid/20260418_223941/report.md"
+      },
+      "report_evaluation": {
+        "status": "success",
+        "report_file": "data/runs/eval_hybrid/20260418_223941/report.md",
+        "context_file": "data/processed/eval_hybrid/eval_retrieved_comparison_25628744.json",
+        "metrics": {
+          "结构完整率": 1.0,
+          "引用覆盖率": 1.0,
+          "事实一致性": 0.22,
+          "综合得分": 0.74
+        },
+        "structure": {
+          "标题": true,
+          "任务说明": true,
+          "检索摘要": true,
+          "关键内容整理": true,
+          "综合分析": true,
+          "结论": true,
+          "参考片段": true
+        },
+        "chapter_coverage": {
+          "用户问题": 1,
+          "生成时间": 1,
+          "共召回片段数": 1,
+          "主要来源": 1,
+          "关键点条目": 4,
+          "结论章节": 1
+        },
+        "citation": {
+          "total_references": 3,
+          "cited_count": 3,
+          "coverage": 1.0,
+          "cited_sources": [
+            "pdf_test.md",
+            "rag_introduction.md",
+            "rag_introduction.md",
+            "signal_rag_guide.md",
+            "rag_introduction.md"
+          ],
+          "all_sources": [
+            "pdf_test.md",
+            "rag_introduction.md",
+            "signal_rag_guide.md"
+          ]
+        },
+        "consistency": {
+          "total_claims": 9,
+          "supported_claims": 2,
+          "unsupported_claims": 7,
+          "consistency_score": 0.22,
+          "supported_examples": [
+            {
+              "claim": "RAG 系统包含三个核心组件 [1]",
+              "best_overlap": 2,
+              "best_source": "pdf_test.md",
+              "best_preview": "RAG 系统包含三个核心组件："
+            },
+            {
+              "claim": "证据[5]单独提及RAG的工作流程，但未提供流程细节",
+              "best_overlap": 2,
+              "best_source": "rag_introduction.md",
+              "best_preview": "## RAG 的工作流程"
+            }
+          ],
+          "unsupported_examples": [
+            {
+              "claim": "RAG 的核心组件是文档中明确列出的主题 [2]",
+              "best_overlap": 1,
+              "best_source": "pdf_test.md",
+              "best_preview": "RAG 系统包含三个核心组件："
+            },
+            {
+              "claim": "信号数据专用的 RAG 系统包含以下核心组件 [4]",
+              "best_overlap": 1,
+              "best_source": "pdf_test.md",
+              "best_preview": "RAG 系统包含三个核心组件："
+            },
+            {
+              "claim": "RAG 的工作流程是文档中明确列出的主题 [5]",
+              "best_overlap": 1,
+              "best_source": "pdf_test.md",
+              "best_preview": "RAG 系统包含三个核心组件："
+            },
+            {
+              "claim": "证据[1]、[2]和[4]均提及RAG系统包含核心组件，其中[1]明确指出有三个核心组件，[2]和[4]虽未展开具体内容，但确认了核心组件的存在",
+              "best_overlap": 1,
+              "best_source": "pdf_test.md",
+              "best_preview": "RAG 系统包含三个核心组件："
+            },
+            {
+              "claim": "因此，核心组件的存在被多个证据支持，但组件的具体内容和工作流程的步骤均未在证据中展开，无法进行更细致的对比",
+              "best_overlap": 0,
+              "best_source": null,
+              "best_preview": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+      "timestamp": "2026-04-18T22:39:42.046760",
+      "relevant_docs": [
+        "hello-algo_1.3.0_zh_cpp.pdf"
+      ],
+      "report_type": "comparison",
+      "retrieve": {
+        "status": "success",
+        "time": 1.46,
+        "context_file": "data/processed/eval_hybrid/eval_retrieved_comparison_54115475.json"
+      },
+      "retrieval": {
+        "status": "success",
+        "query": "hello-algo 中介绍了哪些常见基础数据结构与算法思想？",
+        "total_chunks": 763,
+        "results_count": 5,
+        "labeled_eval": true,
+        "metrics": {
+          "recall@k": 1.0,
+          "precision@k": 1.0,
+          "hit_rate": true,
+          "avg_relevance": 2.0
+        },
+        "relevance_scores": [
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "top_k_results": [
+          {
+            "rank": 1,
+            "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+            "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+            "score": 0.8736842105263158,
+            "relevance": 2,
+            "preview": "第1 章初识算法\nwww.hello‑algo.com\n14\n‧ 空间占用尽量少，以节省计算机内存。\n‧ 数据操作尽可能快速，涵盖数据访问、添加、删除、更新等。\n‧ 提供简洁的数据表示和逻辑信息，以便"
+          },
+          {
+            "rank": 2,
+            "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+            "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+            "score": 0.8657693362313039,
+            "relevance": 2,
+            "preview": "第0 章前言\nwww.hello‑algo.com\n2\n0.1 关于本书\n本项目旨在创建一本开源、免费、对新手友好的数据结构与算法入门教程。\n‧ 全书采用动画图解，内容清晰易懂、学习曲线平滑，引导初学"
+          },
+          {
+            "rank": 3,
+            "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+            "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+            "score": 0.8381167167407733,
+            "relevance": 2,
+            "preview": "第1 章初识算法\nwww.hello‑algo.com\n16\n‧ 查字典的原理与二分查找算法相一致。二分查找算法体现了分而治之的重要算法思想。\n‧ 整理扑克的过程与插入排序算法非常类似。插入排序算法适"
+          },
+          {
+            "rank": 4,
+            "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+            "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+            "score": 0.7807639506419758,
+            "relevance": 2,
+            "preview": "第3 章数据结构\nwww.hello‑algo.com\n49\n3.1 数据结构分类\n常见的数据结构包括数组、链表、栈、队列、哈希表、树、堆、图，它们可以从“逻辑结构”和“物理结构”\n两个维度进行分类。"
+          },
+          {
+            "rank": 5,
+            "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+            "normalized_source": "hello-algo_1.3.0_zh_cpp.pdf",
+            "score": 0.7592482256513,
+            "relevance": 2,
+            "preview": "第2 章复杂度分析\nwww.hello‑algo.com\n19\n‧ 它无需实际运行代码，更加绿色节能。\n‧ 它独立于测试环境，分析结果适用于所有运行平台。\n‧ 它可以体现不同数据量下的算法效率，尤其是"
+          }
+        ]
+      },
+      "report": {
+        "status": "success",
+        "time": 6.97,
+        "file": "data/runs/eval_hybrid/20260418_223950/report.md"
+      },
+      "report_evaluation": {
+        "status": "success",
+        "report_file": "data/runs/eval_hybrid/20260418_223950/report.md",
+        "context_file": "data/processed/eval_hybrid/eval_retrieved_comparison_54115475.json",
+        "metrics": {
+          "结构完整率": 1.0,
+          "引用覆盖率": 1.0,
+          "事实一致性": 0.69,
+          "综合得分": 0.9
+        },
+        "structure": {
+          "标题": true,
+          "任务说明": true,
+          "检索摘要": true,
+          "关键内容整理": true,
+          "综合分析": true,
+          "结论": true,
+          "参考片段": true
+        },
+        "chapter_coverage": {
+          "用户问题": 1,
+          "生成时间": 1,
+          "共召回片段数": 1,
+          "主要来源": 1,
+          "关键点条目": 8,
+          "结论章节": 1
+        },
+        "citation": {
+          "total_references": 1,
+          "cited_count": 1,
+          "coverage": 1.0,
+          "cited_sources": [
+            "hello-algo_1.3.0_zh_cpp.pdf",
+            "hello-algo_1.3.0_zh_cpp.pdf",
+            "hello-algo_1.3.0_zh_cpp.pdf",
+            "hello-algo_1.3.0_zh_cpp.pdf",
+            "hello-algo_1.3.0_zh_cpp.pdf"
+          ],
+          "all_sources": [
+            "hello-algo_1.3.0_zh_cpp.pdf"
+          ]
+        },
+        "consistency": {
+          "total_claims": 16,
+          "supported_claims": 11,
+          "unsupported_claims": 5,
+          "consistency_score": 0.69,
+          "supported_examples": [
+            {
+              "claim": "常见数据结构包括数组、链表、栈、队列、哈希表、树、堆、图 [4]",
+              "best_overlap": 3,
+              "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+              "best_preview": "第0 章前言\nwww.hello‑algo.com\n2\n0.1 关于本书\n本项目旨在创建一本开源、免费、对新手友好的数据结构与算法入门教程。\n‧ 全书采用动画图解，内容清晰易懂、学习曲线平滑，引导初学者探索数据结构与算法的知识地图。\n‧ 源"
+            },
+            {
+              "claim": "数据结构按逻辑结构分为线性结构（数组、链表、栈、队列、哈希表）和非线性结构（树、堆、图） [4]",
+              "best_overlap": 4,
+              "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+              "best_preview": "第0 章前言\nwww.hello‑algo.com\n2\n0.1 关于本书\n本项目旨在创建一本开源、免费、对新手友好的数据结构与算法入门教程。\n‧ 全书采用动画图解，内容清晰易懂、学习曲线平滑，引导初学者探索数据结构与算法的知识地图。\n‧ 源"
+            },
+            {
+              "claim": "数据结构与算法紧密相关：数据结构是算法的基石，算法为数据结构注入生命力 [1][3]",
+              "best_overlap": 4,
+              "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+              "best_preview": "第1 章初识算法\nwww.hello‑algo.com\n14\n‧ 空间占用尽量少，以节省计算机内存。\n‧ 数据操作尽可能快速，涵盖数据访问、添加、删除、更新等。\n‧ 提供简洁的数据表示和逻辑信息，以便算法高效运行。\n数据结构设计是一个充满权"
+            },
+            {
+              "claim": "数据结构与算法可类比为拼装积木：积木代表数据，积木形状和连接方式代表数据结构，拼装步骤代表算法 [1][3]",
+              "best_overlap": 2,
+              "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+              "best_preview": "第1 章初识算法\nwww.hello‑algo.com\n14\n‧ 空间占用尽量少，以节省计算机内存。\n‧ 数据操作尽可能快速，涵盖数据访问、添加、删除、更新等。\n‧ 提供简洁的数据表示和逻辑信息，以便算法高效运行。\n数据结构设计是一个充满权"
+            },
+            {
+              "claim": "复杂度分析是评估算法效率的核心方法，用于衡量时间与空间资源消耗 [2][5]",
+              "best_overlap": 2,
+              "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+              "best_preview": "第1 章初识算法\nwww.hello‑algo.com\n14\n‧ 空间占用尽量少，以节省计算机内存。\n‧ 数据操作尽可能快速，涵盖数据访问、添加、删除、更新等。\n‧ 提供简洁的数据表示和逻辑信息，以便算法高效运行。\n数据结构设计是一个充满权"
+            }
+          ],
+          "unsupported_examples": [
+            {
+              "claim": "非线性结构可进一步划分为树形结构（树、堆、哈希表）和网状结构（图） [4]",
+              "best_overlap": 1,
+              "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+              "best_preview": "第1 章初识算法\nwww.hello‑algo.com\n14\n‧ 空间占用尽量少，以节省计算机内存。\n‧ 数据操作尽可能快速，涵盖数据访问、添加、删除、更新等。\n‧ 提供简洁的数据表示和逻辑信息，以便算法高效运行。\n数据结构设计是一个充满权"
+            },
+            {
+              "claim": "算法思想包括二分查找（体现分而治之）、插入排序（类似整理扑克）、贪心算法（如货币找零） [3]",
+              "best_overlap": 1,
+              "best_source": "hello-algo_1.3.0_zh_cpp.pdf",
+              "best_preview": "第1 章初识算法\nwww.hello‑algo.com\n14\n‧ 空间占用尽量少，以节省计算机内存。\n‧ 数据操作尽可能快速，涵盖数据访问、添加、删除、更新等。\n‧ 提供简洁的数据表示和逻辑信息，以便算法高效运行。\n数据结构设计是一个充满权"
+            },
+            {
+              "claim": "书中明确列出八种基础数据结构，并按逻辑与物理结构分类，同时通过二分查找、插入排序、贪心算法等实例说明核心算法思想",
+              "best_overlap": 0,
+              "best_source": null,
+              "best_preview": ""
+            },
+            {
+              "claim": "复杂度分析作为评估工具贯穿始终，而迭代与递归是实现算法的基础机制",
+              "best_overlap": 0,
+              "best_source": null,
+              "best_preview": ""
+            },
+            {
+              "claim": "各数据结构与算法思想的选取均服务于初学者建立系统性认知，强调理论与实践结合",
+              "best_overlap": 0,
+              "best_source": null,
+              "best_preview": ""
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "total_time": 29.01,
+  "timestamp": "2026-04-18T22:39:50.488836"
+}
