@@ -1,0 +1,562 @@
+--- /dev/null+++ b/rag_minimal/query_rewrite.py@@ -0,0 +1,103 @@+#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""查询改写：为 RAG / Transformer / BERT / GPT / 舵机诊断等主题生成多查询候选。"""
++from __future__ import annotations
++
++from typing import List
++
++
++def _dedupe_keep_order(values: List[str]) -> List[str]:
++    seen = set()
++    output: List[str] = []
++    for value in values:
++        normalized = ' '.join((value or '').split()).strip()
++        if not normalized or normalized in seen:
++            continue
++        seen.add(normalized)
++        output.append(normalized)
++    return output
++
++
++def generate_rewrites(query: str, max_queries: int = 4) -> List[str]:
++    query = ' '.join((query or '').split()).strip()
++    if not query:
++        return []
++
++    candidates: List[str] = [query]
++    lower = query.lower()
++
++    if 'rag' in lower or '检索增强' in query or '检索增强生成' in query:
++        candidates.extend([
++            f'{query} 检索 生成 上下文 流程',
++            f'{query} retrieval generation context pipeline',
++            'RAG 核心组成 检索 生成 文档 上下文',
++        ])
++
++    if 'transformer' in lower:
++        candidates.extend([
++            f'{query} self-attention multi-head encoder decoder',
++            'Transformer 核心机制 self-attention multi-head positional encoding',
++            f'{query} 并行建模 长距离依赖',
++        ])
++
++    if 'bert' in lower and 'gpt' in lower:
++        candidates.extend([
++            'BERT 与 GPT 区别 bidirectional autoregressive masked language model causal language model',
++            f'{query} 预训练目标 双向 自回归',
++        ])
++    elif 'bert' in lower:
++        candidates.extend([
++            f'{query} bidirectional masked language model',
++            'BERT 核心特点 bidirectional masked language model',
++        ])
++    elif 'gpt' in lower:
++        candidates.extend([
++            f'{query} autoregressive causal language model',
++            'GPT 核心特点 autoregressive causal language model',
++        ])
++
++    if 'gpt-2' in lower or 'gpt2' in lower or 'gpt-3' in lower or 'gpt3' in lower:
++        candidates.extend([
++            f'{query} scaling parameters few-shot',
++            'GPT-2 GPT-3 参数规模 few-shot 能力 区别',
++        ])
++
++    if '算法' in query or '复杂度' in query or 'hello-algo' in lower:
++        candidates.extend([
++            f'{query} 时间复杂度 空间复杂度 数据结构',
++            '算法教程 时间复杂度 空间复杂度 数据结构',
++        ])
++
++    if 'signal' in lower or '信号' in query or '舵机' in query or '故障诊断' in query:
++        candidates.extend([
++            f'{query} 信号 模态 检索 诊断',
++            '电动舵机 故障诊断 人工智能 信号 模态',
++            'signal rag guide 信号处理 RAG 指南',
++        ])
++
++    # 通用模板
++    candidates.extend([
++        f'{query} 核心组成',
++        f'{query} 关键机制',
++        f'{query} 基本流程',
++    ])
++
++    return _dedupe_keep_order(candidates)[:max(1, max_queries)]
++
++
++def main() -> int:
++    import argparse
++    import json
++
++    parser = argparse.ArgumentParser(description='生成多查询改写候选')
++    parser.add_argument('--query', '-q', required=True, help='原始问题')
++    parser.add_argument('--max-queries', '-k', type=int, default=4, help='最大候选数')
++    args = parser.parse_args()
++
++    rewrites = generate_rewrites(args.query, max_queries=args.max_queries)
++    print(json.dumps({'query': args.query, 'rewrites': rewrites}, ensure_ascii=False, indent=2))
++    return 0
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+--- /dev/null+++ b/rag_minimal/rerank.py@@ -0,0 +1,102 @@+#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""结果重排序：优先支持 CrossEncoder，本地不可用时回退到启发式 rerank。"""
++from __future__ import annotations
++
++from typing import Any, Dict, List, Tuple
++
++from text_utils import unique_tokens
++
++_CROSS_ENCODER_CACHE: Dict[str, Any] = {}
++
++
++def _keyword_overlap_ratio(query: str, text: str) -> float:
++    q = unique_tokens(query)
++    if not q:
++        return 0.0
++    d = unique_tokens(text)
++    return len(q & d) / len(q)
++
++
++def _normalize(values: List[float]) -> List[float]:
++    if not values:
++        return []
++    lo = min(values)
++    hi = max(values)
++    if hi == lo:
++        return [1.0 if value > 0 else 0.0 for value in values]
++    return [(value - lo) / (hi - lo) for value in values]
++
++
++def _load_cross_encoder(model_name: str):
++    if not model_name:
++        return None
++    if model_name not in _CROSS_ENCODER_CACHE:
++        try:
++            from sentence_transformers import CrossEncoder
++        except Exception as exc:  # pragma: no cover
++            raise ImportError(
++                'CrossEncoder 不可用，请安装 sentence-transformers 或留空 reranker model 使用启发式 rerank'
++            ) from exc
++        _CROSS_ENCODER_CACHE[model_name] = CrossEncoder(model_name)
++    return _CROSS_ENCODER_CACHE[model_name]
++
++
++def heuristic_rerank(query: str, results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
++    base_scores = [float(item.get('score', 0.0)) for item in results]
++    base_norm = _normalize(base_scores)
++    overlap_scores = [
++        _keyword_overlap_ratio(query, str(item['chunk'].get('text', '')))
++        for item in results
++    ]
++    combined: List[Tuple[float, Dict[str, Any]]] = []
++    for idx, item in enumerate(results):
++        rerank_score = 0.6 * base_norm[idx] + 0.4 * overlap_scores[idx]
++        enriched = dict(item)
++        enriched['base_score'] = float(item.get('score', 0.0))
++        enriched['rerank_score'] = round(rerank_score, 6)
++        enriched['score'] = round(rerank_score, 6)
++        combined.append((rerank_score, enriched))
++    combined.sort(key=lambda x: x[0], reverse=True)
++    output = []
++    for rank, (_, item) in enumerate(combined, start=1):
++        item['rank'] = rank
++        output.append(item)
++    return output
++
++
++def cross_encoder_rerank(query: str, results: List[Dict[str, Any]], model_name: str) -> List[Dict[str, Any]]:
++    model = _load_cross_encoder(model_name)
++    pairs = [(query, str(item['chunk'].get('text', ''))) for item in results]
++    scores = model.predict(pairs)
++    score_list = [float(score) for score in scores]
++    score_norm = _normalize(score_list)
++    combined: List[Tuple[float, Dict[str, Any]]] = []
++    for idx, item in enumerate(results):
++        enriched = dict(item)
++        enriched['base_score'] = float(item.get('score', 0.0))
++        enriched['rerank_score'] = round(score_norm[idx], 6)
++        enriched['score'] = round(score_norm[idx], 6)
++        combined.append((score_norm[idx], enriched))
++    combined.sort(key=lambda x: x[0], reverse=True)
++    output = []
++    for rank, (_, item) in enumerate(combined, start=1):
++        item['rank'] = rank
++        output.append(item)
++    return output
++
++
++def rerank_results(query: str,
++                   results: List[Dict[str, Any]],
++                   model_name: str = '',
++                   top_n: int = 10) -> List[Dict[str, Any]]:
++    candidates = list(results)[:max(1, top_n)]
++    if not candidates:
++        return []
++
++    if model_name:
++        try:
++            return cross_encoder_rerank(query, candidates, model_name)
++        except Exception:
++            pass
++    return heuristic_rerank(query, candidates)
+--- /dev/null+++ b/rag_minimal/advanced_retrieve.py@@ -0,0 +1,227 @@+#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""高级检索：多查询改写 + RRF 融合 + 可选 rerank + abstain 建议。"""
++from __future__ import annotations
++
++import json
++from datetime import datetime
++from pathlib import Path
++from typing import Any, Dict, List, Tuple
++
++from query_rewrite import generate_rewrites
++from rerank import rerank_results
++from retrieve import parse_hybrid_weights_arg, retrieve
++
++DEFAULT_RRF_K = 60
++
++
++def _chunk_key(item: Dict[str, Any]) -> Tuple[str, str]:
++    chunk = item['chunk']
++    return (str(chunk.get('doc_id', '')), str(chunk.get('chunk_id', '')))
++
++
++def fuse_with_rrf(payloads: List[Dict[str, Any]], top_k: int, rrf_k: int = DEFAULT_RRF_K) -> List[Dict[str, Any]]:
++    merged: Dict[Tuple[str, str], Dict[str, Any]] = {}
++    total_queries = len(payloads)
++
++    for payload in payloads:
++        q = payload['query']
++        for item in payload['results']:
++            key = _chunk_key(item)
++            rank = int(item['rank'])
++            contribution = 1.0 / (rrf_k + rank)
++            bucket = merged.setdefault(
++                key,
++                {
++                    'chunk': item['chunk'],
++                    'score': 0.0,
++                    'rank': 0,
++                    'query_hits': 0,
++                    'raw_best_score': 0.0,
++                    'per_query': [],
++                },
++            )
++            bucket['score'] += contribution
++            bucket['query_hits'] += 1
++            bucket['raw_best_score'] = max(bucket['raw_best_score'], float(item.get('score', 0.0)))
++            bucket['per_query'].append(
++                {
++                    'query': q,
++                    'rank': rank,
++                    'raw_score': float(item.get('score', 0.0)),
++                }
++            )
++
++    ranked = sorted(
++        merged.values(),
++        key=lambda item: (float(item['score']), int(item['query_hits']), float(item['raw_best_score'])),
++        reverse=True,
++    )[:top_k]
++
++    for idx, item in enumerate(ranked, start=1):
++        item['score'] = round(float(item['score']), 6)
++        item['rank'] = idx
++        item['query_coverage'] = round(item['query_hits'] / max(total_queries, 1), 6)
++    return ranked
++
++
++def _compute_confidence(results: List[Dict[str, Any]], total_queries: int, rrf_k: int) -> Dict[str, Any]:
++    if not results:
++        return {
++            'normalized_top1': 0.0,
++            'normalized_margin': 0.0,
++            'top1_query_coverage': 0.0,
++            'mean_top3_score': 0.0,
++        }
++
++    max_possible = total_queries * (1.0 / (rrf_k + 1))
++    top1 = float(results[0]['score'])
++    top2 = float(results[1]['score']) if len(results) > 1 else 0.0
++    mean_top3 = sum(float(item['score']) for item in results[:3]) / max(min(3, len(results)), 1)
++
++    normalized_top1 = top1 / max_possible if max_possible > 0 else 0.0
++    normalized_margin = (top1 - top2) / max_possible if max_possible > 0 else 0.0
++    top1_query_coverage = float(results[0].get('query_coverage', 0.0))
++
++    return {
++        'normalized_top1': round(normalized_top1, 6),
++        'normalized_margin': round(normalized_margin, 6),
++        'top1_query_coverage': round(top1_query_coverage, 6),
++        'mean_top3_score': round(mean_top3, 6),
++    }
++
++
++def _abstain_decision(confidence: Dict[str, Any]) -> Tuple[bool, str]:
++    if confidence['normalized_top1'] < 0.22:
++        return True, 'top1 证据强度不足'
++    if confidence['top1_query_coverage'] < 0.34 and confidence['normalized_margin'] < 0.03:
++        return True, '多查询之间缺少稳定共识'
++    return False, ''
++
++
++def advanced_retrieve(query: str,
++                      chunks_path: str,
++                      method: str = 'hybrid',
++                      top_k: int = 5,
++                      index_dir: str | None = None,
++                      embedding_model: str = 'BAAI/bge-m3',
++                      hybrid_weights: Dict[str, float] | None = None,
++                      rewrite: bool = True,
++                      rewrite_max_queries: int = 4,
++                      rerank: bool = False,
++                      reranker_model: str = '',
++                      rerank_top_n: int = 10,
++                      rrf_k: int = DEFAULT_RRF_K) -> Dict[str, Any]:
++    rewrites = generate_rewrites(query, max_queries=rewrite_max_queries) if rewrite else [query]
++    rewrites = rewrites or [query]
++
++    payloads = [
++        retrieve(
++            query=q,
++            chunks_path=chunks_path,
++            method=method,
++            top_k=max(top_k, rerank_top_n if rerank else top_k),
++            index_dir=index_dir,
++            embedding_model=embedding_model,
++            hybrid_weights=hybrid_weights,
++        )
++        for q in rewrites
++    ]
++
++    fused_results = fuse_with_rrf(payloads, top_k=max(top_k, rerank_top_n if rerank else top_k), rrf_k=rrf_k)
++    if rerank:
++        fused_results = rerank_results(query, fused_results, model_name=reranker_model, top_n=rerank_top_n)
++
++    final_results = fused_results[:top_k]
++    confidence = _compute_confidence(final_results, total_queries=len(rewrites), rrf_k=rrf_k)
++    should_abstain, abstain_reason = _abstain_decision(confidence)
++
++    return {
++        'query': query,
++        'method': method,
++        'rewrites': rewrites,
++        'rrf_k': rrf_k,
++        'total_chunks': payloads[0]['total_chunks'] if payloads else 0,
++        'results_count': len(final_results),
++        'results': final_results,
++        'index_dir': payloads[0].get('index_dir') if payloads else index_dir,
++        'embedding_model': payloads[0].get('embedding_model') if payloads else embedding_model,
++        'hybrid_weights': payloads[0].get('hybrid_weights') if payloads and 'hybrid_weights' in payloads[0] else hybrid_weights,
++        'advanced': {
++            'rewrite_enabled': rewrite,
++            'rerank_enabled': rerank,
++            'reranker_model': reranker_model,
++            'confidence': confidence,
++            'should_abstain': should_abstain,
++            'abstain_reason': abstain_reason,
++        },
++        'per_query_runs': [
++            {
++                'query': payload['query'],
++                'method': payload['method'],
++                'results_count': payload['results_count'],
++            }
++            for payload in payloads
++        ],
++    }
++
++
++def save_results(payload: Dict[str, Any], output_path: str) -> None:
++    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
++    serializable = dict(payload)
++    serializable['timestamp'] = datetime.now().isoformat()
++    with open(output_path, 'w', encoding='utf-8') as f:
++        json.dump(serializable, f, ensure_ascii=False, indent=2)
++
++
++def main() -> int:
++    import argparse
++
++    parser = argparse.ArgumentParser(description='高级检索：rewrite + RRF + rerank + abstain')
++    parser.add_argument('--query', '-q', required=True, help='查询语句')
++    parser.add_argument('--chunks', '-c', required=True, help='chunk 数据文件路径')
++    parser.add_argument('--method', '-m', default='hybrid', choices=['bm25', 'tfidf', 'keyword', 'vector', 'hybrid'], help='基础检索方法')
++    parser.add_argument('--top-k', '-k', type=int, default=5, help='最终返回 top-k')
++    parser.add_argument('--index-dir', '-i', default='', help='向量索引目录')
++    parser.add_argument('--embedding-model', '-e', default='BAAI/bge-m3', help='embedding 模型')
++    parser.add_argument('--hybrid-weights', default='', help='hybrid 权重 JSON 字符串或 JSON 文件路径')
++    parser.add_argument('--rewrite', action='store_true', help='启用多查询改写')
++    parser.add_argument('--rewrite-max-queries', type=int, default=4, help='最大改写数')
++    parser.add_argument('--rerank', action='store_true', help='启用 rerank')
++    parser.add_argument('--reranker-model', default='', help='CrossEncoder / BGE reranker 模型名或本地路径；留空则使用启发式 rerank')
++    parser.add_argument('--rerank-top-n', type=int, default=10, help='参与 rerank 的候选数')
++    parser.add_argument('--rrf-k', type=int, default=DEFAULT_RRF_K, help='RRF 常数')
++    parser.add_argument('--output', '-o', default='./data/processed/advanced_retrieved_context.json', help='输出文件')
++    args = parser.parse_args()
++
++    payload = advanced_retrieve(
++        query=args.query,
++        chunks_path=args.chunks,
++        method=args.method,
++        top_k=args.top_k,
++        index_dir=args.index_dir or None,
++        embedding_model=args.embedding_model,
++        hybrid_weights=parse_hybrid_weights_arg(args.hybrid_weights),
++        rewrite=args.rewrite,
++        rewrite_max_queries=args.rewrite_max_queries,
++        rerank=args.rerank,
++        reranker_model=args.reranker_model,
++        rerank_top_n=args.rerank_top_n,
++        rrf_k=args.rrf_k,
++    )
++    save_results(payload, args.output)
++
++    print(f"查询: {payload['query']}")
++    print(f"基础方法: {payload['method']}")
++    print(f"改写数: {len(payload['rewrites'])}")
++    print(f"结果数: {payload['results_count']}")
++    print(f"abstain: {payload['advanced']['should_abstain']} {payload['advanced']['abstain_reason']}")
++    print(f"输出文件: {args.output}")
++    for item in payload['results']:
++        print(f"[{item['rank']}] score={item['score']:.4f} coverage={item.get('query_coverage', 0.0):.2f}")
++        print(f"    {str(item['chunk'].get('text', ''))[:120]}...")
++    return 0
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+--- /dev/null+++ b/rag_minimal/data/eval/retrieval_eval_formal_v1.json@@ -0,0 +1,98 @@+[
++  {
++    "id": "rag_core_components",
++    "domain": "rag",
++    "difficulty": "easy",
++    "source_hint": ["rag_introduction.md"],
++    "query": "RAG 系统的核心组成和基本流程是什么？",
++    "expected_substrings": ["retrieval", "generation", "document", "context", "RAG"]
++  },
++  {
++    "id": "rag_why_use_retrieval",
++    "domain": "rag",
++    "difficulty": "medium",
++    "source_hint": ["rag_introduction.md"],
++    "query": "为什么生成系统需要把外部文档检索和上下文增强结合起来？",
++    "expected_substrings": ["retrieval", "context", "document", "generation"]
++  },
++  {
++    "id": "transformer_architecture",
++    "domain": "nlp",
++    "difficulty": "easy",
++    "source_hint": ["transformer.pdf"],
++    "query": "Transformer 的核心结构和关键机制是什么？",
++    "expected_substrings": ["self-attention", "multi-head", "encoder", "decoder", "positional encoding"]
++  },
++  {
++    "id": "transformer_parallelism",
++    "domain": "nlp",
++    "difficulty": "medium",
++    "source_hint": ["transformer.pdf"],
++    "query": "Transformer 为什么相比循环结构更容易并行建模？",
++    "expected_substrings": ["self-attention", "parallel", "sequence", "RNN"]
++  },
++  {
++    "id": "bert_vs_gpt",
++    "domain": "llm",
++    "difficulty": "easy",
++    "source_hint": ["bert.pdf", "gpt.pdf"],
++    "query": "BERT 与 GPT 的主要区别是什么？",
++    "expected_substrings": ["BERT", "GPT", "bidirectional", "autoregressive", "masked language model", "causal language model"]
++  },
++  {
++    "id": "bert_pretraining_objective",
++    "domain": "llm",
++    "difficulty": "medium",
++    "source_hint": ["bert.pdf"],
++    "query": "BERT 的预训练目标和双向建模特点是什么？",
++    "expected_substrings": ["BERT", "bidirectional", "masked language model"]
++  },
++  {
++    "id": "gpt_autoregressive",
++    "domain": "llm",
++    "difficulty": "medium",
++    "source_hint": ["gpt.pdf"],
++    "query": "GPT 的自回归建模方式有什么特点？",
++    "expected_substrings": ["GPT", "autoregressive", "causal language model"]
++  },
++  {
++    "id": "gpt_scaling",
++    "domain": "llm",
++    "difficulty": "medium",
++    "source_hint": ["gpt2.pdf", "gpt3.pdf"],
++    "query": "GPT-2 与 GPT-3 在参数规模或能力上有什么差异？",
++    "expected_substrings": ["GPT-2", "GPT-3", "parameters", "few-shot"]
++  },
++  {
++    "id": "algo_complexity",
++    "domain": "algorithm",
++    "difficulty": "easy",
++    "source_hint": ["hello-algo_1.3.0_zh_cpp.pdf"],
++    "query": "算法分析里常见的时间复杂度和空间复杂度是什么意思？",
++    "expected_substrings": ["时间复杂度", "空间复杂度", "复杂度"]
++  },
++  {
++    "id": "signal_rag_goal",
++    "domain": "signal_rag",
++    "difficulty": "medium",
++    "source_hint": ["signal_rag_guide.md"],
++    "query": "signal RAG 指南关注的核心目标是什么？",
++    "expected_substrings": ["signal", "RAG", "信号"]
++  },
++  {
++    "id": "servo_fault_topic",
++    "domain": "servo_diagnosis",
++    "difficulty": "medium",
++    "source_hint": ["基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"],
++    "query": "飞机电动舵机故障诊断这篇论文主要研究什么问题？",
++    "expected_substrings": ["电动舵机", "故障诊断", "人工智能"]
++  },
++  {
++    "id": "mixed_corpus_disambiguation",
++    "domain": "mixed",
++    "difficulty": "hard",
++    "source_hint": ["transformer.pdf", "rag_introduction.md"],
++    "query": "如果问题同时涉及 Transformer 和 RAG，检索应该如何区分模型结构与系统流程？",
++    "expected_substrings": ["Transformer", "RAG", "retrieval", "generation", "self-attention"]
++  }
++]
+--- /dev/null+++ b/rag_minimal/docs_advanced_retrieval_patch.md@@ -0,0 +1,32 @@+# 高级检索增强补丁说明
++
++这份补丁补了 3 类能力，适合接在你当前 `rag_minimal` 之上：
++
++1. Query Rewrite  
++   通过 `query_rewrite.py` 为原始问题生成多查询候选，覆盖 RAG / Transformer / BERT / GPT / 信号诊断等主题。
++
++2. RRF 融合  
++   `advanced_retrieve.py` 会对多查询结果做 Reciprocal Rank Fusion，而不是只看单个 query 的返回。
++
++3. Rerank + Abstain  
++   `rerank.py` 支持可选 CrossEncoder；本地没有模型时自动回退到启发式 rerank。  
++   同时 `advanced_retrieve.py` 会给出 `should_abstain` 与 `abstain_reason`，用于低置信度场景。
++
++## 推荐命令
++
++```bash
++cd rag_minimal
++CUDA_VISIBLE_DEVICES=1 python advanced_retrieve.py \
++  --query "RAG 系统的核心组成是什么？" \
++  --chunks ./data/processed/eval_docs_chunks.jsonl \
++  --method hybrid \
++  --index-dir ./data/processed/vector_index \
++  --embedding-model /mnt/PRO6000_disk/models/BAAI/bge-m3 \
++  --rewrite \
++  --rewrite-max-queries 4 \
++  --rerank \
++  --rerank-top-n 10 \
++  --output ./data/processed/advanced_retrieved_context.json
++```
++
++如果你之后想上真正的 reranker，可以把 `--reranker-model` 指向本地 CrossEncoder / BGE reranker 模型目录。

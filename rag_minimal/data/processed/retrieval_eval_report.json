@@ -1,0 +1,718 @@
+{
+  "timestamp": "2026-04-19T01:00:08.576076",
+  "eval_file": "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/eval/retrieval_eval.json",
+  "chunks": "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/processed/eval_docs_chunks.jsonl",
+  "index_dir": "/mnt/PRO6000_disk/swd/servo_0/refrag/rag_minimal/data/processed/vector_index",
+  "embedding_model": "/mnt/PRO6000_disk/models/BAAI/bge-m3",
+  "top_k": 5,
+  "methods": [
+    "bm25",
+    "vector",
+    "hybrid"
+  ],
+  "reports": {
+    "bm25": {
+      "method": "bm25",
+      "top_k": 5,
+      "summary": {
+        "queries": 3,
+        "hit_at_k": 0.0,
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "mrr_at_k": 0.0,
+        "avg_first_relevant_rank": null
+      },
+      "hybrid_weights": null,
+      "cases": [
+        {
+          "case_id": "case_1",
+          "query": "Transformer 的核心结构和关键机制是什么？",
+          "method": "bm25",
+          "top_k": 5,
+          "hit_at_k": 0.0,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "mrr_at_k": 0.0,
+          "first_relevant_rank": null,
+          "matched_ranks": [],
+          "matched_items": [],
+          "results": [
+            {
+              "rank": 1,
+              "score": 0.7857142857142857,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 60,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第3 章数据结构\nwww.hello‑algo.com\n55\n单，更容易进行并行化处理，运算速度更快。\n请注意，这并不意味着计算机只能做加法。通过将加法与一些基本逻辑运算结合，计算机能够实现各种其他\n的数学运算。例如，计算减法𝑎−𝑏可以转换"
+            },
+            {
+              "rank": 2,
+              "score": 0.7857142857142857,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 110,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i++, j++) {\nres[i] = n"
+            },
+            {
+              "rank": 3,
+              "score": 0.7142857142857143,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 7,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第0 章前言\nwww.hello‑algo.com\n2\n0.1 关于本书\n本项目旨在创建一本开源、免费、对新手友好的数据结构与算法入门教程。\n‧ 全书采用动画图解，内容清晰易懂、学习曲线平滑，引导初学者探索数据结构与算法的知识地图。\n‧ 源"
+            },
+            {
+              "rank": 4,
+              "score": 0.7142857142857143,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 18,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第1 章初识算法\nwww.hello‑algo.com\n13\n图1‑3 货币找零过程\n在以上步骤中，我们每一步都采取当前看来最好的选择（尽可能用大面额的货币），最终得到了可行的找零方\n案。从数据结构与算法的角度看，这种方法本质上是“贪心”算"
+            },
+            {
+              "rank": 5,
+              "score": 0.7142857142857143,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 32,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第2 章复杂度分析\nwww.hello‑algo.com\n27\n迭代\n递归\n适用问\n题\n适用于简单循环任务，代码直观、可读性\n好\n适用于子问题分解，如树、图、分治、回溯等，代码结构简洁、\n清晰\nTip\n如果感觉以下内容理解困难，可以在读完“"
+            }
+          ],
+          "hybrid_weights": null
+        },
+        {
+          "case_id": "case_2",
+          "query": "BERT 与 GPT 的主要区别是什么？",
+          "method": "bm25",
+          "top_k": 5,
+          "hit_at_k": 0.0,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "mrr_at_k": 0.0,
+          "first_relevant_rank": null,
+          "matched_ranks": [],
+          "matched_items": [],
+          "results": [
+            {
+              "rank": 1,
+              "score": 0.7272727272727273,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 52,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第2 章复杂度分析\nwww.hello‑algo.com\n47\n‧ 空间复杂度的作用类似于时间复杂度，用于衡量算法占用内存空间随数据量增长的趋势。\n‧ 算法运行过程中的相关内存空间可分为输入空间、暂存空间、输出空间。通常情况下，输入空间不纳"
+            },
+            {
+              "rank": 2,
+              "score": 0.7272727272727273,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 88,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释放效率：栈是一块较小的内存，分配由编译器"
+            },
+            {
+              "rank": 3,
+              "score": 0.7272727272727273,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 89,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第4 章数组与链表\nwww.hello‑algo.com\n84\nQ：在Python 中初始化n = [1, 2, 3] 后，这3 个元素的地址是相连的，但是初始化m = [2, 1, 3] 会\n发现它们每个元素的id 并不是连续的，而是分别"
+            },
+            {
+              "rank": 4,
+              "score": 0.7272727272727273,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 165,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第7 章树\nwww.hello‑algo.com\n160\n‧ 前序、中序、后序遍历皆属于深度优先搜索，它们体现了“先走到尽头，再回溯继续”的遍历方式，通\n常使用递归来实现。\n‧ 二叉搜索树是一种高效的元素查找数据结构，其查找、插入和删除操作"
+            },
+            {
+              "rank": 5,
+              "score": 0.7272727272727273,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 245,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第11 章排序\nwww.hello‑algo.com\n240\n‧ 插入排序每轮将未排序区间内的元素插入到已排序区间的正确位置，从而完成排序。虽然插入排序的\n时间复杂度为𝑂(𝑛2) ，但由于单元操作相对较少，因此在小数据量的排序任务中非常受欢"
+            }
+          ],
+          "hybrid_weights": null
+        },
+        {
+          "case_id": "case_3",
+          "query": "RAG 系统的核心组成和基本流程是什么？",
+          "method": "bm25",
+          "top_k": 5,
+          "hit_at_k": 0.0,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "mrr_at_k": 0.0,
+          "first_relevant_rank": null,
+          "matched_ranks": [],
+          "matched_items": [],
+          "results": [
+            {
+              "rank": 1,
+              "score": 0.75,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 2,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "计算机的出现给世界带来了巨大变革，它凭借高速的计算能力和出色的可编程性，成为了执行算法与处理数\n据的理想媒介。无论是电子游戏的逼真画面、自动驾驶的智能决策，还是AlphaGo 的精彩棋局、ChatGPT\n的自然交互，这些应用都是算法在计算机"
+            },
+            {
+              "rank": 2,
+              "score": 0.75,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 88,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第4 章数组与链表\nwww.hello‑algo.com\n83\n存储在栈上和堆上的数组都被存储在连续内存空间内，数据操作效率基本一致。然而，栈和堆具有各自的特\n点，从而导致以下不同点。\n1. 分配和释放效率：栈是一块较小的内存，分配由编译器"
+            },
+            {
+              "rank": 3,
+              "score": 0.75,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 110,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第5 章栈与队列\nwww.hello‑algo.com\n105\nvector<int> res(queSize);\nfor (int i = 0, j = front; i < queSize; i++, j++) {\nres[i] = n"
+            },
+            {
+              "rank": 4,
+              "score": 0.75,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 240,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第11 章排序\nwww.hello‑algo.com\n235\n计数排序与桶排序的联系\n从桶排序的角度看，我们可以将计数排序中的计数数组counter 的每个索引视为一个桶，将统计数\n量的过程看作将各个元素分配到对应的桶中。本质上，计数排序是"
+            },
+            {
+              "rank": 5,
+              "score": 0.75,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 242,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "第11 章排序\nwww.hello‑algo.com\n237\n}\n^/ 使用结果数组res 覆盖原数组nums\nnums = res;\n}\n11.9.3 算法特性\n‧ 时间复杂度为𝑂(𝑛+ 𝑚)、非自适应排序：涉及遍历nums 和遍历cou"
+            }
+          ],
+          "hybrid_weights": null
+        }
+      ]
+    },
+    "vector": {
+      "method": "vector",
+      "top_k": 5,
+      "summary": {
+        "queries": 3,
+        "hit_at_k": 0.666667,
+        "precision_at_k": 0.6,
+        "recall_at_k": 0.666667,
+        "mrr_at_k": 0.666667,
+        "avg_first_relevant_rank": 1.0
+      },
+      "hybrid_weights": null,
+      "cases": [
+        {
+          "case_id": "case_1",
+          "query": "Transformer 的核心结构和关键机制是什么？",
+          "method": "vector",
+          "top_k": 5,
+          "hit_at_k": 1.0,
+          "precision_at_k": 0.8,
+          "recall_at_k": 1.0,
+          "mrr_at_k": 1.0,
+          "first_relevant_rank": 1,
+          "matched_ranks": [
+            1,
+            2,
+            3,
+            5
+          ],
+          "matched_items": [
+            {
+              "rank": 1,
+              "score": 0.6023235321044922,
+              "doc_id": "doc_20260417_114320_6798",
+              "chunk_id": 2,
+              "source": "data/input_docs/transformer.pdf",
+              "text_preview": "Figure 1: The Transformer - model architecture.\nThe Transformer follows this overall architecture using stacked self-att"
+            },
+            {
+              "rank": 2,
+              "score": 0.5819568634033203,
+              "doc_id": "doc_20260417_114320_6798",
+              "chunk_id": 0,
+              "source": "data/input_docs/transformer.pdf",
+              "text_preview": "Provided proper attribution is provided, Google hereby grants permission to\nreproduce the tables and figures in this pap"
+            },
+            {
+              "rank": 3,
+              "score": 0.5742610692977905,
+              "doc_id": "doc_20260417_114320_6798",
+              "chunk_id": 1,
+              "source": "data/input_docs/transformer.pdf",
+              "text_preview": "1\nIntroduction\nRecurrent neural networks, long short-term memory [13] and gated recurrent [7] neural networks\nin particu"
+            },
+            {
+              "rank": 5,
+              "score": 0.5256731510162354,
+              "doc_id": "doc_20260417_114320_6798",
+              "chunk_id": 8,
+              "source": "data/input_docs/transformer.pdf",
+              "text_preview": "Table 3: Variations on the Transformer architecture. Unlisted values are identical to those of the base\nmodel. All metri"
+            }
+          ],
+          "results": [
+            {
+              "rank": 1,
+              "score": 0.6023235321044922,
+              "doc_id": "doc_20260417_114320_6798",
+              "chunk_id": 2,
+              "source": "data/input_docs/transformer.pdf",
+              "text_preview": "Figure 1: The Transformer - model architecture.\nThe Transformer follows this overall architecture using stacked self-att"
+            },
+            {
+              "rank": 2,
+              "score": 0.5819568634033203,
+              "doc_id": "doc_20260417_114320_6798",
+              "chunk_id": 0,
+              "source": "data/input_docs/transformer.pdf",
+              "text_preview": "Provided proper attribution is provided, Google hereby grants permission to\nreproduce the tables and figures in this pap"
+            },
+            {
+              "rank": 3,
+              "score": 0.5742610692977905,
+              "doc_id": "doc_20260417_114320_6798",
+              "chunk_id": 1,
+              "source": "data/input_docs/transformer.pdf",
+              "text_preview": "1\nIntroduction\nRecurrent neural networks, long short-term memory [13] and gated recurrent [7] neural networks\nin particu"
+            },
+            {
+              "rank": 4,
+              "score": 0.5281912088394165,
+              "doc_id": "doc_20260417_114320_1667",
+              "chunk_id": 4,
+              "source": "data/input_docs/pdf_test.md",
+              "text_preview": "## 第二章：核心组件"
+            },
+            {
+              "rank": 5,
+              "score": 0.5256731510162354,
+              "doc_id": "doc_20260417_114320_6798",
+              "chunk_id": 8,
+              "source": "data/input_docs/transformer.pdf",
+              "text_preview": "Table 3: Variations on the Transformer architecture. Unlisted values are identical to those of the base\nmodel. All metri"
+            }
+          ],
+          "hybrid_weights": null
+        },
+        {
+          "case_id": "case_2",
+          "query": "BERT 与 GPT 的主要区别是什么？",
+          "method": "vector",
+          "top_k": 5,
+          "hit_at_k": 1.0,
+          "precision_at_k": 1.0,
+          "recall_at_k": 1.0,
+          "mrr_at_k": 1.0,
+          "first_relevant_rank": 1,
+          "matched_ranks": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "matched_items": [
+            {
+              "rank": 1,
+              "score": 0.6023081541061401,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 13,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "• Learning rate (Adam): 5e-5, 3e-5, 2e-5\n• Number of epochs: 2, 3, 4\nWe also observed that large data sets (e.g.,\n100k+ "
+            },
+            {
+              "rank": 2,
+              "score": 0.5699334144592285,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 0,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT: Pre-training of Deep Bidirectional Transformers for\nLanguage Understanding\nJacob Devlin\nMing-Wei Chang\nKenton Lee\n"
+            },
+            {
+              "rank": 3,
+              "score": 0.5346546769142151,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 2,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT\nBERT\nE[CLS]\nE1\n E[SEP]\n...\nEN\nE1’\n...\nEM’\nC\nT1\nT[SEP]\n...\nTN\nT1’\n...\nTM’\n[CLS]\nTok 1\n [SEP]\n...\nTok N\nTok 1\n...\nTok"
+            },
+            {
+              "rank": 4,
+              "score": 0.5316996574401855,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 8,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "mixed results on the downstream task impact of\nincreasing the pre-trained bi-LM size from two\nto four layers and Melamud"
+            },
+            {
+              "rank": 5,
+              "score": 0.5287774205207825,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 12,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT (Ours)\nTrm\nTrm\nTrm\nTrm\nTrm\nTrm\n...\n...\nTrm\nTrm\nTrm\nTrm\nTrm\nTrm\n...\n...\nOpenAI GPT\nLstm\nELMo\nLstm\nLstm\nLstm\nLstm\nLst"
+            }
+          ],
+          "results": [
+            {
+              "rank": 1,
+              "score": 0.6023081541061401,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 13,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "• Learning rate (Adam): 5e-5, 3e-5, 2e-5\n• Number of epochs: 2, 3, 4\nWe also observed that large data sets (e.g.,\n100k+ "
+            },
+            {
+              "rank": 2,
+              "score": 0.5699334144592285,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 0,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT: Pre-training of Deep Bidirectional Transformers for\nLanguage Understanding\nJacob Devlin\nMing-Wei Chang\nKenton Lee\n"
+            },
+            {
+              "rank": 3,
+              "score": 0.5346546769142151,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 2,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT\nBERT\nE[CLS]\nE1\n E[SEP]\n...\nEN\nE1’\n...\nEM’\nC\nT1\nT[SEP]\n...\nTN\nT1’\n...\nTM’\n[CLS]\nTok 1\n [SEP]\n...\nTok N\nTok 1\n...\nTok"
+            },
+            {
+              "rank": 4,
+              "score": 0.5316996574401855,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 8,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "mixed results on the downstream task impact of\nincreasing the pre-trained bi-LM size from two\nto four layers and Melamud"
+            },
+            {
+              "rank": 5,
+              "score": 0.5287774205207825,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 12,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT (Ours)\nTrm\nTrm\nTrm\nTrm\nTrm\nTrm\n...\n...\nTrm\nTrm\nTrm\nTrm\nTrm\nTrm\n...\n...\nOpenAI GPT\nLstm\nELMo\nLstm\nLstm\nLstm\nLstm\nLst"
+            }
+          ],
+          "hybrid_weights": null
+        },
+        {
+          "case_id": "case_3",
+          "query": "RAG 系统的核心组成和基本流程是什么？",
+          "method": "vector",
+          "top_k": 5,
+          "hit_at_k": 0.0,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "mrr_at_k": 0.0,
+          "first_relevant_rank": null,
+          "matched_ranks": [],
+          "matched_items": [],
+          "results": [
+            {
+              "rank": 1,
+              "score": 0.8677520155906677,
+              "doc_id": "doc_20260417_114320_7754",
+              "chunk_id": 0,
+              "source": "data/input_docs/rag_introduction.md",
+              "text_preview": "# RAG 系统简介"
+            },
+            {
+              "rank": 2,
+              "score": 0.7916293144226074,
+              "doc_id": "doc_20260417_114320_7754",
+              "chunk_id": 12,
+              "source": "data/input_docs/rag_introduction.md",
+              "text_preview": "## RAG 的工作流程"
+            },
+            {
+              "rank": 3,
+              "score": 0.7808709144592285,
+              "doc_id": "doc_20260417_114320_1667",
+              "chunk_id": 5,
+              "source": "data/input_docs/pdf_test.md",
+              "text_preview": "RAG 系统包含三个核心组件："
+            },
+            {
+              "rank": 4,
+              "score": 0.7771750688552856,
+              "doc_id": "doc_20260417_114320_7754",
+              "chunk_id": 3,
+              "source": "data/input_docs/rag_introduction.md",
+              "text_preview": "## RAG 的核心组件"
+            },
+            {
+              "rank": 5,
+              "score": 0.758828341960907,
+              "doc_id": "doc_20260417_114320_7754",
+              "chunk_id": 1,
+              "source": "data/input_docs/rag_introduction.md",
+              "text_preview": "## 什么是 RAG？"
+            }
+          ],
+          "hybrid_weights": null
+        }
+      ]
+    },
+    "hybrid": {
+      "method": "hybrid",
+      "top_k": 5,
+      "summary": {
+        "queries": 3,
+        "hit_at_k": 0.666667,
+        "precision_at_k": 0.333333,
+        "recall_at_k": 0.666667,
+        "mrr_at_k": 0.4,
+        "avg_first_relevant_rank": 3.0
+      },
+      "hybrid_weights": {
+        "bm25": 0.35,
+        "tfidf": 0.15,
+        "keyword": 0.1,
+        "vector": 0.4
+      },
+      "cases": [
+        {
+          "case_id": "case_1",
+          "query": "Transformer 的核心结构和关键机制是什么？",
+          "method": "hybrid",
+          "top_k": 5,
+          "hit_at_k": 1.0,
+          "precision_at_k": 0.2,
+          "recall_at_k": 1.0,
+          "mrr_at_k": 0.2,
+          "first_relevant_rank": 5,
+          "matched_ranks": [
+            5
+          ],
+          "matched_items": [
+            {
+              "rank": 5,
+              "score": 0.6408469009476849,
+              "doc_id": "doc_20260417_114320_6798",
+              "chunk_id": 2,
+              "source": "data/input_docs/transformer.pdf",
+              "text_preview": "Figure 1: The Transformer - model architecture.\nThe Transformer follows this overall architecture using stacked self-att"
+            }
+          ],
+          "results": [
+            {
+              "rank": 1,
+              "score": 0.7578821592375591,
+              "doc_id": "doc_20260417_114320_7754",
+              "chunk_id": 3,
+              "source": "data/input_docs/rag_introduction.md",
+              "text_preview": "## RAG 的核心组件"
+            },
+            {
+              "rank": 2,
+              "score": 0.7570399840109694,
+              "doc_id": "doc_20260417_114320_1667",
+              "chunk_id": 4,
+              "source": "data/input_docs/pdf_test.md",
+              "text_preview": "## 第二章：核心组件"
+            },
+            {
+              "rank": 3,
+              "score": 0.6617010534459774,
+              "doc_id": "doc_20260417_114320_9895",
+              "chunk_id": 25,
+              "source": "data/input_docs/基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf",
+              "text_preview": "西北工业大学博士学位论文\n第二章电动舵机故障诊断模型和平台建立\n16\n2.1.1 EMA 的组成和工作原理\n电动舵机一般由伺服控制的伺服电机、齿轮减速装置和实现直线运动的滚珠\n丝杆副组成[111][112]，其结构如图2-2 所示。\n图2-"
+            },
+            {
+              "rank": 4,
+              "score": 0.6547194965931877,
+              "doc_id": "doc_20260417_114320_2978",
+              "chunk_id": 2,
+              "source": "data/input_docs/hello-algo_1.3.0_zh_cpp.pdf",
+              "text_preview": "计算机的出现给世界带来了巨大变革，它凭借高速的计算能力和出色的可编程性，成为了执行算法与处理数\n据的理想媒介。无论是电子游戏的逼真画面、自动驾驶的智能决策，还是AlphaGo 的精彩棋局、ChatGPT\n的自然交互，这些应用都是算法在计算机"
+            },
+            {
+              "rank": 5,
+              "score": 0.6408469009476849,
+              "doc_id": "doc_20260417_114320_6798",
+              "chunk_id": 2,
+              "source": "data/input_docs/transformer.pdf",
+              "text_preview": "Figure 1: The Transformer - model architecture.\nThe Transformer follows this overall architecture using stacked self-att"
+            }
+          ],
+          "hybrid_weights": {
+            "bm25": 0.35,
+            "tfidf": 0.15,
+            "keyword": 0.1,
+            "vector": 0.4
+          }
+        },
+        {
+          "case_id": "case_2",
+          "query": "BERT 与 GPT 的主要区别是什么？",
+          "method": "hybrid",
+          "top_k": 5,
+          "hit_at_k": 1.0,
+          "precision_at_k": 0.8,
+          "recall_at_k": 1.0,
+          "mrr_at_k": 1.0,
+          "first_relevant_rank": 1,
+          "matched_ranks": [
+            1,
+            2,
+            3,
+            5
+          ],
+          "matched_items": [
+            {
+              "rank": 1,
+              "score": 0.7332882600280818,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 13,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "• Learning rate (Adam): 5e-5, 3e-5, 2e-5\n• Number of epochs: 2, 3, 4\nWe also observed that large data sets (e.g.,\n100k+ "
+            },
+            {
+              "rank": 2,
+              "score": 0.6472660640958862,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 0,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT: Pre-training of Deep Bidirectional Transformers for\nLanguage Understanding\nJacob Devlin\nMing-Wei Chang\nKenton Lee\n"
+            },
+            {
+              "rank": 3,
+              "score": 0.6106269877666447,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 2,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT\nBERT\nE[CLS]\nE1\n E[SEP]\n...\nEN\nE1’\n...\nEM’\nC\nT1\nT[SEP]\n...\nTN\nT1’\n...\nTM’\n[CLS]\nTok 1\n [SEP]\n...\nTok N\nTok 1\n...\nTok"
+            },
+            {
+              "rank": 5,
+              "score": 0.5774447731177486,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 12,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT (Ours)\nTrm\nTrm\nTrm\nTrm\nTrm\nTrm\n...\n...\nTrm\nTrm\nTrm\nTrm\nTrm\nTrm\n...\n...\nOpenAI GPT\nLstm\nELMo\nLstm\nLstm\nLstm\nLstm\nLst"
+            }
+          ],
+          "results": [
+            {
+              "rank": 1,
+              "score": 0.7332882600280818,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 13,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "• Learning rate (Adam): 5e-5, 3e-5, 2e-5\n• Number of epochs: 2, 3, 4\nWe also observed that large data sets (e.g.,\n100k+ "
+            },
+            {
+              "rank": 2,
+              "score": 0.6472660640958862,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 0,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT: Pre-training of Deep Bidirectional Transformers for\nLanguage Understanding\nJacob Devlin\nMing-Wei Chang\nKenton Lee\n"
+            },
+            {
+              "rank": 3,
+              "score": 0.6106269877666447,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 2,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT\nBERT\nE[CLS]\nE1\n E[SEP]\n...\nEN\nE1’\n...\nEM’\nC\nT1\nT[SEP]\n...\nTN\nT1’\n...\nTM’\n[CLS]\nTok 1\n [SEP]\n...\nTok N\nTok 1\n...\nTok"
+            },
+            {
+              "rank": 4,
+              "score": 0.5925261158143327,
+              "doc_id": "doc_20260417_114320_5465",
+              "chunk_id": 19,
+              "source": "data/input_docs/gpt3.pdf",
+              "text_preview": "Figure 3.8: Performance on SuperGLUE increases with model size and number of examples in context. A value\nof K = 32 mean"
+            },
+            {
+              "rank": 5,
+              "score": 0.5774447731177486,
+              "doc_id": "doc_20260417_114320_1772",
+              "chunk_id": 12,
+              "source": "data/input_docs/bert.pdf",
+              "text_preview": "BERT (Ours)\nTrm\nTrm\nTrm\nTrm\nTrm\nTrm\n...\n...\nTrm\nTrm\nTrm\nTrm\nTrm\nTrm\n...\n...\nOpenAI GPT\nLstm\nELMo\nLstm\nLstm\nLstm\nLstm\nLst"
+            }
+          ],
+          "hybrid_weights": {
+            "bm25": 0.35,
+            "tfidf": 0.15,
+            "keyword": 0.1,
+            "vector": 0.4
+          }
+        },
+        {
+          "case_id": "case_3",
+          "query": "RAG 系统的核心组成和基本流程是什么？",
+          "method": "hybrid",
+          "top_k": 5,
+          "hit_at_k": 0.0,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "mrr_at_k": 0.0,
+          "first_relevant_rank": null,
+          "matched_ranks": [],
+          "matched_items": [],
+          "results": [
+            {
+              "rank": 1,
+              "score": 0.8352303892877839,
+              "doc_id": "doc_20260417_114320_1667",
+              "chunk_id": 5,
+              "source": "data/input_docs/pdf_test.md",
+              "text_preview": "RAG 系统包含三个核心组件："
+            },
+            {
+              "rank": 2,
+              "score": 0.8308117209647068,
+              "doc_id": "doc_20260417_114320_7754",
+              "chunk_id": 3,
+              "source": "data/input_docs/rag_introduction.md",
+              "text_preview": "## RAG 的核心组件"
+            },
+            {
+              "rank": 3,
+              "score": 0.8017858125143413,
+              "doc_id": "doc_20260417_114320_7754",
+              "chunk_id": 1,
+              "source": "data/input_docs/rag_introduction.md",
+              "text_preview": "## 什么是 RAG？"
+            },
+            {
+              "rank": 4,
+              "score": 0.7835944965098876,
+              "doc_id": "doc_20260417_114320_7754",
+              "chunk_id": 0,
+              "source": "data/input_docs/rag_introduction.md",
+              "text_preview": "# RAG 系统简介"
+            },
+            {
+              "rank": 5,
+              "score": 0.76613123768479,
+              "doc_id": "doc_20260417_114320_7754",
+              "chunk_id": 12,
+              "source": "data/input_docs/rag_introduction.md",
+              "text_preview": "## RAG 的工作流程"
+            }
+          ],
+          "hybrid_weights": {
+            "bm25": 0.35,
+            "tfidf": 0.15,
+            "keyword": 0.1,
+            "vector": 0.4
+          }
+        }
+      ]
+    }
+  }
+}

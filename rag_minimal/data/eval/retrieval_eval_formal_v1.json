@@ -1,0 +1,98 @@
+[
+  {
+    "id": "rag_core_components",
+    "domain": "rag",
+    "difficulty": "easy",
+    "source_hint": ["rag_introduction.md"],
+    "query": "RAG 系统的核心组成和基本流程是什么？",
+    "expected_substrings": ["retrieval", "generation", "document", "context", "RAG"]
+  },
+  {
+    "id": "rag_why_use_retrieval",
+    "domain": "rag",
+    "difficulty": "medium",
+    "source_hint": ["rag_introduction.md"],
+    "query": "为什么生成系统需要把外部文档检索和上下文增强结合起来？",
+    "expected_substrings": ["retrieval", "context", "document", "generation"]
+  },
+  {
+    "id": "transformer_architecture",
+    "domain": "nlp",
+    "difficulty": "easy",
+    "source_hint": ["transformer.pdf"],
+    "query": "Transformer 的核心结构和关键机制是什么？",
+    "expected_substrings": ["self-attention", "multi-head", "encoder", "decoder", "positional encoding"]
+  },
+  {
+    "id": "transformer_parallelism",
+    "domain": "nlp",
+    "difficulty": "medium",
+    "source_hint": ["transformer.pdf"],
+    "query": "Transformer 为什么相比循环结构更容易并行建模？",
+    "expected_substrings": ["self-attention", "parallel", "sequence", "RNN"]
+  },
+  {
+    "id": "bert_vs_gpt",
+    "domain": "llm",
+    "difficulty": "easy",
+    "source_hint": ["bert.pdf", "gpt.pdf"],
+    "query": "BERT 与 GPT 的主要区别是什么？",
+    "expected_substrings": ["BERT", "GPT", "bidirectional", "autoregressive", "masked language model", "causal language model"]
+  },
+  {
+    "id": "bert_pretraining_objective",
+    "domain": "llm",
+    "difficulty": "medium",
+    "source_hint": ["bert.pdf"],
+    "query": "BERT 的预训练目标和双向建模特点是什么？",
+    "expected_substrings": ["BERT", "bidirectional", "masked language model"]
+  },
+  {
+    "id": "gpt_autoregressive",
+    "domain": "llm",
+    "difficulty": "medium",
+    "source_hint": ["gpt.pdf"],
+    "query": "GPT 的自回归建模方式有什么特点？",
+    "expected_substrings": ["GPT", "autoregressive", "causal language model"]
+  },
+  {
+    "id": "gpt_scaling",
+    "domain": "llm",
+    "difficulty": "medium",
+    "source_hint": ["gpt2.pdf", "gpt3.pdf"],
+    "query": "GPT-2 与 GPT-3 在参数规模或能力上有什么差异？",
+    "expected_substrings": ["GPT-2", "GPT-3", "parameters", "few-shot"]
+  },
+  {
+    "id": "algo_complexity",
+    "domain": "algorithm",
+    "difficulty": "easy",
+    "source_hint": ["hello-algo_1.3.0_zh_cpp.pdf"],
+    "query": "算法分析里常见的时间复杂度和空间复杂度是什么意思？",
+    "expected_substrings": ["时间复杂度", "空间复杂度", "复杂度"]
+  },
+  {
+    "id": "signal_rag_goal",
+    "domain": "signal_rag",
+    "difficulty": "medium",
+    "source_hint": ["signal_rag_guide.md"],
+    "query": "signal RAG 指南关注的核心目标是什么？",
+    "expected_substrings": ["signal", "RAG", "信号"]
+  },
+  {
+    "id": "servo_fault_topic",
+    "domain": "servo_diagnosis",
+    "difficulty": "medium",
+    "source_hint": ["基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf"],
+    "query": "飞机电动舵机故障诊断这篇论文主要研究什么问题？",
+    "expected_substrings": ["电动舵机", "故障诊断", "人工智能"]
+  },
+  {
+    "id": "mixed_corpus_disambiguation",
+    "domain": "mixed",
+    "difficulty": "hard",
+    "source_hint": ["transformer.pdf", "rag_introduction.md"],
+    "query": "如果问题同时涉及 Transformer 和 RAG，检索应该如何区分模型结构与系统流程？",
+    "expected_substrings": ["Transformer", "RAG", "retrieval", "generation", "self-attention"]
+  }
+]
