@@ -75,9 +75,9 @@ def _compute_confidence(results: List[Dict[str, Any]], total_queries: int, rrf_k
         }
 
     max_possible = total_queries * (1.0 / (rrf_k + 1))
-    top1 = float(results[0]['score'])
-    top2 = float(results[1]['score']) if len(results) > 1 else 0.0
-    mean_top3 = sum(float(item['score']) for item in results[:3]) / max(min(3, len(results)), 1)
+    top1 = float(results[0].get('rrf_score', results[0]['score']))
+    top2 = float(results[1].get('rrf_score', results[1]['score'])) if len(results) > 1 else 0.0
+    mean_top3 = sum(float(item.get('rrf_score', item['score'])) for item in results[:3]) / max(min(3, len(results)), 1)
 
     normalized_top1 = top1 / max_possible if max_possible > 0 else 0.0
     normalized_margin = (top1 - top2) / max_possible if max_possible > 0 else 0.0
@@ -129,10 +129,20 @@ def advanced_retrieve(query: str,
     ]
 
     fused_results = fuse_with_rrf(payloads, top_k=max(top_k, rerank_top_n if rerank else top_k), rrf_k=rrf_k)
+
+    rrf_scores = {
+        _chunk_key(item): float(item['score'])
+        for item in fused_results
+    }
+
     if rerank:
         fused_results = rerank_results(query, fused_results, model_name=reranker_model, top_n=rerank_top_n)
 
     final_results = fused_results[:top_k]
+    for item in final_results:
+        key = _chunk_key(item)
+        item['rrf_score'] = rrf_scores.get(key, float(item.get('score', 0.0)))
+
     confidence = _compute_confidence(final_results, total_queries=len(rewrites), rrf_k=rrf_k)
     should_abstain, abstain_reason = _abstain_decision(confidence)
 
