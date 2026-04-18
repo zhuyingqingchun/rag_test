@@ -1,0 +1,51 @@
+{
+  "query": "RAG 系统的核心组成是什么",
+  "method": "vector",
+  "total_chunks": 763,
+  "results_count": 5,
+  "timestamp": "2026-04-19T00:22:02.583692",
+  "results": [
+    {
+      "doc_id": "doc_20260417_114320_7754",
+      "chunk_id": 0,
+      "source": "data/input_docs/rag_introduction.md",
+      "text": "# RAG 系统简介",
+      "score": 0.8379701375961304,
+      "rank": 1
+    },
+    {
+      "doc_id": "doc_20260417_114320_7754",
+      "chunk_id": 3,
+      "source": "data/input_docs/rag_introduction.md",
+      "text": "## RAG 的核心组件",
+      "score": 0.8288674354553223,
+      "rank": 2
+    },
+    {
+      "doc_id": "doc_20260417_114320_1667",
+      "chunk_id": 5,
+      "source": "data/input_docs/pdf_test.md",
+      "text": "RAG 系统包含三个核心组件：",
+      "score": 0.8073205351829529,
+      "rank": 3
+    },
+    {
+      "doc_id": "doc_20260417_114320_7754",
+      "chunk_id": 1,
+      "source": "data/input_docs/rag_introduction.md",
+      "text": "## 什么是 RAG？",
+      "score": 0.7413250207901001,
+      "rank": 4
+    },
+    {
+      "doc_id": "doc_20260417_114320_7754",
+      "chunk_id": 12,
+      "source": "data/input_docs/rag_introduction.md",
+      "text": "## RAG 的工作流程",
+      "score": 0.7179151177406311,
+      "rank": 5
+    }
+  ],
+  "index_dir": "./data/processed/vector_index",
+  "embedding_model": "BAAI/bge-m3"
+}

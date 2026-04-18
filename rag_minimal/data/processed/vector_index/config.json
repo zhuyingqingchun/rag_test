@@ -1,0 +1,6 @@
+{
+  "model_name": "BAAI/bge-m3",
+  "dimension": 1024,
+  "total_chunks": 763,
+  "backend": "faiss"
+}

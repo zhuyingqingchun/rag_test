@@ -38,8 +38,46 @@ def _get_model(model_name: str):
             raise ImportError(
                 '未安装 sentence-transformers，请运行: pip install sentence-transformers'
             ) from exc
-        _MODEL_CACHE[model_name] = SentenceTransformer(model_name)
+        
+        # 尝试使用 modelscope 下载模型
+        model_path = _resolve_model_path(model_name)
+        _MODEL_CACHE[model_name] = SentenceTransformer(model_path)
     return _MODEL_CACHE[model_name]
+
+
+def _resolve_model_path(model_name: str) -> str:
+    """解析模型路径，优先使用本地已下载的模型。"""
+    # 如果是本地路径且存在，直接返回
+    if os.path.isdir(model_name):
+        return model_name
+    
+    # 检查本地模型目录是否存在
+    local_model_dir = '/mnt/PRO6000_disk/models/BAAI/bge-m3'
+    if model_name == 'BAAI/bge-m3' and os.path.isdir(local_model_dir):
+        print(f"使用本地模型: {local_model_dir}")
+        return local_model_dir
+    
+    # 尝试使用 modelscope 下载
+    try:
+        from modelscope import snapshot_download
+        # 映射 HuggingFace 模型名到魔塔社区模型 ID
+        model_id_map = {
+            'BAAI/bge-m3': 'BAAI/bge-m3',
+            'BAAI/bge-large-zh-v1.5': 'BAAI/bge-large-zh-v1.5',
+            'BAAI/bge-base-zh-v1.5': 'BAAI/bge-base-zh-v1.5',
+        }
+        model_id = model_id_map.get(model_name, model_name)
+        
+        print(f"使用魔塔社区下载模型: {model_id}")
+        local_path = snapshot_download(model_id, cache_dir='/mnt/PRO6000_disk/models')
+        print(f"模型已下载到: {local_path}")
+        return local_path
+    except ImportError:
+        print("未安装 modelscope，将从 HuggingFace 下载")
+        return model_name
+    except Exception as e:
+        print(f"魔塔社区下载失败 ({e})，将从 HuggingFace 下载")
+        return model_name
 
 
 def encode_texts(texts: List[str], model_name: str = 'BAAI/bge-m3', batch_size: int = 32) -> np.ndarray:
