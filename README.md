@@ -1,0 +1,350 @@
+# RAG 检索与报告生成系统
+
+## 项目概述
+
+这是一个完整的 RAG（Retrieval-Augmented Generation）检索与报告生成系统，支持多种检索策略、多模板报告生成和离线评估。系统基于本地 GPU 环境运行，使用 Qwen 大语言模型生成结构化报告。
+
+---
+
+## 系统架构
+
+```
+refrag/
+├── rag_minimal/              # RAG 核心系统（当前主项目）
+├── qwen_service/             # Qwen 模型服务（本地 API）
+├── report_system/            # 基于 Haystack 的报告系统（早期版本）
+├── plan_patch/               # 补丁文件目录
+├── configs/                  # 配置文件
+├── scripts/                  # 工具脚本
+├── src/                      # 源码（训练/推理/信号处理）
+├── tests/                    # 测试代码
+├── templates/                # 模板文件
+├── docs/                     # 文档
+├── outputs/                  # 输出结果
+└── data/                     # 数据目录
+```
+
+---
+
+## 核心模块说明
+
+### 1. `rag_minimal/` - RAG 最小闭环系统（主项目）
+
+当前正在开发的核心项目，实现了完整的 RAG 检索和报告生成流程。
+
+```
+rag_minimal/
+├── data/
+│   ├── input_docs/           # 输入文档目录（PDF/MD/TXT）
+│   ├── processed/            # 处理结果目录
+│   │   ├── vector_index/     # 向量索引（FAISS）
+│   │   ├── eval_docs_chunks.jsonl  # 切分后的文档块
+│   │   └── retrieval_eval_report.json  # 评估报告
+│   ├── eval/                 # 评估数据集
+│   │   └── retrieval_eval.json  # 检索评估样例
+│   └── runs/                 # 运行记录目录
+├── 核心模块
+│   ├── ingest.py             # 文档导入（支持 txt/md/pdf）
+│   ├── chunk.py              # 文本切分（段落/字符/句子）
+│   ├── retrieve.py           # 检索模块（BM25/TF-IDF/Keyword/Vector/Hybrid）
+│   ├── vector_store.py       # 向量索引构建与查询（Sentence-Transformers + FAISS）
+│   ├── build_vector_index.py # 向量索引构建脚本
+│   ├── generate_report.py    # 报告生成（调用 Qwen API）
+│   └── pipeline_demo.py      # 完整流程演示
+├── 评估模块
+│   ├── evaluate_main.py      # 主评估流程（检索+报告质量）
+│   ├── evaluate_retrieval.py # 检索离线评估（对比 bm25/vector/hybrid）
+│   ├── evaluate_report.py    # 报告质量评估
+│   ├── evaluate_template_matrix.py  # 多模板对比评估
+│   └── tune_hybrid_weights.py  # 混合检索权重扫描
+├── 配置与模板
+│   ├── report_templates.py   # 报告模板（summary/research/comparison/project/incident）
+│   ├── text_utils.py         # 文本处理工具
+│   └── README.md             # 模块说明
+└── 其他
+    ├── logs/                 # 日志目录
+    └── models/               # 模型缓存目录
+```
+
+**检索方法支持：**
+- `bm25` - BM25 稀疏检索
+- `tfidf` - TF-IDF 余弦相似度
+- `keyword` - 关键词重叠匹配
+- `vector` - 向量语义检索（BGE-M3 + FAISS）
+- `hybrid` - 混合检索（四路加权融合）
+
+**报告模板支持：**
+- `summary` - 文档摘要报告
+- `research` - 专题调研报告
+- `comparison` - 对比分析报告
+- `project` - 项目汇报报告
+- `incident` - 故障/事件分析报告
+
+### 2. `qwen_service/` - Qwen 模型服务
+
+本地 Qwen 大模型 API 服务，提供 OpenAI 兼容接口。
+
+```
+qwen_service/
+├── config.py                 # 服务配置
+├── run_server.py             # 启动服务
+├── stop_server.py            # 停止服务
+├── status_server.py          # 查看服务状态
+├── test_openai_client.py     # 客户端测试
+├── self_check.py             # 自检脚本
+├── utils.py                  # 工具函数
+└── logs/                     # 服务日志
+```
+
+**服务信息：**
+- 端口：8000
+- 接口：OpenAI 兼容 API
+- 模型：next80b_fp8
+- 框架：vLLM
+
+### 3. `report_system/` - 基于 Haystack 的报告系统（早期版本）
+
+```
+report_system/
+├── __init__.py
+├── config.py                 # 配置管理
+├── knowledge_base.py         # 知识库管理
+├── template_engine.py        # 模板引擎
+├── export.py                 # 导出模块
+└── main.py                   # 主入口
+```
+
+### 4. `plan_patch/` - 补丁文件目录
+
+存放各阶段开发的补丁文件，用于代码升级和版本管理。
+
+### 5. `src/` - 源码目录
+
+```
+src/
+├── data/                     # 数据处理
+├── models/                   # 模型定义
+├── training/                 # 训练代码
+├── inference/                # 推理代码
+├── signal_rag/               # 信号处理 RAG
+└── utils/                    # 工具函数
+```
+
+---
+
+## 硬件环境
+
+### GPU 配置
+
+| GPU ID | 型号 | 显存 | 用途 |
+|--------|------|------|------|
+| GPU 0 | NVIDIA RTX PRO 6000 Blackwell | 97.9 GB | vLLM 服务（Qwen 模型） |
+| GPU 1 | NVIDIA RTX PRO 6000 Blackwell | 97.9 GB | 向量检索（BGE-M3 编码） |
+| GPU 2 | NVIDIA RTX PRO 6000 Blackwell | 97.9 GB | 空闲 |
+| GPU 3 | NVIDIA RTX PRO 6000 Blackwell | 97.9 GB | 空闲 |
+
+**总计：4 × 97.9 GB = 391.6 GB 显存**
+
+### Conda 环境
+
+- **环境名称**：`swdtorch12`
+- **Python 版本**：3.11
+- **路径**：`/home/a/miniconda3/envs/swdtorch12`
+- **环境说明文件**：`remi.md`
+
+---
+
+## 模型信息
+
+### 1. Embedding 模型（向量检索）
+
+- **模型名称**：`BAAI/bge-m3`
+- **本地路径**：`/mnt/PRO6000_disk/models/BAAI/bge-m3`
+- **模型大小**：2.2 GB
+- **向量维度**：1024
+- **下载方式**：魔塔社区（ModelScope）
+- **用途**：文本向量化，用于向量检索和混合检索
+
+### 2. LLM 模型（报告生成）
+
+- **模型名称**：`next80b_fp8`
+- **服务地址**：`http://127.0.0.1:8000/v1`
+- **框架**：vLLM
+- **精度**：FP8
+- **用途**：结构化报告生成
+
+---
+
+## 数据说明
+
+### 输入文档（`rag_minimal/data/input_docs/`）
+
+| 文件名 | 类型 | 说明 |
+|--------|------|------|
+| `transformer.pdf` | PDF | Transformer 模型介绍 |
+| `bert.pdf` | PDF | BERT 模型介绍 |
+| `gpt.pdf` | PDF | GPT 模型介绍 |
+| `gpt2.pdf` | PDF | GPT-2 模型介绍 |
+| `gpt3.pdf` | PDF | GPT-3 模型介绍 |
+| `hello-algo_1.3.0_zh_cpp.pdf` | PDF | 算法教程（中文版） |
+| `signal_rag_guide.md` | MD | 信号处理 RAG 指南 |
+| `rag_introduction.md` | MD | RAG 系统简介 |
+| `基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf` | PDF | 学术论文（12MB） |
+
+### 评估数据（`rag_minimal/data/eval/`）
+
+- `retrieval_eval.json` - 检索评估样例（3 个测试用例）
+
+### 处理结果（`rag_minimal/data/processed/`）
+
+- `eval_docs_chunks.jsonl` - 切分后的文档块（763 个 chunk）
+- `vector_index/` - 向量索引（FAISS 格式）
+- `retrieval_eval_report.json` - 检索评估报告
+- `hybrid_weight_scan.json` - 混合权重扫描结果
+
+---
+
+## 快速开始
+
+### 1. 激活环境
+
+```bash
+conda activate swdtorch12
+```
+
+### 2. 启动 Qwen 服务
+
+```bash
+cd qwen_service
+python run_server.py
+```
+
+### 3. 构建向量索引
+
+```bash
+cd rag_minimal
+CUDA_VISIBLE_DEVICES=1 python vector_store.py build \
+  --chunks ./data/processed/eval_docs_chunks.jsonl \
+  --output ./data/processed/vector_index
+```
+
+### 4. 运行检索评估
+
+```bash
+cd rag_minimal
+CUDA_VISIBLE_DEVICES=1 python evaluate_retrieval.py \
+  --eval-file ./data/eval/retrieval_eval.json \
+  --chunks ./data/processed/eval_docs_chunks.jsonl \
+  --methods bm25,vector,hybrid \
+  --top-k 5 \
+  --index-dir ./data/processed/vector_index \
+  --embedding-model /mnt/PRO6000_disk/models/BAAI/bge-m3 \
+  --output ./data/processed/retrieval_eval_report.json
+```
+
+### 5. 运行完整流程
+
+```bash
+cd rag_minimal
+CUDA_VISIBLE_DEVICES=1 python pipeline_demo.py \
+  --query "RAG 系统的核心组成是什么？" \
+  --input ./data/input_docs \
+  --chunk-method paragraph \
+  --retrieve-method hybrid \
+  --embedding-model BAAI/bge-m3 \
+  --top-k 5 \
+  --save-run
+```
+
+---
+
+## 依赖安装
+
+### 基础依赖
+
+```bash
+pip install requests openai
+```
+
+### 稀疏检索
+
+```bash
+pip install rank-bm25 scikit-learn
+```
+
+### 向量检索
+
+```bash
+pip install sentence-transformers faiss-cpu
+```
+
+### PDF 支持
+
+```bash
+pip install PyMuPDF
+```
+
+### 模型下载（魔塔社区）
+
+```bash
+pip install modelscope
+modelscope download --model BAAI/bge-m3 --local_dir /mnt/PRO6000_disk/models/BAAI/bge-m3
+```
+
+---
+
+## 评估指标
+
+### 检索评估
+
+- **Hit@K** - 前 K 个结果中是否有命中
+- **Precision@K** - 前 K 个结果的精确率
+- **Recall@K** - 召回率
+- **MRR@K** - 平均倒数排名
+
+### 报告评估
+
+- **结构完整率** - 报告结构是否完整
+- **引用覆盖率** - 证据引用是否充分
+- **事实一致性** - 报告内容是否与证据一致
+- **综合得分** - 加权综合评分
+
+---
+
+## Git 仓库
+
+- **远程地址**：`https://github.com/zhuyingqingchun/rag_test.git`
+- **默认分支**：`main`
+- **当前状态**：已推送最新代码
+
+---
+
+## 项目历史
+
+1. **第一阶段**：基于 Haystack 构建文档检索和报告生成系统（`report_system/`）
+2. **第二阶段**：实现 Qwen 模型服务（`qwen_service/`）
+3. **第三阶段**：开发 RAG 最小闭环系统（`rag_minimal/`）
+4. **第四阶段**：添加 PDF 支持和评估实验
+5. **第五阶段**：代码审查和改进补丁
+6. **第六阶段**：多模板报告生成
+7. **第七阶段**：多模板对比评估
+8. **第八阶段**：混合检索升级（BM25 + TF-IDF + Keyword + Vector）
+9. **第九阶段**：检索评估和混合检索稳定性扫描（当前）
+
+---
+
+## 下一步计划
+
+- [ ] Rerank 模块
+- [ ] Query Rewrite
+- [ ] Refusal / Abstain 机制
+- [ ] 幻觉专项评估
+- [ ] 更大规模评测集
+
+---
+
+## 联系方式
+
+- **项目维护者**：用户
+- **代码审查**：通过补丁文件进行版本管理
+- **远程仓库**：`https://github.com/zhuyingqingchun/rag_test.git`
