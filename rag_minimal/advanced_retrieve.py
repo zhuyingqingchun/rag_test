@@ -13,11 +13,49 @@ from rerank import rerank_results
 from retrieve import parse_hybrid_weights_arg, retrieve
 
 DEFAULT_RRF_K = 60
+DEFAULT_ABSTAIN_THRESHOLDS = {
+    'min_rrf_top1': 0.22,
+    'min_rrf_margin': 0.03,
+    'min_query_coverage': 0.34,
+    'min_rerank_top1': 0.35,
+}
 
 
 def _chunk_key(item: Dict[str, Any]) -> Tuple[str, str]:
     chunk = item['chunk']
     return (str(chunk.get('doc_id', '')), str(chunk.get('chunk_id', '')))
+
+
+def normalize_abstain_thresholds(thresholds: Dict[str, float] | None = None) -> Dict[str, float]:
+    base = dict(DEFAULT_ABSTAIN_THRESHOLDS)
+    if not thresholds:
+        return base
+    for key, value in thresholds.items():
+        if key not in base:
+            raise ValueError(f'未知 abstain 阈值字段: {key}')
+        numeric_value = float(value)
+        if numeric_value < 0:
+            raise ValueError(f'abstain 阈值必须 >= 0: {key}={numeric_value}')
+        base[key] = numeric_value
+    return base
+
+
+def parse_abstain_thresholds_arg(raw_value: str | None) -> Dict[str, float] | None:
+    if not raw_value:
+        return None
+    raw_value = raw_value.strip()
+    if not raw_value:
+        return None
+
+    candidate = Path(raw_value)
+    if candidate.exists():
+        payload = json.loads(candidate.read_text(encoding='utf-8'))
+    else:
+        payload = json.loads(raw_value)
+
+    if not isinstance(payload, dict):
+        raise ValueError('abstain 阈值必须是 JSON 对象或 JSON 文件路径')
+    return normalize_abstain_thresholds({str(k): float(v) for k, v in payload.items()})
 
 
 def fuse_with_rrf(payloads: List[Dict[str, Any]], top_k: int, rrf_k: int = DEFAULT_RRF_K) -> List[Dict[str, Any]]:
@@ -65,7 +103,7 @@ def fuse_with_rrf(payloads: List[Dict[str, Any]], top_k: int, rrf_k: int = DEFAU
     return ranked
 
 
-def _compute_confidence(results: List[Dict[str, Any]], total_queries: int, rrf_k: int) -> Dict[str, Any]:
+def _compute_rrf_confidence(results: List[Dict[str, Any]], total_queries: int, rrf_k: int) -> Dict[str, Any]:
     if not results:
         return {
             'normalized_top1': 0.0,
@@ -91,12 +129,45 @@ def _compute_confidence(results: List[Dict[str, Any]], total_queries: int, rrf_k
     }
 
 
-def _abstain_decision(confidence: Dict[str, Any]) -> Tuple[bool, str]:
-    if confidence['normalized_top1'] < 0.22:
-        return True, 'top1 证据强度不足'
-    if confidence['top1_query_coverage'] < 0.34 and confidence['normalized_margin'] < 0.03:
-        return True, '多查询之间缺少稳定共识'
-    return False, ''
+def _compute_ranking_confidence(results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    if not results:
+        return {
+            'normalized_top1': 0.0,
+            'normalized_margin': 0.0,
+            'mean_top3_score': 0.0,
+        }
+
+    top1 = float(results[0].get('rerank_score', results[0].get('score', 0.0)))
+    top2 = float(results[1].get('rerank_score', results[1].get('score', 0.0))) if len(results) > 1 else 0.0
+    mean_top3 = sum(float(item.get('rerank_score', item.get('score', 0.0))) for item in results[:3]) / max(min(3, len(results)), 1)
+
+    return {
+        'normalized_top1': round(top1, 6),
+        'normalized_margin': round(top1 - top2, 6),
+        'mean_top3_score': round(mean_top3, 6),
+    }
+
+
+def _abstain_decision(rrf_confidence: Dict[str, Any],
+                      ranking_confidence: Dict[str, Any],
+                      thresholds: Dict[str, float],
+                      rerank_enabled: bool) -> Tuple[bool, str, List[str]]:
+    reasons: List[str] = []
+    if rrf_confidence['normalized_top1'] < thresholds['min_rrf_top1']:
+        reasons.append('rrf top1 证据强度不足')
+    if (
+        rrf_confidence['top1_query_coverage'] < thresholds['min_query_coverage']
+        and rrf_confidence['normalized_margin'] < thresholds['min_rrf_margin']
+    ):
+        reasons.append('多查询之间缺少稳定共识')
+    if (
+        rerank_enabled
+        and ranking_confidence['normalized_top1'] < thresholds['min_rerank_top1']
+        and rrf_confidence['normalized_margin'] < thresholds['min_rrf_margin']
+    ):
+        reasons.append('重排后 top1 仍然缺少明显优势')
+
+    return bool(reasons), '；'.join(reasons), reasons
 
 
 def advanced_retrieve(query: str,
@@ -111,9 +182,11 @@ def advanced_retrieve(query: str,
                       rerank: bool = False,
                       reranker_model: str = '',
                       rerank_top_n: int = 10,
-                      rrf_k: int = DEFAULT_RRF_K) -> Dict[str, Any]:
+                      rrf_k: int = DEFAULT_RRF_K,
+                      abstain_thresholds: Dict[str, float] | None = None) -> Dict[str, Any]:
     rewrites = generate_rewrites(query, max_queries=rewrite_max_queries) if rewrite else [query]
     rewrites = rewrites or [query]
+    resolved_thresholds = normalize_abstain_thresholds(abstain_thresholds)
 
     payloads = [
         retrieve(
@@ -130,8 +203,11 @@ def advanced_retrieve(query: str,
 
     fused_results = fuse_with_rrf(payloads, top_k=max(top_k, rerank_top_n if rerank else top_k), rrf_k=rrf_k)
 
-    rrf_scores = {
-        _chunk_key(item): float(item['score'])
+    rrf_meta = {
+        _chunk_key(item): {
+            'rrf_score': float(item['score']),
+            'rrf_rank': int(item['rank']),
+        }
         for item in fused_results
     }
 
@@ -141,10 +217,17 @@ def advanced_retrieve(query: str,
     final_results = fused_results[:top_k]
     for item in final_results:
         key = _chunk_key(item)
-        item['rrf_score'] = rrf_scores.get(key, float(item.get('score', 0.0)))
+        item['rrf_score'] = rrf_meta.get(key, {}).get('rrf_score', float(item.get('score', 0.0)))
+        item['rrf_rank'] = rrf_meta.get(key, {}).get('rrf_rank', int(item.get('rank', 0)))
 
-    confidence = _compute_confidence(final_results, total_queries=len(rewrites), rrf_k=rrf_k)
-    should_abstain, abstain_reason = _abstain_decision(confidence)
+    rrf_confidence = _compute_rrf_confidence(final_results, total_queries=len(rewrites), rrf_k=rrf_k)
+    ranking_confidence = _compute_ranking_confidence(final_results)
+    should_abstain, abstain_reason, abstain_signals = _abstain_decision(
+        rrf_confidence=rrf_confidence,
+        ranking_confidence=ranking_confidence,
+        thresholds=resolved_thresholds,
+        rerank_enabled=rerank,
+    )
 
     return {
         'query': query,
@@ -161,9 +244,15 @@ def advanced_retrieve(query: str,
             'rewrite_enabled': rewrite,
             'rerank_enabled': rerank,
             'reranker_model': reranker_model,
-            'confidence': confidence,
+            'confidence': rrf_confidence,
+            'confidence_detail': {
+                'rrf': rrf_confidence,
+                'ranking': ranking_confidence,
+            },
+            'abstain_thresholds': resolved_thresholds,
             'should_abstain': should_abstain,
             'abstain_reason': abstain_reason,
+            'abstain_signals': abstain_signals,
         },
         'per_query_runs': [
             {
@@ -201,6 +290,7 @@ def main() -> int:
     parser.add_argument('--reranker-model', default='', help='CrossEncoder / BGE reranker 模型名或本地路径；留空则使用启发式 rerank')
     parser.add_argument('--rerank-top-n', type=int, default=10, help='参与 rerank 的候选数')
     parser.add_argument('--rrf-k', type=int, default=DEFAULT_RRF_K, help='RRF 常数')
+    parser.add_argument('--abstain-thresholds', default='', help='abstain 阈值 JSON 字符串或 JSON 文件路径')
     parser.add_argument('--output', '-o', default='./data/processed/advanced_retrieved_context.json', help='输出文件')
     args = parser.parse_args()
 
@@ -218,6 +308,7 @@ def main() -> int:
         reranker_model=args.reranker_model,
         rerank_top_n=args.rerank_top_n,
         rrf_k=args.rrf_k,
+        abstain_thresholds=parse_abstain_thresholds_arg(args.abstain_thresholds),
     )
     save_results(payload, args.output)
 
@@ -227,8 +318,16 @@ def main() -> int:
     print(f"结果数: {payload['results_count']}")
     print(f"abstain: {payload['advanced']['should_abstain']} {payload['advanced']['abstain_reason']}")
     print(f"输出文件: {args.output}")
+    print(f"rrf_confidence: {json.dumps(payload['advanced']['confidence_detail']['rrf'], ensure_ascii=False)}")
+    if payload['advanced']['rerank_enabled']:
+        print(f"ranking_confidence: {json.dumps(payload['advanced']['confidence_detail']['ranking'], ensure_ascii=False)}")
     for item in payload['results']:
-        print(f"[{item['rank']}] score={item['score']:.4f} coverage={item.get('query_coverage', 0.0):.2f}")
+        print(
+            f"[{item['rank']}] score={item['score']:.4f} "
+            f"rrf_score={item.get('rrf_score', 0.0):.4f} "
+            f"rrf_rank={item.get('rrf_rank', 0)} "
+            f"coverage={item.get('query_coverage', 0.0):.2f}"
+        )
         print(f"    {str(item['chunk'].get('text', ''))[:120]}...")
     return 0
 

@@ -1,0 +1,299 @@
+{
+  "query": "RAG 系统的核心组成是什么？",
+  "method": "hybrid",
+  "rewrites": [
+    "RAG 系统的核心组成是什么？",
+    "RAG 系统的核心组成是什么？ 检索 生成 上下文 流程",
+    "RAG 系统的核心组成是什么？ retrieval generation context pipeline",
+    "RAG 核心组成 检索 生成 文档 上下文"
+  ],
+  "rrf_k": 60,
+  "total_chunks": 763,
+  "results_count": 5,
+  "results": [
+    {
+      "chunk": {
+        "doc_id": "doc_20260417_114320_7084",
+        "chunk_id": 1,
+        "chunk_index": 1,
+        "source": "data/input_docs/signal_rag_guide.md",
+        "filename": "signal_rag_guide.md",
+        "text": "本文档介绍如何使用信号数据专用的RAG（检索增强生成）系统。该系统包含以下核心组件：",
+        "char_count": 42,
+        "token_count": 10,
+        "chunk_time": "2026-04-17T11:43:21.403137"
+      },
+      "score": 0.869742,
+      "rank": 1,
+      "query_hits": 4,
+      "raw_best_score": 0.9484240536786619,
+      "per_query": [
+        {
+          "query": "RAG 系统的核心组成是什么？",
+          "rank": 5,
+          "raw_score": 0.7136226414893686
+        },
+        {
+          "query": "RAG 系统的核心组成是什么？ 检索 生成 上下文 流程",
+          "rank": 1,
+          "raw_score": 0.9219093861101598
+        },
+        {
+          "query": "RAG 系统的核心组成是什么？ retrieval generation context pipeline",
+          "rank": 4,
+          "raw_score": 0.8053256800114148
+        },
+        {
+          "query": "RAG 核心组成 检索 生成 文档 上下文",
+          "rank": 1,
+          "raw_score": 0.9484240536786619
+        }
+      ],
+      "query_coverage": 1.0,
+      "base_score": 0.063797,
+      "rerank_score": 0.869742,
+      "rrf_score": 0.063797,
+      "rrf_rank": 3
+    },
+    {
+      "chunk": {
+        "doc_id": "doc_20260417_114320_1667",
+        "chunk_id": 5,
+        "chunk_index": 5,
+        "source": "data/input_docs/pdf_test.md",
+        "filename": "pdf_test.md",
+        "text": "RAG 系统包含三个核心组件：",
+        "char_count": 15,
+        "token_count": 3,
+        "chunk_time": "2026-04-17T11:43:21.402874"
+      },
+      "score": 0.800525,
+      "rank": 2,
+      "query_hits": 4,
+      "raw_best_score": 0.9039379032921584,
+      "per_query": [
+        {
+          "query": "RAG 系统的核心组成是什么？",
+          "rank": 2,
+          "raw_score": 0.8890260632265321
+        },
+        {
+          "query": "RAG 系统的核心组成是什么？ 检索 生成 上下文 流程",
+          "rank": 3,
+          "raw_score": 0.8907742907622024
+        },
+        {
+          "query": "RAG 系统的核心组成是什么？ retrieval generation context pipeline",
+          "rank": 2,
+          "raw_score": 0.9039379032921584
+        },
+        {
+          "query": "RAG 核心组成 检索 生成 文档 上下文",
+          "rank": 3,
+          "raw_score": 0.7887456682770071
+        }
+      ],
+      "query_coverage": 1.0,
+      "base_score": 0.064004,
+      "rerank_score": 0.800525,
+      "rrf_score": 0.064004,
+      "rrf_rank": 2
+    },
+    {
+      "chunk": {
+        "doc_id": "doc_20260417_114320_7754",
+        "chunk_id": 3,
+        "chunk_index": 3,
+        "source": "data/input_docs/rag_introduction.md",
+        "filename": "rag_introduction.md",
+        "text": "## RAG 的核心组件",
+        "char_count": 12,
+        "token_count": 3,
+        "chunk_time": "2026-04-17T11:43:21.402940"
+      },
+      "score": 0.781818,
+      "rank": 3,
+      "query_hits": 4,
+      "raw_best_score": 0.9117732481354396,
+      "per_query": [
+        {
+          "query": "RAG 系统的核心组成是什么？",
+          "rank": 1,
+          "raw_score": 0.9049443796400658
+        },
+        {
+          "query": "RAG 系统的核心组成是什么？ 检索 生成 上下文 流程",
+          "rank": 2,
+          "raw_score": 0.9010989010989011
+        },
+        {
+          "query": "RAG 系统的核心组成是什么？ retrieval generation context pipeline",
+          "rank": 1,
+          "raw_score": 0.9117732481354396
+        },
+        {
+          "query": "RAG 核心组成 检索 生成 文档 上下文",
+          "rank": 2,
+          "raw_score": 0.9008200501631183
+        }
+      ],
+      "query_coverage": 1.0,
+      "base_score": 0.065045,
+      "rerank_score": 0.781818,
+      "rrf_score": 0.065045,
+      "rrf_rank": 1
+    },
+    {
+      "chunk": {
+        "doc_id": "doc_20260417_114320_1667",
+        "chunk_id": 1,
+        "chunk_index": 1,
+        "source": "data/input_docs/pdf_test.md",
+        "filename": "pdf_test.md",
+        "text": "这是一个用于测试 RAG 系统 PDF 支持的文档。",
+        "char_count": 26,
+        "token_count": 6,
+        "chunk_time": "2026-04-17T11:43:21.402861"
+      },
+      "score": 0.662157,
+      "rank": 4,
+      "query_hits": 4,
+      "raw_best_score": 0.6937126715148222,
+      "per_query": [
+        {
+          "query": "RAG 系统的核心组成是什么？",
+          "rank": 10,
+          "raw_score": 0.5577696104824887
+        },
+        {
+          "query": "RAG 系统的核心组成是什么？ 检索 生成 上下文 流程",
+          "rank": 9,
+          "raw_score": 0.6462869243007665
+        },
+        {
+          "query": "RAG 系统的核心组成是什么？ retrieval generation context pipeline",
+          "rank": 10,
+          "raw_score": 0.6022187796219614
+        },
+        {
+          "query": "RAG 核心组成 检索 生成 文档 上下文",
+          "rank": 7,
+          "raw_score": 0.6937126715148222
+        }
+      ],
+      "query_coverage": 1.0,
+      "base_score": 0.05799,
+      "rerank_score": 0.662157,
+      "rrf_score": 0.05799,
+      "rrf_rank": 5
+    },
+    {
+      "chunk": {
+        "doc_id": "doc_20260417_114320_7754",
+        "chunk_id": 12,
+        "chunk_index": 12,
+        "source": "data/input_docs/rag_introduction.md",
+        "filename": "rag_introduction.md",
+        "text": "## RAG 的工作流程",
+        "char_count": 12,
+        "token_count": 3,
+        "chunk_time": "2026-04-17T11:43:21.402981"
+      },
+      "score": 0.579153,
+      "rank": 5,
+      "query_hits": 4,
+      "raw_best_score": 0.7811217735496682,
+      "per_query": [
+        {
+          "query": "RAG 系统的核心组成是什么？",
+          "rank": 6,
+          "raw_score": 0.6327745265820438
+        },
+        {
+          "query": "RAG 系统的核心组成是什么？ 检索 生成 上下文 流程",
+          "rank": 5,
+          "raw_score": 0.7811217735496682
+        },
+        {
+          "query": "RAG 系统的核心组成是什么？ retrieval generation context pipeline",
+          "rank": 8,
+          "raw_score": 0.6452699909893168
+        },
+        {
+          "query": "RAG 核心组成 检索 生成 文档 上下文",
+          "rank": 10,
+          "raw_score": 0.5776229289445977
+        }
+      ],
+      "query_coverage": 1.0,
+      "base_score": 0.059528,
+      "rerank_score": 0.579153,
+      "rrf_score": 0.059528,
+      "rrf_rank": 4
+    }
+  ],
+  "index_dir": "./data/processed/vector_index",
+  "embedding_model": "/mnt/PRO6000_disk/models/BAAI/bge-m3",
+  "hybrid_weights": {
+    "bm25": 0.35,
+    "tfidf": 0.15,
+    "keyword": 0.1,
+    "vector": 0.4
+  },
+  "advanced": {
+    "rewrite_enabled": true,
+    "rerank_enabled": true,
+    "reranker_model": "",
+    "confidence": {
+      "normalized_top1": 0.972904,
+      "normalized_margin": -0.003157,
+      "top1_query_coverage": 1.0,
+      "mean_top3_score": 0.064282
+    },
+    "confidence_detail": {
+      "rrf": {
+        "normalized_top1": 0.972904,
+        "normalized_margin": -0.003157,
+        "top1_query_coverage": 1.0,
+        "mean_top3_score": 0.064282
+      },
+      "ranking": {
+        "normalized_top1": 0.869742,
+        "normalized_margin": 0.069217,
+        "mean_top3_score": 0.817362
+      }
+    },
+    "abstain_thresholds": {
+      "min_rrf_top1": 0.22,
+      "min_rrf_margin": 0.03,
+      "min_query_coverage": 0.34,
+      "min_rerank_top1": 0.35
+    },
+    "should_abstain": false,
+    "abstain_reason": "",
+    "abstain_signals": []
+  },
+  "per_query_runs": [
+    {
+      "query": "RAG 系统的核心组成是什么？",
+      "method": "hybrid",
+      "results_count": 10
+    },
+    {
+      "query": "RAG 系统的核心组成是什么？ 检索 生成 上下文 流程",
+      "method": "hybrid",
+      "results_count": 10
+    },
+    {
+      "query": "RAG 系统的核心组成是什么？ retrieval generation context pipeline",
+      "method": "hybrid",
+      "results_count": 10
+    },
+    {
+      "query": "RAG 核心组成 检索 生成 文档 上下文",
+      "method": "hybrid",
+      "results_count": 10
+    }
+  ],
+  "timestamp": "2026-04-19T15:51:41.114764"
+}

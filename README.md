@@ -39,9 +39,13 @@ rag_minimal/
 │   ├── processed/            # 处理结果目录
 │   │   ├── vector_index/     # 向量索引（FAISS）
 │   │   ├── eval_docs_chunks.jsonl  # 切分后的文档块
-│   │   └── retrieval_eval_report.json  # 评估报告
+│   │   ├── retrieval_eval_report.json  # 检索评估报告
+│   │   ├── advanced_retrieved_context_vnext.json  # 高级检索结果
+│   │   └── hybrid_weight_scan.json  # 混合权重扫描结果
 │   ├── eval/                 # 评估数据集
-│   │   └── retrieval_eval.json  # 检索评估样例
+│   │   ├── retrieval_eval.json  # 检索评估样例（冒烟测试）
+│   │   ├── retrieval_eval_formal_v1.json  # 正式评测集（覆盖多主题）
+│   │   └── advanced_abstain_thresholds.example.json  # abstain 阈值配置示例
 │   └── runs/                 # 运行记录目录
 ├── 核心模块
 │   ├── ingest.py             # 文档导入（支持 txt/md/pdf）
@@ -51,9 +55,14 @@ rag_minimal/
 │   ├── build_vector_index.py # 向量索引构建脚本
 │   ├── generate_report.py    # 报告生成（调用 Qwen API）
 │   └── pipeline_demo.py      # 完整流程演示
+├── 高级检索
+│   ├── query_rewrite.py      # 多查询改写（支持 RAG/Transformer/BERT/GPT/舵机诊断等主题）
+│   ├── rerank.py             # 结果重排序（CrossEncoder + 启发式 rerank）
+│   └── advanced_retrieve.py  # 高级检索（rewrite + RRF + rerank + abstain）
 ├── 评估模块
 │   ├── evaluate_main.py      # 主评估流程（检索+报告质量）
 │   ├── evaluate_retrieval.py # 检索离线评估（对比 bm25/vector/hybrid）
+│   ├── evaluate_advanced_retrieval.py  # 高级检索评测（rewrite/rerank/abstain）
 │   ├── evaluate_report.py    # 报告质量评估
 │   ├── evaluate_template_matrix.py  # 多模板对比评估
 │   └── tune_hybrid_weights.py  # 混合检索权重扫描
@@ -72,6 +81,13 @@ rag_minimal/
 - `keyword` - 关键词重叠匹配
 - `vector` - 向量语义检索（BGE-M3 + FAISS）
 - `hybrid` - 混合检索（四路加权融合）
+
+**高级检索功能：**
+- `query_rewrite` - 多查询改写（按主题生成候选查询）
+- `RRF 融合` - Reciprocal Rank Fusion 多查询结果融合
+- `rerank` - 结果重排序（CrossEncoder 或启发式 rerank）
+- `abstain` - 置信度不足时拒绝回答机制
+- `confidence_detail` - 双层置信度（RRF 证据强度 + 最终排序强度）
 
 **报告模板支持：**
 - `summary` - 文档摘要报告
@@ -193,7 +209,9 @@ src/
 
 ### 评估数据（`rag_minimal/data/eval/`）
 
-- `retrieval_eval.json` - 检索评估样例（3 个测试用例）
+- `retrieval_eval.json` - 检索评估样例（3 个测试用例，冒烟测试）
+- `retrieval_eval_formal_v1.json` - 正式评测集（覆盖 RAG/Transformer/BERT/GPT/算法/舵机诊断等 12 个用例）
+- `advanced_abstain_thresholds.example.json` - abstain 阈值配置示例
 
 ### 处理结果（`rag_minimal/data/processed/`）
 
@@ -256,6 +274,39 @@ CUDA_VISIBLE_DEVICES=1 python pipeline_demo.py \
   --save-run
 ```
 
+### 6. 运行高级检索（rewrite + RRF + rerank + abstain）
+
+```bash
+cd rag_minimal
+CUDA_VISIBLE_DEVICES=1 python advanced_retrieve.py \
+  --query "RAG 系统的核心组成是什么？" \
+  --chunks ./data/processed/eval_docs_chunks.jsonl \
+  --method hybrid \
+  --index-dir ./data/processed/vector_index \
+  --embedding-model /mnt/PRO6000_disk/models/BAAI/bge-m3 \
+  --rewrite \
+  --rewrite-max-queries 4 \
+  --rerank \
+  --rerank-top-n 10 \
+  --output ./data/processed/advanced_retrieved_context.json
+```
+
+### 7. 运行高级检索评测
+
+```bash
+cd rag_minimal
+CUDA_VISIBLE_DEVICES=1 python evaluate_advanced_retrieval.py \
+  --eval-file ./data/eval/retrieval_eval_formal_v1.json \
+  --chunks ./data/processed/eval_docs_chunks.jsonl \
+  --method hybrid \
+  --top-k 5 \
+  --index-dir ./data/processed/vector_index \
+  --embedding-model /mnt/PRO6000_disk/models/BAAI/bge-m3 \
+  --rewrite \
+  --rerank \
+  --output ./data/processed/advanced_retrieval_eval_report.json
+```
+
 ---
 
 ## 依赖安装
@@ -302,6 +353,13 @@ modelscope download --model BAAI/bge-m3 --local_dir /mnt/PRO6000_disk/models/BAA
 - **Recall@K** - 召回率
 - **MRR@K** - 平均倒数排名
 
+### 高级检索评估
+
+- **answered_rate** - 没有 abstain 的比例
+- **answered_hit_rate** - 在没有 abstain 的样本中，回答命中的比例
+- **useful_answer_rate** - 既没有 abstain，又成功命中的比例
+- **abstain_rate** - abstain 的比例
+
 ### 报告评估
 
 - **结构完整率** - 报告结构是否完整
@@ -329,17 +387,18 @@ modelscope download --model BAAI/bge-m3 --local_dir /mnt/PRO6000_disk/models/BAA
 6. **第六阶段**：多模板报告生成
 7. **第七阶段**：多模板对比评估
 8. **第八阶段**：混合检索升级（BM25 + TF-IDF + Keyword + Vector）
-9. **第九阶段**：检索评估和混合检索稳定性扫描（当前）
+9. **第九阶段**：检索评估和混合检索稳定性扫描
+10. **第十阶段**：高级检索（rewrite + RRF + rerank + abstain）+ 置信度双层化 + 高级检索评测
 
 ---
 
 ## 下一步计划
 
-- [ ] Rerank 模块
-- [ ] Query Rewrite
-- [ ] Refusal / Abstain 机制
+- [ ] Rerank 模块（CrossEncoder 模型集成）
+- [ ] Refusal / Abstain 机制优化（阈值迁移实验）
 - [ ] 幻觉专项评估
-- [ ] 更大规模评测集
+- [ ] 更大规模评测集（含 negative / hard negative 样本）
+- [ ] Query Rewrite 模型化（LLM-based 改写）
 
 ---
 

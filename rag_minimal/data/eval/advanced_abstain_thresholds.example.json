@@ -1,0 +1,6 @@
+{
+  "min_rrf_top1": 0.22,
+  "min_rrf_margin": 0.03,
+  "min_query_coverage": 0.34,
+  "min_rerank_top1": 0.35
+}
