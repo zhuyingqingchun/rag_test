@@ -1,5 +1,46 @@
 # RAG 检索与报告生成系统
 
+## 项目目标
+
+> **构建一个面向本地文档资料的 RAG 检索与报告生成系统，支持稀疏检索、向量检索、混合检索与高级检索增强，并通过离线评测与证据置信度控制，提高回答与报告生成的可靠性。**
+
+本项目不是通用聊天机器人，而是**"拿你的本地知识资料，先检索，再生成报告"的本地知识助手**。标准输入是放进 `rag_minimal/data/input_docs/` 的 PDF / Markdown / TXT 文档；标准输出不是一句简短回答，而是**带证据支撑的结构化报告**。
+
+### 核心能力
+
+| 能力 | 说明 | 当前状态 |
+|------|------|----------|
+| **知识检索** | 从本地文档库中检索最相关证据，输出 top-k chunk、来源文件、分数、检索方式 | ✅ 已完成（bm25/tfidf/keyword/vector/hybrid） |
+| **证据化报告** | 基于检索结果生成摘要/调研/对比/项目/故障分析等结构化报告 | ✅ 已完成（5 种模板） |
+| **质量控制** | 检索可靠性评估、证据充分性判断、abstain 决策、权重稳定性分析 | 🔄 进行中（评测框架已建立，负样本测试待补充） |
+
+### 系统架构演进
+
+```
+第一层：最小闭环（已完成）
+  导入文档 → 切分 chunk → 检索证据 → 生成报告
+
+第二层：检索能力升级（已完成）
+  单一检索 → 多路检索 → 混合检索 → 离线评测 → 权重扫描
+
+第三层：高级检索增强（已完成基础）
+  单次查询 → query rewrite → RRF 融合 → rerank → abstain 决策
+
+第四层：质量闭环（进行中）
+  高级检索统一评测 → abstain 负样本测试 → rerank benchmark → 报告质量一体化评估
+```
+
+### 当前知识库覆盖
+
+| 类别 | 示例文件 |
+|------|----------|
+| LLM / NLP 基础 | transformer.pdf, bert.pdf, gpt.pdf, gpt2.pdf, gpt3.pdf |
+| RAG 相关 | rag_introduction.md, signal_rag_guide.md |
+| 通用算法 | hello-algo_1.3.0_zh_cpp.pdf |
+| 垂直领域 | 基于人工智能的飞机电动舵机故障诊断方法研究_王剑.pdf |
+
+---
+
 ## 项目概述
 
 这是一个完整的 RAG（Retrieval-Augmented Generation）检索与报告生成系统，支持多种检索策略、多模板报告生成和离线评估。系统基于本地 GPU 环境运行，使用 Qwen 大语言模型生成结构化报告。
@@ -394,11 +435,20 @@ modelscope download --model BAAI/bge-m3 --local_dir /mnt/PRO6000_disk/models/BAA
 
 ## 下一步计划
 
-- [ ] Rerank 模块（CrossEncoder 模型集成）
-- [ ] Refusal / Abstain 机制优化（阈值迁移实验）
+### 检索质量
+- [ ] abstain 的正式负样本测试（negative / hard negative 样本）
+- [ ] rerank 的正式 benchmark（CrossEncoder vs 启发式）
+- [ ] query rewrite 模型化（LLM-based 改写）
+
+### 评估闭环
+- [ ] 高级检索统一评测（rewrite/rerank/abstain 联合评估）
+- [ ] 报告质量和检索质量的一体化闭环
 - [ ] 幻觉专项评估
-- [ ] 更大规模评测集（含 negative / hard negative 样本）
-- [ ] Query Rewrite 模型化（LLM-based 改写）
+
+### 产品化
+- [ ] 确定主场景（通用知识库 vs 垂直领域诊断）
+- [ ] 面向用户的固定输出界面/流程
+- [ ] 单一明确场景收敛
 
 ---
 
